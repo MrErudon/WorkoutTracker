@@ -23,299 +23,198 @@
     --upper-b: #4098E8;
     --lower-b: #9B5DE5;
     --run: #F5A623;
-    --accent: #E8E9EC;
-    --font-mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
-    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono: 'SF Mono','Fira Code','Consolas',monospace;
+    --font-sans: -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--bg); color: var(--text); font-family: var(--font-sans); min-height: 100vh; }
 
   /* GOAL STRIP */
-  .goal-strip {
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    padding: 10px 16px;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-  }
-  .goal-card {
-    background: var(--surface2);
-    border-radius: 8px;
-    padding: 8px 10px;
-    position: relative;
-    overflow: hidden;
-  }
-  .goal-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: var(--goal-color, #E84040);
-  }
-  .goal-label { font-size: 9px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 4px; }
-  .goal-value { font-family: var(--font-mono); font-size: 18px; font-weight: 700; line-height: 1; color: var(--goal-color); }
-  .goal-target { font-size: 9px; color: var(--muted); margin-top: 3px; }
-  .goal-progress-bar {
-    margin-top: 6px;
-    height: 3px;
-    background: var(--border);
-    border-radius: 2px;
-    overflow: hidden;
-  }
-  .goal-progress-fill {
-    height: 100%;
-    border-radius: 2px;
-    background: var(--goal-color);
-    transition: width .4s ease;
-  }
+  .goal-strip { background: var(--surface); border-bottom: 1px solid var(--border); padding: 10px 16px; display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+  .goal-card { background: var(--surface2); border-radius: 8px; padding: 8px 10px; position: relative; overflow: hidden; }
+  .goal-card::before { content:''; position: absolute; top:0; left:0; right:0; height:2px; background: var(--goal-color,#E84040); }
+  .goal-label { font-size:9px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin-bottom:4px; }
+  .goal-value { font-family:var(--font-mono); font-size:18px; font-weight:700; line-height:1; color:var(--goal-color); }
+  .goal-target { font-size:9px; color:var(--muted); margin-top:3px; }
+  .goal-progress-bar { margin-top:6px; height:3px; background:var(--border); border-radius:2px; overflow:hidden; }
+  .goal-progress-fill { height:100%; border-radius:2px; background:var(--goal-color); transition:width .4s ease; }
 
   /* HEADER */
-  header {
-    padding: 14px 16px 0;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  header h1 { font-size: 20px; font-weight: 700; letter-spacing: -.02em; }
-  .header-date { font-size: 12px; color: var(--muted); font-family: var(--font-mono); }
+  header { padding:14px 16px 0; display:flex; align-items:center; justify-content:space-between; }
+  header h1 { font-size:20px; font-weight:700; letter-spacing:-.02em; }
+  .header-date { font-size:12px; color:var(--muted); font-family:var(--font-mono); }
 
   /* TABS */
-  .tabs-wrap { padding: 14px 16px 0; overflow-x: auto; }
-  .tabs { display: flex; gap: 6px; min-width: max-content; }
-  .tab {
-    padding: 7px 14px;
-    border-radius: 6px;
+  .tabs-wrap { padding:14px 16px 0; overflow-x:auto; }
+  .tabs { display:flex; gap:6px; min-width:max-content; }
+  .tab { padding:7px 14px; border-radius:6px; border:1px solid var(--border); background:var(--surface); color:var(--muted); font-size:12px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; cursor:pointer; transition:all .15s; white-space:nowrap; }
+  .tab:hover { border-color:#444; color:var(--text); }
+  .tab.active { color:#fff; border-color:var(--tab-color); background:color-mix(in srgb,var(--tab-color) 15%,var(--surface)); }
+  .tab[data-tab="upper-a"] { --tab-color:var(--upper-a); }
+  .tab[data-tab="lower-a"] { --tab-color:var(--lower-a); }
+  .tab[data-tab="upper-b"] { --tab-color:var(--upper-b); }
+  .tab[data-tab="lower-b"] { --tab-color:var(--lower-b); }
+  .tab[data-tab="run"] { --tab-color:var(--run); }
+  .tab[data-tab="log"] { --tab-color:#888; }
+
+  main { padding:16px; }
+  .panel { display:none; }
+  .panel.active { display:block; }
+
+  /* WORKOUT HEADER */
+  .workout-header { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+  .workout-badge { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .workout-title { font-size:22px; font-weight:700; }
+  .workout-subtitle { font-size:12px; color:var(--muted); margin-top:2px; }
+  .section-label { font-size:9px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); margin:18px 0 8px; padding-bottom:6px; border-bottom:1px solid var(--border); }
+
+  /* EXERCISE CARD */
+  .exercise-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; margin-bottom:8px; overflow:hidden; }
+  .exercise-header { display:flex; align-items:center; justify-content:space-between; padding:12px 14px; user-select:none; }
+  .exercise-header-left { flex:1; cursor:pointer; }
+  .exercise-name { font-size:14px; font-weight:600; }
+  .exercise-scheme { font-family:var(--font-mono); font-size:11px; color:var(--muted); }
+  .exercise-chevron { font-size:10px; color:var(--muted); transition:transform .2s; margin-left:10px; cursor:pointer; }
+  .exercise-card.open .exercise-chevron { transform:rotate(180deg); }
+
+  /* SWAP BUTTON */
+  .swap-btn {
+    background: var(--surface2);
     border: 1px solid var(--border);
-    background: var(--surface);
+    border-radius: 5px;
     color: var(--muted);
-    font-size: 12px;
-    font-weight: 600;
+    font-size: 10px;
+    font-weight: 700;
     letter-spacing: .04em;
-    text-transform: uppercase;
+    padding: 4px 8px;
     cursor: pointer;
-    transition: all .15s;
     white-space: nowrap;
-  }
-  .tab:hover { border-color: #444; color: var(--text); }
-  .tab.active { color: #fff; border-color: var(--tab-color); background: color-mix(in srgb, var(--tab-color) 15%, var(--surface)); }
-  .tab[data-tab="upper-a"] { --tab-color: var(--upper-a); }
-  .tab[data-tab="lower-a"] { --tab-color: var(--lower-a); }
-  .tab[data-tab="upper-b"] { --tab-color: var(--upper-b); }
-  .tab[data-tab="lower-b"] { --tab-color: var(--lower-b); }
-  .tab[data-tab="run"] { --tab-color: var(--run); }
-  .tab[data-tab="log"] { --tab-color: #888; }
-
-  /* MAIN */
-  main { padding: 16px; }
-  .panel { display: none; }
-  .panel.active { display: block; }
-
-  /* WORKOUT PANEL */
-  .workout-header {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 16px;
-  }
-  .workout-badge {
-    width: 8px; height: 8px;
-    border-radius: 50%;
+    transition: all .15s;
+    margin-right: 8px;
     flex-shrink: 0;
   }
-  .workout-title { font-size: 22px; font-weight: 700; }
-  .workout-subtitle { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .swap-btn:hover { border-color:#555; color:var(--text); }
+  .swap-btn.active { border-color:#F5A623; color:#F5A623; background:rgba(245,166,35,.08); }
 
-  .section-label {
+  /* SWAP DROPDOWN */
+  .swap-dropdown {
+    display: none;
+    margin: 0 14px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .swap-dropdown.open { display: block; }
+  .swap-category {
+    padding: 6px 12px 4px;
     font-size: 9px;
     text-transform: uppercase;
     letter-spacing: .1em;
     color: var(--muted);
-    margin: 18px 0 8px;
-    padding-bottom: 6px;
-    border-bottom: 1px solid var(--border);
+    border-top: 1px solid var(--border);
+    margin-top: 2px;
   }
-
-  /* EXERCISE ROW */
-  .exercise-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    margin-bottom: 8px;
-    overflow: hidden;
-  }
-  .exercise-header {
+  .swap-category:first-child { border-top: none; margin-top: 0; }
+  .swap-option {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 14px;
+    padding: 9px 12px;
     cursor: pointer;
-    user-select: none;
-  }
-  .exercise-name { font-size: 14px; font-weight: 600; }
-  .exercise-scheme { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
-  .exercise-chevron { font-size: 10px; color: var(--muted); transition: transform .2s; }
-  .exercise-card.open .exercise-chevron { transform: rotate(180deg); }
-
-  .set-logger { padding: 0 14px 12px; display: none; }
-  .exercise-card.open .set-logger { display: block; }
-
-  .sets-grid {
-    display: grid;
-    grid-template-columns: 28px 1fr 1fr 80px;
-    gap: 6px;
-    align-items: center;
-    margin-bottom: 6px;
-  }
-  .sets-grid-header {
-    font-size: 9px;
-    text-transform: uppercase;
-    letter-spacing: .08em;
-    color: var(--muted);
-    padding-bottom: 4px;
-    border-bottom: 1px solid var(--border);
-    margin-bottom: 4px;
-  }
-  .set-num { font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
-  .set-input {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 7px 10px;
-    color: var(--text);
-    font-family: var(--font-mono);
+    transition: background .12s;
     font-size: 13px;
-    width: 100%;
-    outline: none;
-    transition: border-color .15s;
   }
-  .set-input:focus { border-color: #555; }
-  .set-input::placeholder { color: #3a3b40; }
-  .complete-btn {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 7px;
-    color: var(--muted);
-    font-size: 11px;
-    cursor: pointer;
-    text-align: center;
-    transition: all .15s;
-    font-weight: 600;
-  }
-  .complete-btn.done { background: #1a2e1a; border-color: #2e5c2e; color: #5aab5a; }
+  .swap-option:hover { background: rgba(255,255,255,.04); }
+  .swap-option.current { color: #F5A623; }
+  .swap-option-name { font-weight: 500; }
+  .swap-option-scheme { font-family: var(--font-mono); font-size: 10px; color: var(--muted); }
+  .swap-option.current .swap-option-scheme { color: rgba(245,166,35,.6); }
+  .swap-check { font-size: 12px; color: #F5A623; opacity: 0; }
+  .swap-option.current .swap-check { opacity: 1; }
 
-  /* RUN PANEL */
-  .run-option { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-bottom: 10px; }
-  .run-type { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; margin-bottom: 8px; color: var(--run); }
-  .run-detail { font-size: 13px; color: var(--muted); line-height: 1.7; }
-  .run-detail strong { color: var(--text); }
-  .run-log-area { margin-top: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .run-input-wrap label { font-size: 10px; color: var(--muted); display: block; margin-bottom: 4px; letter-spacing: .05em; text-transform: uppercase; }
-  .run-input {
-    background: var(--surface2); border: 1px solid var(--border);
-    border-radius: 6px; padding: 8px 10px; color: var(--text);
-    font-family: var(--font-mono); font-size: 13px; width: 100%; outline: none;
-  }
-  .run-input:focus { border-color: #555; }
+  /* SET LOGGER */
+  .set-logger { padding:0 14px 12px; display:none; }
+  .exercise-card.open .set-logger { display:block; }
+  .sets-grid { display:grid; grid-template-columns:28px 1fr 1fr 80px; gap:6px; align-items:center; margin-bottom:6px; }
+  .sets-grid-header { font-size:9px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); padding-bottom:4px; border-bottom:1px solid var(--border); margin-bottom:4px; }
+  .set-num { font-family:var(--font-mono); font-size:12px; color:var(--muted); }
+  .set-input { background:var(--surface2); border:1px solid var(--border); border-radius:6px; padding:7px 10px; color:var(--text); font-family:var(--font-mono); font-size:13px; width:100%; outline:none; transition:border-color .15s; }
+  .set-input:focus { border-color:#555; }
+  .set-input::placeholder { color:#3a3b40; }
+  .complete-btn { background:var(--surface2); border:1px solid var(--border); border-radius:6px; padding:7px; color:var(--muted); font-size:11px; cursor:pointer; text-align:center; transition:all .15s; font-weight:600; }
+  .complete-btn.done { background:#1a2e1a; border-color:#2e5c2e; color:#5aab5a; }
 
-  /* LOG PANEL */
-  .log-entry {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 14px;
-    margin-bottom: 8px;
-  }
-  .log-entry-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-  .log-entry-day { font-weight: 700; font-size: 14px; }
-  .log-entry-date { font-family: var(--font-mono); font-size: 11px; color: var(--muted); }
-  .log-entry-delete { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; padding: 0 2px; }
-  .log-entry-delete:hover { color: #e84040; }
-  .log-sets { font-family: var(--font-mono); font-size: 12px; color: var(--muted); line-height: 1.9; }
-  .log-sets span { color: var(--text); }
-  .empty-log { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 14px; }
+  /* RUN */
+  .run-option { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:16px; margin-bottom:10px; }
+  .run-type { font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; margin-bottom:8px; color:var(--run); }
+  .run-detail { font-size:13px; color:var(--muted); line-height:1.7; }
+  .run-detail strong { color:var(--text); }
+  .run-log-area { margin-top:12px; display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .run-input-wrap label { font-size:10px; color:var(--muted); display:block; margin-bottom:4px; letter-spacing:.05em; text-transform:uppercase; }
+  .run-input { background:var(--surface2); border:1px solid var(--border); border-radius:6px; padding:8px 10px; color:var(--text); font-family:var(--font-mono); font-size:13px; width:100%; outline:none; }
+  .run-input:focus { border-color:#555; }
 
-  /* SAVE BUTTON */
-  .save-bar {
-    position: sticky;
-    bottom: 0;
-    background: linear-gradient(to top, var(--bg) 70%, transparent);
-    padding: 16px 0 8px;
-    margin-top: 12px;
-  }
-  .save-btn {
-    width: 100%;
-    padding: 14px;
-    border-radius: 10px;
-    border: none;
-    font-size: 14px;
-    font-weight: 700;
-    cursor: pointer;
-    letter-spacing: .04em;
-    transition: opacity .15s;
-  }
-  .save-btn:hover { opacity: .85; }
+  /* LOG */
+  .log-entry { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:14px; margin-bottom:8px; }
+  .log-entry-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; }
+  .log-entry-day { font-weight:700; font-size:14px; }
+  .log-entry-date { font-family:var(--font-mono); font-size:11px; color:var(--muted); }
+  .log-entry-delete { background:none; border:none; color:var(--muted); cursor:pointer; font-size:16px; padding:0 2px; }
+  .log-entry-delete:hover { color:#e84040; }
+  .log-sets { font-family:var(--font-mono); font-size:12px; color:var(--muted); line-height:1.9; }
+  .log-sets span { color:var(--text); }
+  .empty-log { text-align:center; padding:40px 20px; color:var(--muted); font-size:14px; }
+
+  /* SAVE BAR */
+  .save-bar { position:sticky; bottom:0; background:linear-gradient(to top,var(--bg) 70%,transparent); padding:16px 0 8px; margin-top:12px; }
+  .save-btn { width:100%; padding:14px; border-radius:10px; border:none; font-size:14px; font-weight:700; cursor:pointer; letter-spacing:.04em; transition:opacity .15s; }
+  .save-btn:hover { opacity:.85; }
 
   /* GOAL EDITOR */
-  .goal-editor { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px; margin-top: 16px; }
-  .goal-editor h3 { font-size: 13px; font-weight: 700; margin-bottom: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
-  .goal-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .goal-input-wrap label { font-size: 10px; color: var(--muted); display: block; margin-bottom: 4px; letter-spacing: .05em; text-transform: uppercase; }
-  .goal-input {
-    background: var(--surface2); border: 1px solid var(--border);
-    border-radius: 6px; padding: 8px 10px; color: var(--text);
-    font-family: var(--font-mono); font-size: 14px; width: 100%; outline: none;
-  }
-  .goal-input:focus { border-color: #555; }
-  .update-goals-btn {
-    margin-top: 12px; width: 100%; padding: 10px;
-    background: var(--surface2); border: 1px solid var(--border);
-    border-radius: 8px; color: var(--text); font-size: 13px;
-    font-weight: 700; cursor: pointer; transition: border-color .15s;
-  }
-  .update-goals-btn:hover { border-color: #555; }
+  .goal-editor { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:16px; margin-top:16px; }
+  .goal-editor h3 { font-size:13px; font-weight:700; margin-bottom:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; }
+  .goal-inputs { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .goal-input-wrap label { font-size:10px; color:var(--muted); display:block; margin-bottom:4px; letter-spacing:.05em; text-transform:uppercase; }
+  .goal-input { background:var(--surface2); border:1px solid var(--border); border-radius:6px; padding:8px 10px; color:var(--text); font-family:var(--font-mono); font-size:14px; width:100%; outline:none; }
+  .goal-input:focus { border-color:#555; }
+  .update-goals-btn { margin-top:12px; width:100%; padding:10px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; color:var(--text); font-size:13px; font-weight:700; cursor:pointer; transition:border-color .15s; }
+  .update-goals-btn:hover { border-color:#555; }
 
-  /* Week nav */
-  .week-nav {
-    display: flex; align-items: center; justify-content: space-between;
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: 8px; padding: 8px 14px; margin-bottom: 14px;
-    font-size: 13px; font-weight: 600;
-  }
-  .week-nav button { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 18px; padding: 0 6px; }
-  .week-nav button:hover { color: var(--text); }
-  .week-label { font-family: var(--font-mono); font-size: 12px; }
+  /* WEEK NAV */
+  .week-nav { display:flex; align-items:center; justify-content:space-between; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:8px 14px; margin-bottom:14px; font-size:13px; font-weight:600; }
+  .week-nav button { background:none; border:none; color:var(--muted); cursor:pointer; font-size:18px; padding:0 6px; }
+  .week-nav button:hover { color:var(--text); }
+  .week-label { font-family:var(--font-mono); font-size:12px; }
 
-  @media (max-width: 480px) {
-    .goal-strip { grid-template-columns: repeat(2, 1fr); }
-    .sets-grid { grid-template-columns: 22px 1fr 1fr 66px; }
+  @media (max-width:480px) {
+    .goal-strip { grid-template-columns:repeat(2,1fr); }
+    .sets-grid { grid-template-columns:22px 1fr 1fr 66px; }
   }
 </style>
 </head>
 <body>
 
-<!-- GOAL STRIP -->
-<div class="goal-strip" id="goalStrip">
-  <div class="goal-card" style="--goal-color: #E84040">
+<div class="goal-strip">
+  <div class="goal-card" style="--goal-color:#E84040">
     <div class="goal-label">Weight</div>
     <div class="goal-value" id="gWeight">210</div>
     <div class="goal-target">Goal: 180–190 lbs</div>
     <div class="goal-progress-bar"><div class="goal-progress-fill" id="gWeightBar" style="width:0%"></div></div>
   </div>
-  <div class="goal-card" style="--goal-color: #3DBE6E">
+  <div class="goal-card" style="--goal-color:#3DBE6E">
     <div class="goal-label">2-Mile</div>
     <div class="goal-value" id="g2mile">—</div>
     <div class="goal-target">Goal: 13:00</div>
     <div class="goal-progress-bar"><div class="goal-progress-fill" id="g2mileBar" style="width:0%"></div></div>
   </div>
-  <div class="goal-card" style="--goal-color: #4098E8">
+  <div class="goal-card" style="--goal-color:#4098E8">
     <div class="goal-label">HRPU</div>
     <div class="goal-value" id="gHRPU">—</div>
     <div class="goal-target">Goal: 70</div>
     <div class="goal-progress-bar"><div class="goal-progress-fill" id="gHRPUBar" style="width:0%"></div></div>
   </div>
-  <div class="goal-card" style="--goal-color: #9B5DE5">
+  <div class="goal-card" style="--goal-color:#9B5DE5">
     <div class="goal-label">Squat PR</div>
     <div class="goal-value" id="gSquat">—</div>
     <div class="goal-target">Started: 225–235</div>
@@ -342,128 +241,81 @@
 </div>
 
 <main>
-
-<!-- UPPER A -->
 <div class="panel active" id="panel-upper-a">
   <div class="workout-header">
     <div class="workout-badge" style="background:#E84040"></div>
-    <div>
-      <div class="workout-title">Upper A</div>
-      <div class="workout-subtitle">Strength — Bench · Row · Pull-ups · Arms</div>
-    </div>
+    <div><div class="workout-title">Upper A</div><div class="workout-subtitle">Strength — Bench · Row · Pull-ups · Arms</div></div>
   </div>
   <div id="upper-a-exercises"></div>
-  <div class="save-bar">
-    <button class="save-btn" style="background:#E84040;color:#fff" onclick="saveWorkout('upper-a')">Log Upper A Session</button>
-  </div>
+  <div class="save-bar"><button class="save-btn" style="background:#E84040;color:#fff" onclick="saveWorkout('upper-a')">Log Upper A Session</button></div>
 </div>
 
-<!-- LOWER A -->
 <div class="panel" id="panel-lower-a">
   <div class="workout-header">
     <div class="workout-badge" style="background:#3DBE6E"></div>
-    <div>
-      <div class="workout-title">Lower A</div>
-      <div class="workout-subtitle">Strength + Jump — Squat · Hex Bar · Plyo</div>
-    </div>
+    <div><div class="workout-title">Lower A</div><div class="workout-subtitle">Strength + Jump — Squat · Hex Bar · Plyo</div></div>
   </div>
   <div id="lower-a-exercises"></div>
-  <div class="save-bar">
-    <button class="save-btn" style="background:#3DBE6E;color:#000" onclick="saveWorkout('lower-a')">Log Lower A Session</button>
-  </div>
+  <div class="save-bar"><button class="save-btn" style="background:#3DBE6E;color:#000" onclick="saveWorkout('lower-a')">Log Lower A Session</button></div>
 </div>
 
-<!-- UPPER B -->
 <div class="panel" id="panel-upper-b">
   <div class="workout-header">
     <div class="workout-badge" style="background:#4098E8"></div>
-    <div>
-      <div class="workout-title">Upper B</div>
-      <div class="workout-subtitle">Volume — Incline · Lat Pulldown · Push-Ups</div>
-    </div>
+    <div><div class="workout-title">Upper B</div><div class="workout-subtitle">Volume — Incline · Lat Pulldown · Push-Ups</div></div>
   </div>
   <div id="upper-b-exercises"></div>
-  <div class="save-bar">
-    <button class="save-btn" style="background:#4098E8;color:#fff" onclick="saveWorkout('upper-b')">Log Upper B Session</button>
-  </div>
+  <div class="save-bar"><button class="save-btn" style="background:#4098E8;color:#fff" onclick="saveWorkout('upper-b')">Log Upper B Session</button></div>
 </div>
 
-<!-- LOWER B -->
 <div class="panel" id="panel-lower-b">
   <div class="workout-header">
     <div class="workout-badge" style="background:#9B5DE5"></div>
-    <div>
-      <div class="workout-title">Lower B</div>
-      <div class="workout-subtitle">Power + Athletic — Hex Bar · BSS · RDL · Plyo</div>
-    </div>
+    <div><div class="workout-title">Lower B</div><div class="workout-subtitle">Power + Athletic — Hex Bar · BSS · RDL · Plyo</div></div>
   </div>
   <div id="lower-b-exercises"></div>
-  <div class="save-bar">
-    <button class="save-btn" style="background:#9B5DE5;color:#fff" onclick="saveWorkout('lower-b')">Log Lower B Session</button>
-  </div>
+  <div class="save-bar"><button class="save-btn" style="background:#9B5DE5;color:#fff" onclick="saveWorkout('lower-b')">Log Lower B Session</button></div>
 </div>
 
-<!-- RUN -->
 <div class="panel" id="panel-run">
   <div class="workout-header">
     <div class="workout-badge" style="background:#F5A623"></div>
-    <div>
-      <div class="workout-title">Run</div>
-      <div class="workout-subtitle">Easy · Intervals · Tempo</div>
-    </div>
+    <div><div class="workout-title">Run</div><div class="workout-subtitle">Easy · Intervals · Tempo</div></div>
   </div>
-
   <div class="run-option">
     <div class="run-type">Easy Run</div>
-    <div class="run-detail">
-      <strong>3–4 miles</strong> easy pace<br>
-      Finish: <strong>4–6 × 20-sec strides</strong>
-    </div>
+    <div class="run-detail"><strong>3–4 miles</strong> easy pace<br>Finish: <strong>4–6 × 20-sec strides</strong></div>
     <div class="run-log-area">
       <div class="run-input-wrap"><label>Distance (mi)</label><input class="run-input" id="easy-dist" type="number" step="0.1" placeholder="3.5"></div>
       <div class="run-input-wrap"><label>Time (mm:ss)</label><input class="run-input" id="easy-time" type="text" placeholder="28:00"></div>
     </div>
   </div>
-
   <div class="run-option">
     <div class="run-type">Intervals</div>
-    <div class="run-detail">
-      Warm-up <strong>10 min</strong><br>
-      <strong>6–8 × 400m</strong> @ <strong>1:32–1:35 / 9.3–9.6 mph</strong><br>
-      Jog recovery between reps
-    </div>
+    <div class="run-detail">Warm-up <strong>10 min</strong><br><strong>6–8 × 400m</strong> @ <strong>1:32–1:35 / 9.3–9.6 mph</strong><br>Jog recovery between reps</div>
     <div class="run-log-area">
       <div class="run-input-wrap"><label>Reps completed</label><input class="run-input" id="int-reps" type="number" placeholder="6"></div>
       <div class="run-input-wrap"><label>Avg pace / rep</label><input class="run-input" id="int-pace" type="text" placeholder="1:33"></div>
     </div>
   </div>
-
   <div class="run-option">
     <div class="run-type">Tempo</div>
-    <div class="run-detail">
-      Warm-up, then <strong>15–20 min @ 8.2–8.6 mph</strong>, cool-down
-    </div>
+    <div class="run-detail">Warm-up, then <strong>15–20 min @ 8.2–8.6 mph</strong>, cool-down</div>
     <div class="run-log-area">
       <div class="run-input-wrap"><label>Duration (min)</label><input class="run-input" id="tempo-dur" type="number" placeholder="18"></div>
       <div class="run-input-wrap"><label>Avg speed (mph)</label><input class="run-input" id="tempo-speed" type="number" step="0.1" placeholder="8.4"></div>
     </div>
   </div>
-
-  <div class="save-bar">
-    <button class="save-btn" style="background:#F5A623;color:#000" onclick="saveRun()">Log Run Session</button>
-  </div>
+  <div class="save-bar"><button class="save-btn" style="background:#F5A623;color:#000" onclick="saveRun()">Log Run Session</button></div>
 </div>
 
-<!-- LOG / HISTORY -->
 <div class="panel" id="panel-log">
   <div class="week-nav">
     <button onclick="shiftWeek(-1)">‹</button>
     <div class="week-label" id="weekLabel"></div>
     <button onclick="shiftWeek(1)">›</button>
   </div>
-
   <div id="logList"></div>
-
   <div class="goal-editor">
     <h3>Update Goal Metrics</h3>
     <div class="goal-inputs">
@@ -475,154 +327,512 @@
     <button class="update-goals-btn" onclick="updateGoals()">Save Goal Metrics</button>
   </div>
 </div>
-
 </main>
 
 <script>
-// ── DATA ────────────────────────────────────────────────────────────
+// ── ALTERNATES LIBRARY ───────────────────────────────────────────────
+// Each exercise can have alternates grouped by equipment category.
+// 'default' is the base exercise and always appears first.
+const ALTERNATES = {
+  'Barbell Bench Press': {
+    default: { name:'Barbell Bench Press', scheme:'5×5', sets:5, hasWeight:true },
+    Bodyweight: [
+      { name:'Push-Ups', scheme:'5×AMRAP', sets:5, hasWeight:false, repsLabel:'Reps' }
+    ],
+    Dumbbell: [
+      { name:'DB Chest Press', scheme:'5×8-10', sets:5, hasWeight:true }
+    ],
+    Machine: [
+      { name:'Machine Chest Press', scheme:'5×8-10', sets:5, hasWeight:true }
+    ]
+  },
+  'Pull-Ups': {
+    default: { name:'Pull-Ups', scheme:'4×AMRAP', sets:4, hasWeight:false, repsLabel:'Reps' },
+    Cable: [
+      { name:'Lat Pulldown', scheme:'4×8-12', sets:4, hasWeight:true }
+    ],
+    Bodyweight: [
+      { name:'Inverted Row', scheme:'4×AMRAP', sets:4, hasWeight:false, repsLabel:'Reps' }
+    ]
+  },
+  'Barbell Row': {
+    default: { name:'Barbell Row', scheme:'4×6-8', sets:4, hasWeight:true },
+    Dumbbell: [
+      { name:'DB Row', scheme:'4×10', sets:4, hasWeight:true }
+    ],
+    Cable: [
+      { name:'Cable Seated Row', scheme:'4×10', sets:4, hasWeight:true }
+    ]
+  },
+  'DB Incline Bench': {
+    default: { name:'DB Incline Bench', scheme:'3×8-10', sets:3, hasWeight:true },
+    Barbell: [
+      { name:'Incline Barbell Bench', scheme:'3×6-8', sets:3, hasWeight:true }
+    ],
+    Cable: [
+      { name:'Cable Incline Fly', scheme:'3×12', sets:3, hasWeight:true }
+    ],
+    Bodyweight: [
+      { name:'Incline Push-Ups', scheme:'3×AMRAP', sets:3, hasWeight:false, repsLabel:'Reps' }
+    ],
+    Machine: [
+      { name:'Machine Chest Press (Incline)', scheme:'3×10', sets:3, hasWeight:true }
+    ]
+  },
+  'DB Shoulder Press': {
+    default: { name:'DB Shoulder Press', scheme:'3×8-10', sets:3, hasWeight:true },
+    Barbell: [
+      { name:'Military Press', scheme:'3×6-8', sets:3, hasWeight:true }
+    ],
+    Cable: [
+      { name:'Cable Shoulder Press', scheme:'3×10', sets:3, hasWeight:true }
+    ],
+    Bodyweight: [
+      { name:'Pike Push-Ups', scheme:'3×AMRAP', sets:3, hasWeight:false, repsLabel:'Reps' }
+    ],
+    Machine: [
+      { name:'Machine Shoulder Press', scheme:'3×10', sets:3, hasWeight:true }
+    ]
+  },
+  'Barbell Curl': {
+    default: { name:'Barbell Curl', scheme:'3×10', sets:3, hasWeight:true },
+    'EZ Bar': [
+      { name:'EZ Bar Curl', scheme:'3×10', sets:3, hasWeight:true }
+    ],
+    Dumbbell: [
+      { name:'DB Curl', scheme:'3×10', sets:3, hasWeight:true }
+    ],
+    Cable: [
+      { name:'Cable Curl', scheme:'3×12', sets:3, hasWeight:true }
+    ]
+  },
+  'Lying DB Triceps Extension': {
+    default: { name:'Lying DB Triceps Extension', scheme:'3×10', sets:3, hasWeight:true },
+    'EZ Bar': [
+      { name:'EZ Bar Skull Crusher', scheme:'3×10', sets:3, hasWeight:true }
+    ],
+    Cable: [
+      { name:'Tricep Pushdown', scheme:'3×12', sets:3, hasWeight:true }
+    ],
+    Bodyweight: [
+      { name:'Diamond Push-Ups', scheme:'3×AMRAP', sets:3, hasWeight:false, repsLabel:'Reps' }
+    ]
+  },
+  'Ab Roller': {
+    default: { name:'Ab Roller', scheme:'3×AMRAP (controlled)', sets:3, hasWeight:false, repsLabel:'Reps' },
+    Bodyweight: [
+      { name:'Hollow Hold', scheme:'3×45 sec', sets:3, hasWeight:false, repsLabel:'Secs' },
+      { name:'Plank', scheme:'3×60 sec', sets:3, hasWeight:false, repsLabel:'Secs' },
+      { name:'Dead Bug', scheme:'3×10/side', sets:3, hasWeight:false, repsLabel:'Reps' }
+    ],
+    Cable: [
+      { name:'Cable Crunch', scheme:'3×15', sets:3, hasWeight:true }
+    ],
+    Machine: [
+      { name:'Machine Ab Crunch', scheme:'3×15', sets:3, hasWeight:true }
+    ]
+  },
+  'Jump Rope': {
+    default: { name:'Jump Rope', scheme:'3×3 min (1 min rest)', sets:3, hasWeight:false, repsLabel:'Min' },
+    Bodyweight: [
+      { name:'High Knees', scheme:'3×60 sec', sets:3, hasWeight:false, repsLabel:'Secs' },
+      { name:'Jumping Jacks', scheme:'3×60 sec', sets:3, hasWeight:false, repsLabel:'Secs' }
+    ]
+  },
+  'Jump Rope (Upper)': {
+    default: { name:'Jump Rope', scheme:'1×10 min steady', sets:1, hasWeight:false, repsLabel:'Min' },
+    Bodyweight: [
+      { name:'High Knees', scheme:'2×60 sec', sets:2, hasWeight:false, repsLabel:'Secs' },
+      { name:'Jumping Jacks', scheme:'2×60 sec', sets:2, hasWeight:false, repsLabel:'Secs' }
+    ]
+  },
+  'Vertical Jumps': {
+    default: { name:'Vertical Jumps', scheme:'5×3', sets:5, hasWeight:false, repsLabel:'Reps' },
+    Bodyweight: [
+      { name:'Box Jumps', scheme:'5×3', sets:5, hasWeight:false, repsLabel:'Reps' },
+      { name:'Tuck Jumps', scheme:'5×3', sets:5, hasWeight:false, repsLabel:'Reps' }
+    ]
+  },
+  'Back Squat': {
+    default: { name:'Back Squat', scheme:'5×5', sets:5, hasWeight:true },
+    Barbell: [
+      { name:'Front Squat', scheme:'5×5', sets:5, hasWeight:true },
+      { name:'Pause Squat', scheme:'5×3', sets:5, hasWeight:true }
+    ],
+    Dumbbell: [
+      { name:'Goblet Squat', scheme:'5×8', sets:5, hasWeight:true }
+    ],
+    Bodyweight: [
+      { name:'Bodyweight Squat', scheme:'5×15', sets:5, hasWeight:false, repsLabel:'Reps' }
+    ],
+    Machine: [
+      { name:'Leg Press', scheme:'5×8-10', sets:5, hasWeight:true }
+    ]
+  },
+  'Hex Bar Deadlift': {
+    default: { name:'Hex Bar Deadlift', scheme:'3×5', sets:3, hasWeight:true },
+    Barbell: [
+      { name:'Conventional Deadlift', scheme:'3×5', sets:3, hasWeight:true },
+      { name:'Sumo Deadlift', scheme:'3×5', sets:3, hasWeight:true }
+    ],
+    Dumbbell: [
+      { name:'DB Romanian Deadlift', scheme:'3×8', sets:3, hasWeight:true }
+    ]
+  },
+  'Hex Bar Deadlift (Power)': {
+    default: { name:'Hex Bar Deadlift', scheme:'5×3', sets:5, hasWeight:true },
+    Barbell: [
+      { name:'Conventional Deadlift', scheme:'5×3', sets:5, hasWeight:true },
+      { name:'Sumo Deadlift', scheme:'5×3', sets:5, hasWeight:true }
+    ],
+    Dumbbell: [
+      { name:'DB Romanian Deadlift', scheme:'5×6', sets:5, hasWeight:true }
+    ]
+  },
+  'Walking Lunges': {
+    default: { name:'Walking Lunges', scheme:'3×10/leg', sets:3, hasWeight:true },
+    Barbell: [
+      { name:'Barbell Reverse Lunge', scheme:'3×8/leg', sets:3, hasWeight:true }
+    ],
+    Dumbbell: [
+      { name:'DB Walking Lunges', scheme:'3×10/leg', sets:3, hasWeight:true }
+    ],
+    Bodyweight: [
+      { name:'Reverse Lunges', scheme:'3×12/leg', sets:3, hasWeight:false, repsLabel:'Reps' }
+    ],
+    Machine: [
+      { name:'Leg Press', scheme:'3×10', sets:3, hasWeight:true }
+    ]
+  },
+  'Tibialis Machine': {
+    default: { name:'Tibialis Machine', scheme:'3×20', sets:3, hasWeight:true },
+    Bodyweight: [
+      { name:'Tibialis Raise (wall)', scheme:'3×20', sets:3, hasWeight:false, repsLabel:'Reps' }
+    ]
+  },
+  'Standing Calf Raise': {
+    default: { name:'Standing Calf Raise', scheme:'3×20', sets:3, hasWeight:true },
+    Bodyweight: [
+      { name:'Bodyweight Calf Raise', scheme:'3×30', sets:3, hasWeight:false, repsLabel:'Reps' },
+      { name:'Single-Leg Calf Raise', scheme:'3×15/leg', sets:3, hasWeight:false, repsLabel:'Reps' }
+    ]
+  },
+  'Pendulums': {
+    default: { name:'Pendulums', scheme:'3×10-15', sets:3, hasWeight:false, repsLabel:'Reps' },
+    Bodyweight: [
+      { name:'Dead Bug', scheme:'3×10/side', sets:3, hasWeight:false, repsLabel:'Reps' },
+      { name:'Lying Leg Raise', scheme:'3×15', sets:3, hasWeight:false, repsLabel:'Reps' },
+      { name:'Ab Roller', scheme:'3×AMRAP', sets:3, hasWeight:false, repsLabel:'Reps' }
+    ],
+    Cable: [
+      { name:'Cable Woodchop', scheme:'3×12/side', sets:3, hasWeight:true }
+    ],
+    Machine: [
+      { name:'Machine Ab Crunch', scheme:'3×15', sets:3, hasWeight:true }
+    ]
+  },
+  'Incline Barbell Bench': {
+    default: { name:'Incline Barbell Bench', scheme:'4×6-8', sets:4, hasWeight:true },
+    Dumbbell: [
+      { name:'DB Incline Press', scheme:'4×8-10', sets:4, hasWeight:true }
+    ],
+    Cable: [
+      { name:'Cable Incline Fly', scheme:'4×12', sets:4, hasWeight:true }
+    ],
+    Bodyweight: [
+      { name:'Decline Push-Ups', scheme:'4×AMRAP', sets:4, hasWeight:false, repsLabel:'Reps' }
+    ],
+    Machine: [
+      { name:'Machine Chest Press (Incline)', scheme:'4×10', sets:4, hasWeight:true }
+    ]
+  },
+  'Lat Pulldown': {
+    default: { name:'Lat Pulldown', scheme:'4×8-12', sets:4, hasWeight:true },
+    Bodyweight: [
+      { name:'Pull-Ups', scheme:'4×AMRAP', sets:4, hasWeight:false, repsLabel:'Reps' },
+      { name:'Chin-Ups', scheme:'4×AMRAP', sets:4, hasWeight:false, repsLabel:'Reps' }
+    ],
+    Cable: [
+      { name:'Cable Straight-Arm Pulldown', scheme:'4×12', sets:4, hasWeight:true }
+    ]
+  },
+  '1-Arm DB Row': {
+    default: { name:'1-Arm DB Row', scheme:'3×10', sets:3, hasWeight:true },
+    Barbell: [
+      { name:'Barbell Row', scheme:'3×8', sets:3, hasWeight:true }
+    ],
+    Cable: [
+      { name:'Cable Seated Row', scheme:'3×10', sets:3, hasWeight:true },
+      { name:'Cable Single-Arm Row', scheme:'3×10', sets:3, hasWeight:true }
+    ],
+    Bodyweight: [
+      { name:'Inverted Row', scheme:'3×AMRAP', sets:3, hasWeight:false, repsLabel:'Reps' }
+    ]
+  },
+  'Hand-Release Push-Ups': {
+    default: { name:'Hand-Release Push-Ups', scheme:'3×AMRAP', sets:3, hasWeight:false, repsLabel:'Reps' },
+    Bodyweight: [
+      { name:'Standard Push-Ups', scheme:'3×AMRAP', sets:3, hasWeight:false, repsLabel:'Reps' },
+      { name:'Wide Push-Ups', scheme:'3×AMRAP', sets:3, hasWeight:false, repsLabel:'Reps' }
+    ],
+    Dumbbell: [
+      { name:'DB Chest Press', scheme:'3×10', sets:3, hasWeight:true }
+    ]
+  },
+  'Hammer Curl': {
+    default: { name:'Hammer Curl', scheme:'3×10-12', sets:3, hasWeight:true },
+    'EZ Bar': [
+      { name:'EZ Bar Curl', scheme:'3×10', sets:3, hasWeight:true }
+    ],
+    Cable: [
+      { name:'Cable Rope Hammer Curl', scheme:'3×12', sets:3, hasWeight:true }
+    ],
+    Barbell: [
+      { name:'Barbell Curl', scheme:'3×10', sets:3, hasWeight:true }
+    ]
+  },
+  'Close-Grip Push-Ups': {
+    default: { name:'Close-Grip Push-Ups', scheme:'3×AMRAP', sets:3, hasWeight:false, repsLabel:'Reps' },
+    Cable: [
+      { name:'Tricep Pushdown', scheme:'3×12', sets:3, hasWeight:true }
+    ],
+    Dumbbell: [
+      { name:'DB Overhead Tricep Extension', scheme:'3×12', sets:3, hasWeight:true }
+    ],
+    'EZ Bar': [
+      { name:'EZ Bar Skull Crusher', scheme:'3×10', sets:3, hasWeight:true }
+    ]
+  },
+  'Broad Jumps': {
+    default: { name:'Broad Jumps', scheme:'4×3', sets:4, hasWeight:false, repsLabel:'Reps' },
+    Bodyweight: [
+      { name:'Box Jumps', scheme:'4×3', sets:4, hasWeight:false, repsLabel:'Reps' },
+      { name:'Lateral Bounds', scheme:'4×5/side', sets:4, hasWeight:false, repsLabel:'Reps' }
+    ]
+  },
+  'Depth Drops': {
+    default: { name:'Depth Drops', scheme:'3×5', sets:3, hasWeight:false, repsLabel:'Reps' },
+    Bodyweight: [
+      { name:'Single-Leg Landing', scheme:'3×5/leg', sets:3, hasWeight:false, repsLabel:'Reps' },
+      { name:'Pogo Hops', scheme:'3×10', sets:3, hasWeight:false, repsLabel:'Reps' }
+    ]
+  },
+  'Bulgarian Split Squat': {
+    default: { name:'Bulgarian Split Squat', scheme:'3×8/leg', sets:3, hasWeight:true },
+    Barbell: [
+      { name:'Barbell Reverse Lunge', scheme:'3×8/leg', sets:3, hasWeight:true }
+    ],
+    Dumbbell: [
+      { name:'DB Bulgarian Split Squat', scheme:'3×10/leg', sets:3, hasWeight:true }
+    ],
+    Bodyweight: [
+      { name:'Bodyweight Split Squat', scheme:'3×12/leg', sets:3, hasWeight:false, repsLabel:'Reps' }
+    ],
+    Machine: [
+      { name:'Leg Press', scheme:'3×10', sets:3, hasWeight:true }
+    ]
+  },
+  'Romanian Deadlift': {
+    default: { name:'Romanian Deadlift', scheme:'3×8', sets:3, hasWeight:true },
+    Dumbbell: [
+      { name:'DB Romanian Deadlift', scheme:'3×10', sets:3, hasWeight:true }
+    ],
+    Cable: [
+      { name:'Cable Pull-Through', scheme:'3×12', sets:3, hasWeight:true }
+    ],
+    Bodyweight: [
+      { name:'Single-Leg Hip Hinge', scheme:'3×10/leg', sets:3, hasWeight:false, repsLabel:'Reps' }
+    ],
+    Machine: [
+      { name:'Machine Leg Curl', scheme:'3×12', sets:3, hasWeight:true }
+    ]
+  },
+  'Monkey Foot Leg Extensions': {
+    default: { name:'Monkey Foot Leg Extensions', scheme:'3×12', sets:3, hasWeight:true },
+    Cable: [
+      { name:'Cable Leg Extension', scheme:'3×12', sets:3, hasWeight:true }
+    ],
+    Bodyweight: [
+      { name:'Terminal Knee Extension', scheme:'3×15', sets:3, hasWeight:false, repsLabel:'Reps' }
+    ],
+    Machine: [
+      { name:'Machine Leg Extension', scheme:'3×12', sets:3, hasWeight:true }
+    ]
+  },
+  'Monkey Foot Hamstring Curls': {
+    default: { name:'Monkey Foot Hamstring Curls', scheme:'3×12', sets:3, hasWeight:true },
+    Cable: [
+      { name:'Cable Hamstring Curl', scheme:'3×12', sets:3, hasWeight:true }
+    ],
+    Bodyweight: [
+      { name:'Nordic Curl (eccentric)', scheme:'3×5', sets:3, hasWeight:false, repsLabel:'Reps' },
+      { name:'Glute Bridge', scheme:'3×15', sets:3, hasWeight:false, repsLabel:'Reps' }
+    ],
+    Machine: [
+      { name:'Machine Leg Curl', scheme:'3×12', sets:3, hasWeight:true }
+    ]
+  },
+  'Russian Twists': {
+    default: { name:'Russian Twists', scheme:'3×20', sets:3, hasWeight:false, repsLabel:'Reps' },
+    Bodyweight: [
+      { name:'Bicycle Crunches', scheme:'3×20', sets:3, hasWeight:false, repsLabel:'Reps' },
+      { name:'Side Plank', scheme:'3×30 sec/side', sets:3, hasWeight:false, repsLabel:'Secs' }
+    ],
+    Dumbbell: [
+      { name:'DB Russian Twists', scheme:'3×20', sets:3, hasWeight:true }
+    ],
+    Cable: [
+      { name:'Cable Woodchop', scheme:'3×12/side', sets:3, hasWeight:true }
+    ]
+  }
+};
+
+// ── WORKOUTS ─────────────────────────────────────────────────────────
 const WORKOUTS = {
   'upper-a': {
     label: 'Upper A',
     sections: [
-      { name: 'Warm-Up', exercises: [
-        { name: 'Jump Rope', scheme: '1×10 min steady', sets: 1, hasWeight: false, repsLabel: 'Min' }
+      { name:'Warm-Up', exercises:[
+        { name:'Jump Rope', altKey:'Jump Rope (Upper)', scheme:'1×10 min steady', sets:1, hasWeight:false, repsLabel:'Min' }
       ]},
-      { name: 'Main Lift', exercises: [
-        { name: 'Barbell Bench Press', scheme: '5×5', sets: 5, hasWeight: true }
+      { name:'Main Lift', exercises:[
+        { name:'Barbell Bench Press', scheme:'5×5', sets:5, hasWeight:true }
       ]},
-      { name: 'Vertical Pull', exercises: [
-        { name: 'Pull-Ups', scheme: '4×AMRAP', sets: 4, hasWeight: false, repsLabel: 'Reps' }
+      { name:'Vertical Pull', exercises:[
+        { name:'Pull-Ups', scheme:'4×AMRAP', sets:4, hasWeight:false, repsLabel:'Reps' }
       ]},
-      { name: 'Horizontal Pull', exercises: [
-        { name: 'Barbell Row', scheme: '4×6-8', sets: 4, hasWeight: true }
+      { name:'Horizontal Pull', exercises:[
+        { name:'Barbell Row', scheme:'4×6-8', sets:4, hasWeight:true }
       ]},
-      { name: 'Secondary Press', exercises: [
-        { name: 'DB Incline Bench', scheme: '3×8-10', sets: 3, hasWeight: true }
+      { name:'Secondary Press', exercises:[
+        { name:'DB Incline Bench', scheme:'3×8-10', sets:3, hasWeight:true }
       ]},
-      { name: 'Shoulders', exercises: [
-        { name: 'DB Shoulder Press', scheme: '3×8-10', sets: 3, hasWeight: true }
+      { name:'Shoulders', exercises:[
+        { name:'DB Shoulder Press', scheme:'3×8-10', sets:3, hasWeight:true }
       ]},
-      { name: 'Arms', exercises: [
-        { name: 'Barbell Curl', scheme: '3×10', sets: 3, hasWeight: true },
-        { name: 'Lying DB Triceps Extension', scheme: '3×10', sets: 3, hasWeight: true }
+      { name:'Arms', exercises:[
+        { name:'Barbell Curl', scheme:'3×10', sets:3, hasWeight:true },
+        { name:'Lying DB Triceps Extension', scheme:'3×10', sets:3, hasWeight:true }
       ]},
-      { name: 'Core', exercises: [
-        { name: 'Ab Roller', scheme: '3×AMRAP (controlled)', sets: 3, hasWeight: false, repsLabel: 'Reps' }
+      { name:'Core', exercises:[
+        { name:'Ab Roller', scheme:'3×AMRAP (controlled)', sets:3, hasWeight:false, repsLabel:'Reps' }
       ]}
     ]
   },
   'lower-a': {
     label: 'Lower A',
     sections: [
-      { name: 'Warm-Up', exercises: [
-        { name: 'Jump Rope', scheme: '3×3 min (1 min rest)', sets: 3, hasWeight: false, repsLabel: 'Min' }
+      { name:'Warm-Up', exercises:[
+        { name:'Jump Rope', scheme:'3×3 min (1 min rest)', sets:3, hasWeight:false, repsLabel:'Min' }
       ]},
-      { name: 'Plyo', exercises: [
-        { name: 'Vertical Jumps', scheme: '5×3', sets: 5, hasWeight: false, repsLabel: 'Reps' }
+      { name:'Plyo', exercises:[
+        { name:'Vertical Jumps', scheme:'5×3', sets:5, hasWeight:false, repsLabel:'Reps' }
       ]},
-      { name: 'Main Lift', exercises: [
-        { name: 'Back Squat', scheme: '5×5', sets: 5, hasWeight: true }
+      { name:'Main Lift', exercises:[
+        { name:'Back Squat', scheme:'5×5', sets:5, hasWeight:true }
       ]},
-      { name: 'Posterior Chain', exercises: [
-        { name: 'Hex Bar Deadlift', scheme: '3×5', sets: 3, hasWeight: true }
+      { name:'Posterior Chain', exercises:[
+        { name:'Hex Bar Deadlift', scheme:'3×5', sets:3, hasWeight:true }
       ]},
-      { name: 'Single Leg', exercises: [
-        { name: 'Walking Lunges', scheme: '3×10/leg', sets: 3, hasWeight: true }
+      { name:'Single Leg', exercises:[
+        { name:'Walking Lunges', scheme:'3×10/leg', sets:3, hasWeight:true }
       ]},
-      { name: 'Lower Leg', exercises: [
-        { name: 'Tibialis Machine', scheme: '3×20', sets: 3, hasWeight: true },
-        { name: 'Standing Calf Raise', scheme: '3×20', sets: 3, hasWeight: true }
+      { name:'Lower Leg', exercises:[
+        { name:'Tibialis Machine', scheme:'3×20', sets:3, hasWeight:true },
+        { name:'Standing Calf Raise', scheme:'3×20', sets:3, hasWeight:true }
       ]},
-      { name: 'Core', exercises: [
-        { name: 'Pendulums', scheme: '3×10-15', sets: 3, hasWeight: false, repsLabel: 'Reps' }
+      { name:'Core', exercises:[
+        { name:'Pendulums', scheme:'3×10-15', sets:3, hasWeight:false, repsLabel:'Reps' }
       ]}
     ]
   },
   'upper-b': {
     label: 'Upper B',
     sections: [
-      { name: 'Warm-Up', exercises: [
-        { name: 'Jump Rope', scheme: '1×10 min steady', sets: 1, hasWeight: false, repsLabel: 'Min' }
+      { name:'Warm-Up', exercises:[
+        { name:'Jump Rope', altKey:'Jump Rope (Upper)', scheme:'1×10 min steady', sets:1, hasWeight:false, repsLabel:'Min' }
       ]},
-      { name: 'Main Lift', exercises: [
-        { name: 'Incline Barbell Bench', scheme: '4×6-8', sets: 4, hasWeight: true }
+      { name:'Main Lift', exercises:[
+        { name:'Incline Barbell Bench', scheme:'4×6-8', sets:4, hasWeight:true }
       ]},
-      { name: 'Vertical Pull', exercises: [
-        { name: 'Lat Pulldown', scheme: '4×8-12', sets: 4, hasWeight: true }
+      { name:'Vertical Pull', exercises:[
+        { name:'Lat Pulldown', scheme:'4×8-12', sets:4, hasWeight:true }
       ]},
-      { name: 'Horizontal Pull', exercises: [
-        { name: '1-Arm DB Row', scheme: '3×10', sets: 3, hasWeight: true }
+      { name:'Horizontal Pull', exercises:[
+        { name:'1-Arm DB Row', scheme:'3×10', sets:3, hasWeight:true }
       ]},
-      { name: 'Bodyweight Push', exercises: [
-        { name: 'Hand-Release Push-Ups', scheme: '3×AMRAP', sets: 3, hasWeight: false, repsLabel: 'Reps' }
+      { name:'Bodyweight Push', exercises:[
+        { name:'Hand-Release Push-Ups', scheme:'3×AMRAP', sets:3, hasWeight:false, repsLabel:'Reps' }
       ]},
-      { name: 'Arms', exercises: [
-        { name: 'Hammer Curl', scheme: '3×10-12', sets: 3, hasWeight: true },
-        { name: 'Close-Grip Push-Ups', scheme: '3×AMRAP', sets: 3, hasWeight: false, repsLabel: 'Reps' }
+      { name:'Arms', exercises:[
+        { name:'Hammer Curl', scheme:'3×10-12', sets:3, hasWeight:true },
+        { name:'Close-Grip Push-Ups', scheme:'3×AMRAP', sets:3, hasWeight:false, repsLabel:'Reps' }
       ]},
-      { name: 'Core', exercises: [
-        { name: 'Ab Roller', scheme: '3×8-10 (tempo)', sets: 3, hasWeight: false, repsLabel: 'Reps' }
+      { name:'Core', exercises:[
+        { name:'Ab Roller', altKey:'Ab Roller', scheme:'3×8-10 (tempo)', sets:3, hasWeight:false, repsLabel:'Reps' }
       ]}
     ]
   },
   'lower-b': {
     label: 'Lower B',
     sections: [
-      { name: 'Warm-Up', exercises: [
-        { name: 'Jump Rope', scheme: '3×3 min (1 min rest)', sets: 3, hasWeight: false, repsLabel: 'Min' }
+      { name:'Warm-Up', exercises:[
+        { name:'Jump Rope', scheme:'3×3 min (1 min rest)', sets:3, hasWeight:false, repsLabel:'Min' }
       ]},
-      { name: 'Plyo', exercises: [
-        { name: 'Broad Jumps', scheme: '4×3', sets: 4, hasWeight: false, repsLabel: 'Reps' },
-        { name: 'Depth Drops', scheme: '3×5', sets: 3, hasWeight: false, repsLabel: 'Reps' }
+      { name:'Plyo', exercises:[
+        { name:'Broad Jumps', scheme:'4×3', sets:4, hasWeight:false, repsLabel:'Reps' },
+        { name:'Depth Drops', scheme:'3×5', sets:3, hasWeight:false, repsLabel:'Reps' }
       ]},
-      { name: 'Main Lift', exercises: [
-        { name: 'Hex Bar Deadlift', scheme: '5×3', sets: 5, hasWeight: true }
+      { name:'Main Lift', exercises:[
+        { name:'Hex Bar Deadlift', altKey:'Hex Bar Deadlift (Power)', scheme:'5×3', sets:5, hasWeight:true }
       ]},
-      { name: 'Single Leg', exercises: [
-        { name: 'Bulgarian Split Squat', scheme: '3×8/leg', sets: 3, hasWeight: true }
+      { name:'Single Leg', exercises:[
+        { name:'Bulgarian Split Squat', scheme:'3×8/leg', sets:3, hasWeight:true }
       ]},
-      { name: 'Posterior Chain', exercises: [
-        { name: 'Romanian Deadlift', scheme: '3×8', sets: 3, hasWeight: true }
+      { name:'Posterior Chain', exercises:[
+        { name:'Romanian Deadlift', scheme:'3×8', sets:3, hasWeight:true }
       ]},
-      { name: 'Lower Leg', exercises: [
-        { name: 'Tibialis Machine', scheme: '3×20', sets: 3, hasWeight: true },
-        { name: 'Monkey Foot Leg Extensions', scheme: '3×12', sets: 3, hasWeight: true },
-        { name: 'Monkey Foot Hamstring Curls', scheme: '3×12', sets: 3, hasWeight: true }
+      { name:'Lower Leg', exercises:[
+        { name:'Tibialis Machine', scheme:'3×20', sets:3, hasWeight:true },
+        { name:'Monkey Foot Leg Extensions', scheme:'3×12', sets:3, hasWeight:true },
+        { name:'Monkey Foot Hamstring Curls', scheme:'3×12', sets:3, hasWeight:true }
       ]},
-      { name: 'Core', exercises: [
-        { name: 'Russian Twists', scheme: '3×20', sets: 3, hasWeight: false, repsLabel: 'Reps' }
+      { name:'Core', exercises:[
+        { name:'Russian Twists', scheme:'3×20', sets:3, hasWeight:false, repsLabel:'Reps' }
       ]}
     ]
   }
 };
 
-// ── STATE ────────────────────────────────────────────────────────────
+// ── STATE ─────────────────────────────────────────────────────────────
 let log = JSON.parse(localStorage.getItem('trainingLog') || '[]');
 let goals = JSON.parse(localStorage.getItem('trainingGoals') || '{"weight":210,"mile2":null,"hrpu":null,"squat":225}');
 let viewWeekOffset = 0;
+// Session-only swap state: exId -> exercise object
+const sessionSwaps = {};
 
-// ── INIT ─────────────────────────────────────────────────────────────
+// ── INIT ──────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
-  const now = new Date();
   document.getElementById('headerDate').textContent =
-    now.toLocaleDateString('en-US', { weekday:'long', month:'short', day:'numeric' });
-
+    new Date().toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'});
   Object.keys(WORKOUTS).forEach(key => renderWorkout(key));
   renderLog();
   updateGoalStrip();
   updateWeekLabel();
-
   document.querySelectorAll('.tab').forEach(t => {
     t.addEventListener('click', () => {
-      document.querySelectorAll('.tab, .panel').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab,.panel').forEach(el => el.classList.remove('active'));
       t.classList.add('active');
       document.getElementById('panel-' + t.dataset.tab).classList.add('active');
       if (t.dataset.tab === 'log') { renderLog(); updateGoalStrip(); }
     });
   });
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.exercise-card')) closeAllSwapDropdowns();
+  });
 });
 
-// ── RENDER WORKOUT ───────────────────────────────────────────────────
+// ── RENDER WORKOUT ────────────────────────────────────────────────────
 function renderWorkout(key) {
   const w = WORKOUTS[key];
   const container = document.getElementById(key + '-exercises');
@@ -632,39 +842,140 @@ function renderWorkout(key) {
     html += `<div class="section-label">${section.name}</div>`;
     section.exercises.forEach((ex, ei) => {
       const exId = key + '-' + section.name.replace(/\s+/g,'-') + '-' + ei;
-      const weightCol = ex.hasWeight
-        ? `<div class="sets-grid-header" style="grid-column:3">Weight (lbs)</div>`
-        : `<div class="sets-grid-header" style="grid-column:3">${ex.repsLabel||'Reps'}</div>`;
-      let setsHtml = `
-        <div class="sets-grid sets-grid-header">
-          <div></div>
-          <div class="sets-grid-header">Reps</div>
-          ${ex.hasWeight ? `<div class="sets-grid-header">Weight (lbs)</div>` : `<div class="sets-grid-header">${ex.repsLabel||'Reps'}</div>`}
-          <div class="sets-grid-header">Done</div>
-        </div>`;
-      for (let s = 1; s <= ex.sets; s++) {
-        setsHtml += `
-          <div class="sets-grid">
-            <div class="set-num">${s}</div>
-            <input class="set-input" type="number" placeholder="—" id="${exId}-s${s}-reps">
-            <input class="set-input" type="number" placeholder="—" id="${exId}-s${s}-wt">
-            <button class="complete-btn" id="${exId}-s${s}-done" onclick="toggleDone('${exId}-s${s}')">✓</button>
-          </div>`;
-      }
+      const altKey = ex.altKey || ex.name;
+      const alts = ALTERNATES[altKey];
+      const hasAlts = alts && (Object.keys(alts).filter(k => k !== 'default').length > 0);
+      const swapBtnHtml = hasAlts
+        ? `<button class="swap-btn" id="swapbtn-${exId}" onclick="toggleSwapDropdown(event,'${exId}','${altKey}')">SWAP ⇄</button>`
+        : '';
+      const swapDropHtml = hasAlts ? buildSwapDropdown(exId, altKey, ex) : '';
+      const displayEx = sessionSwaps[exId] || ex;
       html += `
         <div class="exercise-card" id="card-${exId}">
-          <div class="exercise-header" onclick="toggleCard('${exId}')">
-            <div>
-              <div class="exercise-name">${ex.name}</div>
-              <div class="exercise-scheme">${ex.scheme}</div>
+          <div class="exercise-header">
+            <div class="exercise-header-left" onclick="toggleCard('${exId}')">
+              <div class="exercise-name" id="exname-${exId}">${displayEx.name}</div>
+              <div class="exercise-scheme" id="exscheme-${exId}">${displayEx.scheme}</div>
             </div>
-            <div class="exercise-chevron">▼</div>
+            ${swapBtnHtml}
+            <div class="exercise-chevron" onclick="toggleCard('${exId}')">▼</div>
           </div>
-          <div class="set-logger">${setsHtml}</div>
+          ${swapDropHtml}
+          <div class="set-logger" id="logger-${exId}">
+            ${buildSetLogger(exId, displayEx)}
+          </div>
         </div>`;
     });
   });
   container.innerHTML = html;
+}
+
+function buildSetLogger(exId, ex) {
+  let html = `
+    <div class="sets-grid sets-grid-header">
+      <div></div>
+      <div class="sets-grid-header">Reps</div>
+      <div class="sets-grid-header">${ex.hasWeight ? 'Weight (lbs)' : (ex.repsLabel||'Reps')}</div>
+      <div class="sets-grid-header">Done</div>
+    </div>`;
+  for (let s = 1; s <= ex.sets; s++) {
+    html += `
+      <div class="sets-grid">
+        <div class="set-num">${s}</div>
+        <input class="set-input" type="number" placeholder="—" id="${exId}-s${s}-reps">
+        <input class="set-input" type="number" placeholder="—" id="${exId}-s${s}-wt">
+        <button class="complete-btn" id="${exId}-s${s}-done" onclick="toggleDone('${exId}-s${s}')">✓</button>
+      </div>`;
+  }
+  return html;
+}
+
+function buildSwapDropdown(exId, altKey, currentEx) {
+  const alts = ALTERNATES[altKey];
+  if (!alts) return '';
+  const categories = Object.keys(alts).filter(k => k !== 'default');
+  const defaultEx = alts.default;
+  let html = `<div class="swap-dropdown" id="swap-${exId}">`;
+
+  // Always show default first
+  const curName = (sessionSwaps[exId] || currentEx).name;
+  const defCurrent = curName === defaultEx.name;
+  html += `
+    <div class="swap-option ${defCurrent ? 'current' : ''}" onclick="applySwap('${exId}','${altKey}',null)">
+      <div>
+        <div class="swap-option-name">${defaultEx.name} <span style="font-size:10px;color:var(--muted);font-weight:400">(default)</span></div>
+        <div class="swap-option-scheme">${defaultEx.scheme}</div>
+      </div>
+      <div class="swap-check">✓</div>
+    </div>`;
+
+  categories.forEach(cat => {
+    html += `<div class="swap-category">${cat}</div>`;
+    alts[cat].forEach((alt, i) => {
+      const isCurrent = curName === alt.name;
+      html += `
+        <div class="swap-option ${isCurrent ? 'current' : ''}" onclick="applySwap('${exId}','${altKey}',${JSON.stringify(alt).replace(/"/g,'&quot;')})">
+          <div>
+            <div class="swap-option-name">${alt.name}</div>
+            <div class="swap-option-scheme">${alt.scheme}</div>
+          </div>
+          <div class="swap-check">✓</div>
+        </div>`;
+    });
+  });
+  html += `</div>`;
+  return html;
+}
+
+// ── SWAP LOGIC ────────────────────────────────────────────────────────
+function toggleSwapDropdown(e, exId, altKey) {
+  e.stopPropagation();
+  const drop = document.getElementById('swap-' + exId);
+  const btn = document.getElementById('swapbtn-' + exId);
+  const isOpen = drop.classList.contains('open');
+  closeAllSwapDropdowns();
+  if (!isOpen) {
+    drop.classList.add('open');
+    btn.classList.add('active');
+    // Open the card too so it feels natural
+    document.getElementById('card-' + exId).classList.add('open');
+  }
+}
+
+function closeAllSwapDropdowns() {
+  document.querySelectorAll('.swap-dropdown.open').forEach(d => d.classList.remove('open'));
+  document.querySelectorAll('.swap-btn.active').forEach(b => b.classList.remove('active'));
+}
+
+function applySwap(exId, altKey, altData) {
+  const alts = ALTERNATES[altKey];
+  const ex = altData || alts.default;
+  sessionSwaps[exId] = ex;
+
+  // Update name + scheme display
+  document.getElementById('exname-' + exId).textContent = ex.name;
+  document.getElementById('exscheme-' + exId).textContent = ex.scheme;
+
+  // Rebuild set logger
+  document.getElementById('logger-' + exId).innerHTML = buildSetLogger(exId, ex);
+
+  // Rebuild dropdown to reflect new current
+  const card = document.getElementById('card-' + exId);
+  const oldDrop = document.getElementById('swap-' + exId);
+  if (oldDrop) {
+    // Find the original exercise definition to pass in
+    let origEx = null;
+    Object.values(WORKOUTS).forEach(w => w.sections.forEach(s => s.exercises.forEach((e, ei) => {
+      const id = Object.keys(WORKOUTS).find(k => WORKOUTS[k] === w) + '-' + s.name.replace(/\s+/g,'-') + '-' + ei;
+      if (id === exId) origEx = e;
+    })));
+    const newDropHtml = buildSwapDropdown(exId, altKey, origEx || ex);
+    const tmp = document.createElement('div');
+    tmp.innerHTML = newDropHtml;
+    oldDrop.replaceWith(tmp.firstElementChild);
+  }
+
+  closeAllSwapDropdowns();
 }
 
 function toggleCard(id) {
@@ -672,27 +983,27 @@ function toggleCard(id) {
 }
 
 function toggleDone(setId) {
-  const btn = document.getElementById(setId + '-done');
-  btn.classList.toggle('done');
+  document.getElementById(setId + '-done').classList.toggle('done');
 }
 
-// ── SAVE WORKOUT ─────────────────────────────────────────────────────
+// ── SAVE WORKOUT ──────────────────────────────────────────────────────
 function saveWorkout(key) {
   const w = WORKOUTS[key];
-  const entry = { type: key, label: w.label, date: new Date().toISOString(), sets: [] };
+  const entry = { type:key, label:w.label, date:new Date().toISOString(), sets:[] };
   let anyData = false;
 
   w.sections.forEach(section => {
     section.exercises.forEach((ex, ei) => {
       const exId = key + '-' + section.name.replace(/\s+/g,'-') + '-' + ei;
+      const activeEx = sessionSwaps[exId] || ex;
       const exSets = [];
-      for (let s = 1; s <= ex.sets; s++) {
+      for (let s = 1; s <= activeEx.sets; s++) {
         const reps = document.getElementById(`${exId}-s${s}-reps`)?.value;
         const wt = document.getElementById(`${exId}-s${s}-wt`)?.value;
         const done = document.getElementById(`${exId}-s${s}-done`)?.classList.contains('done');
-        if (reps || wt || done) { exSets.push({ s, reps, wt, done }); anyData = true; }
+        if (reps || wt || done) { exSets.push({s,reps,wt,done}); anyData = true; }
       }
-      if (exSets.length) entry.sets.push({ exercise: ex.name, scheme: ex.scheme, sets: exSets });
+      if (exSets.length) entry.sets.push({exercise:activeEx.name, scheme:activeEx.scheme, sets:exSets});
     });
   });
 
@@ -700,30 +1011,25 @@ function saveWorkout(key) {
   log.unshift(entry);
   localStorage.setItem('trainingLog', JSON.stringify(log));
 
-  // auto-update squat PR
+  // Auto-track squat PR
   if (key === 'lower-a') {
-    w.sections.forEach(sec => sec.exercises.forEach((ex, ei) => {
+    w.sections.forEach(sec => sec.exercises.forEach((ex,ei) => {
       if (ex.name === 'Back Squat') {
         const exId = key + '-' + sec.name.replace(/\s+/g,'-') + '-' + ei;
         let maxWt = 0;
-        for (let s = 1; s <= ex.sets; s++) {
-          const wt = parseFloat(document.getElementById(`${exId}-s${s}-wt`)?.value || 0);
-          if (wt > maxWt) maxWt = wt;
-        }
-        if (maxWt > (goals.squat || 0)) { goals.squat = maxWt; localStorage.setItem('trainingGoals', JSON.stringify(goals)); }
+        for (let s=1;s<=ex.sets;s++) { const wt=parseFloat(document.getElementById(`${exId}-s${s}-wt`)?.value||0); if(wt>maxWt) maxWt=wt; }
+        if (maxWt > (goals.squat||0)) { goals.squat=maxWt; localStorage.setItem('trainingGoals',JSON.stringify(goals)); }
       }
     }));
   }
+  // Auto-track HRPU
   if (key === 'upper-b') {
-    w.sections.forEach(sec => sec.exercises.forEach((ex, ei) => {
+    w.sections.forEach(sec => sec.exercises.forEach((ex,ei) => {
       if (ex.name === 'Hand-Release Push-Ups') {
         const exId = key + '-' + sec.name.replace(/\s+/g,'-') + '-' + ei;
-        let maxReps = 0;
-        for (let s = 1; s <= ex.sets; s++) {
-          const r = parseInt(document.getElementById(`${exId}-s${s}-reps`)?.value || 0);
-          if (r > maxReps) maxReps = r;
-        }
-        if (maxReps > (goals.hrpu || 0)) { goals.hrpu = maxReps; localStorage.setItem('trainingGoals', JSON.stringify(goals)); }
+        let maxR=0;
+        for (let s=1;s<=ex.sets;s++) { const r=parseInt(document.getElementById(`${exId}-s${s}-reps`)?.value||0); if(r>maxR) maxR=r; }
+        if (maxR > (goals.hrpu||0)) { goals.hrpu=maxR; localStorage.setItem('trainingGoals',JSON.stringify(goals)); }
       }
     }));
   }
@@ -732,7 +1038,7 @@ function saveWorkout(key) {
   alert(`${w.label} session saved ✓`);
 }
 
-// ── SAVE RUN ─────────────────────────────────────────────────────────
+// ── SAVE RUN ──────────────────────────────────────────────────────────
 function saveRun() {
   const easyDist = document.getElementById('easy-dist').value;
   const easyTime = document.getElementById('easy-time').value;
@@ -740,30 +1046,22 @@ function saveRun() {
   const intPace = document.getElementById('int-pace').value;
   const tempoDur = document.getElementById('tempo-dur').value;
   const tempoSpeed = document.getElementById('tempo-speed').value;
-
   if (!easyDist && !easyTime && !intReps && !tempoDur) { alert('Log at least one run before saving.'); return; }
-
-  const entry = { type: 'run', label: 'Run', date: new Date().toISOString(), runData: {
-    easy: easyDist || easyTime ? `${easyDist||'?'} mi · ${easyTime||'?'}` : null,
+  const entry = { type:'run', label:'Run', date:new Date().toISOString(), runData:{
+    easy: easyDist||easyTime ? `${easyDist||'?'} mi · ${easyTime||'?'}` : null,
     intervals: intReps ? `${intReps} × 400m @ ${intPace||'?'}/rep` : null,
     tempo: tempoDur ? `${tempoDur} min @ ${tempoSpeed||'?'} mph` : null
   }};
-
-  // check if 2-mile equivalent logged
   if (easyDist >= 2 && easyTime) {
     const parts = easyTime.split(':');
     if (parts.length === 2) {
-      const totalSec = parseInt(parts[0]) * 60 + parseInt(parts[1]);
-      const twoMileSec = Math.round(totalSec / parseFloat(easyDist) * 2);
-      const mm = Math.floor(twoMileSec / 60), ss = twoMileSec % 60;
-      const twoMileStr = `${mm}:${ss.toString().padStart(2,'0')}`;
-      if (!goals.mile2 || twoMileSec < timeToSec(goals.mile2)) {
-        goals.mile2 = twoMileStr;
-        localStorage.setItem('trainingGoals', JSON.stringify(goals));
-      }
+      const totalSec = parseInt(parts[0])*60 + parseInt(parts[1]);
+      const twoMileSec = Math.round(totalSec/parseFloat(easyDist)*2);
+      const mm=Math.floor(twoMileSec/60), ss=twoMileSec%60;
+      const str=`${mm}:${ss.toString().padStart(2,'0')}`;
+      if (!goals.mile2 || twoMileSec < timeToSec(goals.mile2)) { goals.mile2=str; localStorage.setItem('trainingGoals',JSON.stringify(goals)); }
     }
   }
-
   log.unshift(entry);
   localStorage.setItem('trainingLog', JSON.stringify(log));
   updateGoalStrip();
@@ -772,76 +1070,51 @@ function saveRun() {
 
 function timeToSec(str) {
   if (!str) return 9999;
-  const p = str.split(':');
-  return parseInt(p[0]) * 60 + parseInt(p[1] || 0);
+  const p=str.split(':');
+  return parseInt(p[0])*60+parseInt(p[1]||0);
 }
 
-// ── LOG VIEW ─────────────────────────────────────────────────────────
-function shiftWeek(dir) { viewWeekOffset += dir; renderLog(); updateWeekLabel(); }
+// ── LOG VIEW ──────────────────────────────────────────────────────────
+function shiftWeek(dir) { viewWeekOffset+=dir; renderLog(); updateWeekLabel(); }
 
 function updateWeekLabel() {
-  const now = new Date();
-  const start = new Date(now);
-  start.setDate(now.getDate() - now.getDay() + viewWeekOffset * 7);
-  const end = new Date(start); end.setDate(start.getDate() + 6);
-  const fmt = d => d.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+  const now=new Date(), start=new Date(now);
+  start.setDate(now.getDate()-now.getDay()+viewWeekOffset*7);
+  const end=new Date(start); end.setDate(start.getDate()+6);
+  const fmt=d=>d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
   document.getElementById('weekLabel').textContent =
-    viewWeekOffset === 0 ? `This Week  ${fmt(start)} – ${fmt(end)}`
-    : viewWeekOffset === -1 ? `Last Week  ${fmt(start)} – ${fmt(end)}`
+    viewWeekOffset===0 ? `This Week  ${fmt(start)} – ${fmt(end)}`
+    : viewWeekOffset===-1 ? `Last Week  ${fmt(start)} – ${fmt(end)}`
     : `${fmt(start)} – ${fmt(end)}`;
 }
 
 function renderLog() {
-  const container = document.getElementById('logList');
-  const now = new Date();
-  const weekStart = new Date(now);
-  weekStart.setDate(now.getDate() - now.getDay() + viewWeekOffset * 7);
+  const container=document.getElementById('logList');
+  const now=new Date(), weekStart=new Date(now);
+  weekStart.setDate(now.getDate()-now.getDay()+viewWeekOffset*7);
   weekStart.setHours(0,0,0,0);
-  const weekEnd = new Date(weekStart); weekEnd.setDate(weekStart.getDate() + 7);
-
-  const filtered = log.filter(e => {
-    const d = new Date(e.date);
-    return d >= weekStart && d < weekEnd;
-  });
-
-  if (!filtered.length) {
-    container.innerHTML = `<div class="empty-log">No sessions logged this week.<br>Hit the gym 💪</div>`;
-    return;
-  }
-
-  const colorMap = { 'upper-a':'#E84040','lower-a':'#3DBE6E','upper-b':'#4098E8','lower-b':'#9B5DE5','run':'#F5A623' };
-
-  container.innerHTML = filtered.map((e, i) => {
-    const d = new Date(e.date);
-    const dateStr = d.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
-    const timeStr = d.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit' });
-    const color = colorMap[e.type] || '#888';
-    const origIdx = log.indexOf(e);
-
-    let detail = '';
-    if (e.sets) {
-      detail = e.sets.map(ex => {
-        const setStr = ex.sets.map(s => {
-          if (s.wt && s.reps) return `${s.reps}×${s.wt}lb`;
-          if (s.reps) return `${s.reps} reps`;
-          return s.done ? '✓' : '—';
-        }).join(', ');
-        return `<div><span style="color:var(--text)">${ex.exercise}</span>  ${setStr}</div>`;
-      }).join('');
-    } else if (e.runData) {
-      detail = Object.entries(e.runData).filter(([,v]) => v).map(([k,v]) =>
-        `<div><span style="color:var(--text)">${k.charAt(0).toUpperCase()+k.slice(1)}</span>  ${v}</div>`
-      ).join('');
-    }
-
+  const weekEnd=new Date(weekStart); weekEnd.setDate(weekStart.getDate()+7);
+  const filtered=log.filter(e=>{ const d=new Date(e.date); return d>=weekStart&&d<weekEnd; });
+  if (!filtered.length) { container.innerHTML=`<div class="empty-log">No sessions logged this week.<br>Hit the gym 💪</div>`; return; }
+  const colorMap={'upper-a':'#E84040','lower-a':'#3DBE6E','upper-b':'#4098E8','lower-b':'#9B5DE5','run':'#F5A623'};
+  container.innerHTML=filtered.map(e=>{
+    const d=new Date(e.date);
+    const dateStr=d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+    const timeStr=d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});
+    const color=colorMap[e.type]||'#888';
+    const origIdx=log.indexOf(e);
+    let detail='';
+    if (e.sets) detail=e.sets.map(ex=>{
+      const setStr=ex.sets.map(s=>s.wt&&s.reps?`${s.reps}×${s.wt}lb`:s.reps?`${s.reps} reps`:s.done?'✓':'—').join(', ');
+      return `<div><span style="color:var(--text)">${ex.exercise}</span>  ${setStr}</div>`;
+    }).join('');
+    else if (e.runData) detail=Object.entries(e.runData).filter(([,v])=>v).map(([k,v])=>
+      `<div><span style="color:var(--text)">${k.charAt(0).toUpperCase()+k.slice(1)}</span>  ${v}</div>`).join('');
     return `
-      <div class="log-entry" style="border-left: 3px solid ${color}">
+      <div class="log-entry" style="border-left:3px solid ${color}">
         <div class="log-entry-header">
-          <div>
-            <div class="log-entry-day">${e.label}</div>
-            <div class="log-entry-date">${dateStr} · ${timeStr}</div>
-          </div>
-          <button class="log-entry-delete" onclick="deleteEntry(${origIdx})" title="Delete">🗑</button>
+          <div><div class="log-entry-day">${e.label}</div><div class="log-entry-date">${dateStr} · ${timeStr}</div></div>
+          <button class="log-entry-delete" onclick="deleteEntry(${origIdx})">🗑</button>
         </div>
         <div class="log-sets">${detail}</div>
       </div>`;
@@ -850,62 +1123,40 @@ function renderLog() {
 
 function deleteEntry(idx) {
   if (!confirm('Delete this session?')) return;
-  log.splice(idx, 1);
-  localStorage.setItem('trainingLog', JSON.stringify(log));
+  log.splice(idx,1);
+  localStorage.setItem('trainingLog',JSON.stringify(log));
   renderLog();
 }
 
 // ── GOALS ─────────────────────────────────────────────────────────────
 function updateGoals() {
-  const w = parseFloat(document.getElementById('inputWeight').value);
-  const m = document.getElementById('input2mile').value.trim();
-  const h = parseInt(document.getElementById('inputHRPU').value);
-  const sq = parseFloat(document.getElementById('inputSquat').value);
-  if (w) goals.weight = w;
-  if (m) goals.mile2 = m;
-  if (h) goals.hrpu = h;
-  if (sq) goals.squat = sq;
-  localStorage.setItem('trainingGoals', JSON.stringify(goals));
+  const w=parseFloat(document.getElementById('inputWeight').value);
+  const m=document.getElementById('input2mile').value.trim();
+  const h=parseInt(document.getElementById('inputHRPU').value);
+  const sq=parseFloat(document.getElementById('inputSquat').value);
+  if(w) goals.weight=w; if(m) goals.mile2=m; if(h) goals.hrpu=h; if(sq) goals.squat=sq;
+  localStorage.setItem('trainingGoals',JSON.stringify(goals));
   updateGoalStrip();
   alert('Metrics saved ✓');
 }
 
 function updateGoalStrip() {
-  // Weight: 210 → 185 (midpoint goal)
-  const gw = goals.weight || 210;
-  document.getElementById('gWeight').textContent = gw + ' lb';
-  const weightPct = Math.min(100, Math.max(0, Math.round((210 - gw) / (210 - 185) * 100)));
-  document.getElementById('gWeightBar').style.width = weightPct + '%';
-
-  // 2-mile: lower is better, goal 13:00 (780s), assume start ~15:00 (900s)
-  const m2 = goals.mile2;
-  document.getElementById('g2mile').textContent = m2 || '—';
-  if (m2) {
-    const sec = timeToSec(m2);
-    const pct = Math.min(100, Math.max(0, Math.round((900 - sec) / (900 - 780) * 100)));
-    document.getElementById('g2mileBar').style.width = pct + '%';
-  }
-
-  // HRPU
-  const hrpu = goals.hrpu;
-  document.getElementById('gHRPU').textContent = hrpu ? hrpu : '—';
-  if (hrpu) document.getElementById('gHRPUBar').style.width = Math.min(100, Math.round(hrpu / 70 * 100)) + '%';
-
-  // Squat
-  const sq = goals.squat;
-  document.getElementById('gSquat').textContent = sq ? sq + ' lb' : '—';
-  if (sq) {
-    const pct = Math.min(100, Math.round((sq - 225) / (315 - 225) * 100 + 50));
-    document.getElementById('gSquatBar').style.width = Math.max(10, pct) + '%';
-  }
+  const gw=goals.weight||210;
+  document.getElementById('gWeight').textContent=gw+' lb';
+  document.getElementById('gWeightBar').style.width=Math.min(100,Math.max(0,Math.round((210-gw)/(210-185)*100)))+'%';
+  const m2=goals.mile2;
+  document.getElementById('g2mile').textContent=m2||'—';
+  if(m2){const sec=timeToSec(m2);document.getElementById('g2mileBar').style.width=Math.min(100,Math.max(0,Math.round((900-sec)/(900-780)*100)))+'%';}
+  const hrpu=goals.hrpu;
+  document.getElementById('gHRPU').textContent=hrpu?hrpu:'—';
+  if(hrpu) document.getElementById('gHRPUBar').style.width=Math.min(100,Math.round(hrpu/70*100))+'%';
+  const sq=goals.squat;
+  document.getElementById('gSquat').textContent=sq?sq+' lb':'—';
+  if(sq) document.getElementById('gSquatBar').style.width=Math.max(10,Math.min(100,Math.round((sq-225)/(315-225)*100+50)))+'%';
 }
 </script>
 <script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js').catch(() => {});
-  });
-}
+if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});}
 </script>
 </body>
 </html>
