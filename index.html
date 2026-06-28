@@ -145,6 +145,34 @@
   .complete-btn { background:var(--surface2); border:1px solid var(--border); border-radius:6px; padding:7px; color:var(--muted); font-size:11px; cursor:pointer; text-align:center; transition:all .15s; font-weight:600; }
   .complete-btn.done { background:#1a2e1a; border-color:#2e5c2e; color:#5aab5a; }
 
+  /* LAST SESSION HINT */
+  .sets-grid-wrap { margin-bottom:6px; }
+  .last-hint { font-size:10px; color:var(--muted); font-family:var(--font-mono); padding:2px 0 0 34px; opacity:.6; }
+
+  /* REST TIMER */
+  .rest-timer { padding:8px 14px 10px; }
+  .rest-timer-inner { background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:10px 14px; display:flex; align-items:center; gap:10px; }
+  .rest-label { font-size:9px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); font-weight:700; }
+  .rest-countdown { font-family:var(--font-mono); font-size:20px; font-weight:700; color:var(--text); min-width:38px; }
+  .rest-skip { background:none; border:1px solid var(--border); border-radius:5px; color:var(--muted); font-size:11px; padding:3px 8px; cursor:pointer; margin-left:auto; transition:all .15s; }
+  .rest-skip:hover { color:var(--text); border-color:#555; }
+  .rest-bar-wrap { position:absolute; bottom:0; left:0; right:0; height:2px; background:var(--border); border-radius:0 0 8px 8px; overflow:hidden; }
+  .rest-timer-inner { position:relative; }
+  .rest-bar-fill { height:100%; border-radius:2px; transition:width 1s linear, background .5s; }
+
+  /* PR FLASH */
+  .pr-flash {
+    position:absolute; top:10px; right:50px;
+    background:#2a1f00; border:1px solid #F5A623;
+    color:#F5A623; font-size:13px; font-weight:700;
+    padding:4px 10px; border-radius:6px;
+    animation: prPop .3s ease, prFade 2s ease 0.5s forwards;
+    pointer-events:none; z-index:10;
+  }
+  @keyframes prPop { from{transform:scale(.7);opacity:0} to{transform:scale(1);opacity:1} }
+  @keyframes prFade { from{opacity:1} to{opacity:0} }
+  .exercise-card { position:relative; }
+
   /* RUN */
   .run-option { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:16px; margin-bottom:10px; }
   .run-type { font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; margin-bottom:8px; color:var(--run); }
@@ -227,6 +255,7 @@
     <h1>Training Log</h1>
     <div class="header-date" id="headerDate"></div>
   </div>
+  <div id="streakDisplay" style="font-size:13px;font-weight:700;color:#F5A623;font-family:var(--font-mono)"></div>
 </header>
 
 <div class="tabs-wrap">
@@ -807,14 +836,18 @@ const WORKOUTS = {
 // ── STATE ─────────────────────────────────────────────────────────────
 let log = JSON.parse(localStorage.getItem('trainingLog') || '[]');
 let goals = JSON.parse(localStorage.getItem('trainingGoals') || '{"weight":210,"mile2":null,"hrpu":null,"squat":225}');
+let prs = JSON.parse(localStorage.getItem('exercisePRs') || '{}'); // { exerciseName: maxWeight }
 let viewWeekOffset = 0;
-// Session-only swap state: exId -> exercise object
 const sessionSwaps = {};
+let restTimerInterval = null;
+let restTimerRemaining = 0;
+const REST_DURATION = 90; // seconds default
 
 // ── INIT ──────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('headerDate').textContent =
     new Date().toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'});
+  updateStreakDisplay();
   Object.keys(WORKOUTS).forEach(key => renderWorkout(key));
   renderLog();
   updateGoalStrip();
@@ -831,6 +864,52 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!e.target.closest('.exercise-card')) closeAllSwapDropdowns();
   });
 });
+
+// ── STREAK ────────────────────────────────────────────────────────────
+function getWeekKey(date) {
+  const d = new Date(date);
+  const start = new Date(d);
+  start.setDate(d.getDate() - d.getDay());
+  return start.toISOString().slice(0,10);
+}
+
+function calcStreak() {
+  const weekSessions = {};
+  log.forEach(e => {
+    const wk = getWeekKey(e.date);
+    weekSessions[wk] = (weekSessions[wk] || new Set()).add(e.type + e.date.slice(0,10));
+  });
+  const now = new Date();
+  let streak = 0;
+  let offset = 0;
+  while (true) {
+    const check = new Date(now);
+    check.setDate(now.getDate() - now.getDay() - offset * 7);
+    const wk = getWeekKey(check);
+    const sessions = weekSessions[wk];
+    if (sessions && sessions.size >= 4) { streak++; offset++; }
+    else if (offset === 0) { offset++; } // allow current week to be in progress
+    else break;
+  }
+  return streak;
+}
+
+function updateStreakDisplay() {
+  const streak = calcStreak();
+  const el = document.getElementById('streakDisplay');
+  if (el) el.textContent = streak > 0 ? `🔥 ${streak}w streak` : '';
+}
+
+// ── LAST SESSION DATA ─────────────────────────────────────────────────
+function getLastSessionData(exerciseName) {
+  // Find most recent log entry containing this exercise
+  for (const entry of log) {
+    if (!entry.sets) continue;
+    const ex = entry.sets.find(s => s.exercise === exerciseName);
+    if (ex) return ex.sets; // array of {s, reps, wt, done}
+  }
+  return null;
+}
 
 // ── RENDER WORKOUT ────────────────────────────────────────────────────
 function renderWorkout(key) {
@@ -864,6 +943,14 @@ function renderWorkout(key) {
           <div class="set-logger" id="logger-${exId}">
             ${buildSetLogger(exId, displayEx)}
           </div>
+          <div class="rest-timer" id="rest-${exId}" style="display:none">
+            <div class="rest-timer-inner">
+              <span class="rest-label">REST</span>
+              <span class="rest-countdown" id="restcount-${exId}">1:30</span>
+              <button class="rest-skip" onclick="skipRest('${exId}')">Skip</button>
+              <div class="rest-bar-wrap"><div class="rest-bar-fill" id="restbar-${exId}"></div></div>
+            </div>
+          </div>
         </div>`;
     });
   });
@@ -871,6 +958,7 @@ function renderWorkout(key) {
 }
 
 function buildSetLogger(exId, ex) {
+  const lastSets = getLastSessionData(ex.name);
   let html = `
     <div class="sets-grid sets-grid-header">
       <div></div>
@@ -879,42 +967,47 @@ function buildSetLogger(exId, ex) {
       <div class="sets-grid-header">Done</div>
     </div>`;
   for (let s = 1; s <= ex.sets; s++) {
+    const last = lastSets ? lastSets.find(ls => ls.s === s) : null;
+    const repsPlaceholder = last?.reps ? last.reps : '—';
+    const wtPlaceholder = last?.wt ? last.wt : '—';
+    const lastHint = last ? `<div class="last-hint" id="${exId}-s${s}-hint">Last: ${last.reps||'—'}${ex.hasWeight && last.wt ? ' × '+last.wt+'lb' : ''}</div>` : '';
     html += `
-      <div class="sets-grid">
-        <div class="set-num">${s}</div>
-        <input class="set-input" type="number" placeholder="—" id="${exId}-s${s}-reps">
-        <input class="set-input" type="number" placeholder="—" id="${exId}-s${s}-wt">
-        <button class="complete-btn" id="${exId}-s${s}-done" onclick="toggleDone('${exId}-s${s}')">✓</button>
+      <div class="sets-grid-wrap">
+        <div class="sets-grid">
+          <div class="set-num">${s}</div>
+          <input class="set-input" type="number" placeholder="${repsPlaceholder}" id="${exId}-s${s}-reps">
+          <input class="set-input" type="number" placeholder="${wtPlaceholder}" id="${exId}-s${s}-wt">
+          <button class="complete-btn" id="${exId}-s${s}-done" onclick="toggleDone('${exId}',${s},'${ex.name}',${ex.hasWeight})">✓</button>
+        </div>
+        ${lastHint}
       </div>`;
   }
   return html;
 }
 
+// ── SWAP LOGIC ────────────────────────────────────────────────────────
 function buildSwapDropdown(exId, altKey, currentEx) {
   const alts = ALTERNATES[altKey];
   if (!alts) return '';
   const categories = Object.keys(alts).filter(k => k !== 'default');
   const defaultEx = alts.default;
   let html = `<div class="swap-dropdown" id="swap-${exId}">`;
-
-  // Always show default first
   const curName = (sessionSwaps[exId] || currentEx).name;
   const defCurrent = curName === defaultEx.name;
   html += `
-    <div class="swap-option ${defCurrent ? 'current' : ''}" onclick="applySwap('${exId}','${altKey}',null)">
+    <div class="swap-option ${defCurrent?'current':''}" onclick="applySwap('${exId}','${altKey}',null)">
       <div>
         <div class="swap-option-name">${defaultEx.name} <span style="font-size:10px;color:var(--muted);font-weight:400">(default)</span></div>
         <div class="swap-option-scheme">${defaultEx.scheme}</div>
       </div>
       <div class="swap-check">✓</div>
     </div>`;
-
   categories.forEach(cat => {
     html += `<div class="swap-category">${cat}</div>`;
-    alts[cat].forEach((alt, i) => {
+    alts[cat].forEach(alt => {
       const isCurrent = curName === alt.name;
       html += `
-        <div class="swap-option ${isCurrent ? 'current' : ''}" onclick="applySwap('${exId}','${altKey}',${JSON.stringify(alt).replace(/"/g,'&quot;')})">
+        <div class="swap-option ${isCurrent?'current':''}" onclick="applySwap('${exId}','${altKey}',${JSON.stringify(alt).replace(/"/g,'&quot;')})">
           <div>
             <div class="swap-option-name">${alt.name}</div>
             <div class="swap-option-scheme">${alt.scheme}</div>
@@ -927,7 +1020,6 @@ function buildSwapDropdown(exId, altKey, currentEx) {
   return html;
 }
 
-// ── SWAP LOGIC ────────────────────────────────────────────────────────
 function toggleSwapDropdown(e, exId, altKey) {
   e.stopPropagation();
   const drop = document.getElementById('swap-' + exId);
@@ -937,7 +1029,6 @@ function toggleSwapDropdown(e, exId, altKey) {
   if (!isOpen) {
     drop.classList.add('open');
     btn.classList.add('active');
-    // Open the card too so it feels natural
     document.getElementById('card-' + exId).classList.add('open');
   }
 }
@@ -951,30 +1042,20 @@ function applySwap(exId, altKey, altData) {
   const alts = ALTERNATES[altKey];
   const ex = altData || alts.default;
   sessionSwaps[exId] = ex;
-
-  // Update name + scheme display
   document.getElementById('exname-' + exId).textContent = ex.name;
   document.getElementById('exscheme-' + exId).textContent = ex.scheme;
-
-  // Rebuild set logger
   document.getElementById('logger-' + exId).innerHTML = buildSetLogger(exId, ex);
-
-  // Rebuild dropdown to reflect new current
-  const card = document.getElementById('card-' + exId);
   const oldDrop = document.getElementById('swap-' + exId);
   if (oldDrop) {
-    // Find the original exercise definition to pass in
     let origEx = null;
     Object.values(WORKOUTS).forEach(w => w.sections.forEach(s => s.exercises.forEach((e, ei) => {
       const id = Object.keys(WORKOUTS).find(k => WORKOUTS[k] === w) + '-' + s.name.replace(/\s+/g,'-') + '-' + ei;
       if (id === exId) origEx = e;
     })));
-    const newDropHtml = buildSwapDropdown(exId, altKey, origEx || ex);
     const tmp = document.createElement('div');
-    tmp.innerHTML = newDropHtml;
+    tmp.innerHTML = buildSwapDropdown(exId, altKey, origEx || ex);
     oldDrop.replaceWith(tmp.firstElementChild);
   }
-
   closeAllSwapDropdowns();
 }
 
@@ -982,8 +1063,113 @@ function toggleCard(id) {
   document.getElementById('card-' + id).classList.toggle('open');
 }
 
-function toggleDone(setId) {
-  document.getElementById(setId + '-done').classList.toggle('done');
+// ── DONE BUTTON + AUTO-FILL + REST TIMER + PR CHECK ──────────────────
+function toggleDone(exId, setNum, exName, hasWeight) {
+  const setId = `${exId}-s${setNum}`;
+  const btn = document.getElementById(setId + '-done');
+  const repsEl = document.getElementById(setId + '-reps');
+  const wtEl = document.getElementById(setId + '-wt');
+  const wasDone = btn.classList.contains('done');
+
+  if (!wasDone) {
+    // Auto-fill from placeholder (last session) if fields are empty
+    if (!repsEl.value && repsEl.placeholder !== '—') repsEl.value = repsEl.placeholder;
+    if (!wtEl.value && wtEl.placeholder !== '—') wtEl.value = wtEl.placeholder;
+
+    btn.classList.add('done');
+
+    // PR check — only for weight-based exercises
+    if (hasWeight && wtEl.value) {
+      const wt = parseFloat(wtEl.value);
+      const prevPR = prs[exName] || 0;
+      if (wt > prevPR) {
+        prs[exName] = wt;
+        localStorage.setItem('exercisePRs', JSON.stringify(prs));
+        showPRFlash(exId);
+      }
+    }
+
+    // Auto-fill subsequent empty sets with same values
+    const logger = document.getElementById('logger-' + exId);
+    const allGrids = logger.querySelectorAll('.sets-grid-wrap');
+    allGrids.forEach((wrap, idx) => {
+      const sNum = idx + 1;
+      if (sNum <= setNum) return;
+      const nextReps = document.getElementById(`${exId}-s${sNum}-reps`);
+      const nextWt = document.getElementById(`${exId}-s${sNum}-wt`);
+      if (nextReps && !nextReps.value) nextReps.placeholder = repsEl.value || repsEl.placeholder;
+      if (nextWt && !nextWt.value) nextWt.placeholder = wtEl.value || wtEl.placeholder;
+    });
+
+    // Start rest timer
+    startRestTimer(exId);
+  } else {
+    btn.classList.remove('done');
+    stopRestTimer(exId);
+  }
+}
+
+function showPRFlash(exId) {
+  const card = document.getElementById('card-' + exId);
+  const flash = document.createElement('div');
+  flash.className = 'pr-flash';
+  flash.textContent = '🏆 PR!';
+  card.appendChild(flash);
+  setTimeout(() => flash.remove(), 2500);
+}
+
+// ── REST TIMER ────────────────────────────────────────────────────────
+let activeRestExId = null;
+
+function startRestTimer(exId) {
+  // Clear any existing timer
+  if (restTimerInterval) { clearInterval(restTimerInterval); restTimerInterval = null; }
+  if (activeRestExId && activeRestExId !== exId) {
+    document.getElementById('rest-' + activeRestExId).style.display = 'none';
+  }
+  activeRestExId = exId;
+  restTimerRemaining = REST_DURATION;
+  const timerEl = document.getElementById('rest-' + exId);
+  const countEl = document.getElementById('restcount-' + exId);
+  const barEl = document.getElementById('restbar-' + exId);
+  timerEl.style.display = 'block';
+  updateRestDisplay(countEl, barEl);
+  restTimerInterval = setInterval(() => {
+    restTimerRemaining--;
+    if (restTimerRemaining <= 0) {
+      clearInterval(restTimerInterval);
+      restTimerInterval = null;
+      timerEl.style.display = 'none';
+      activeRestExId = null;
+      // Vibrate if supported
+      if (navigator.vibrate) navigator.vibrate([200,100,200]);
+    } else {
+      updateRestDisplay(countEl, barEl);
+    }
+  }, 1000);
+}
+
+function updateRestDisplay(countEl, barEl) {
+  const m = Math.floor(restTimerRemaining / 60);
+  const s = restTimerRemaining % 60;
+  countEl.textContent = `${m}:${s.toString().padStart(2,'0')}`;
+  barEl.style.width = (restTimerRemaining / REST_DURATION * 100) + '%';
+  // Color shifts red as time runs out
+  const pct = restTimerRemaining / REST_DURATION;
+  barEl.style.background = pct > 0.4 ? '#3DBE6E' : pct > 0.2 ? '#F5A623' : '#E84040';
+}
+
+function stopRestTimer(exId) {
+  if (activeRestExId === exId) {
+    clearInterval(restTimerInterval);
+    restTimerInterval = null;
+    document.getElementById('rest-' + exId).style.display = 'none';
+    activeRestExId = null;
+  }
+}
+
+function skipRest(exId) {
+  stopRestTimer(exId);
 }
 
 // ── SAVE WORKOUT ──────────────────────────────────────────────────────
@@ -991,19 +1177,48 @@ function saveWorkout(key) {
   const w = WORKOUTS[key];
   const entry = { type:key, label:w.label, date:new Date().toISOString(), sets:[] };
   let anyData = false;
+  const nudges = []; // progressive overload suggestions
 
   w.sections.forEach(section => {
     section.exercises.forEach((ex, ei) => {
       const exId = key + '-' + section.name.replace(/\s+/g,'-') + '-' + ei;
       const activeEx = sessionSwaps[exId] || ex;
       const exSets = [];
+      let totalVol = 0;
+      let allMatched = true;
+      const lastSets = getLastSessionData(activeEx.name);
+
       for (let s = 1; s <= activeEx.sets; s++) {
-        const reps = document.getElementById(`${exId}-s${s}-reps`)?.value;
-        const wt = document.getElementById(`${exId}-s${s}-wt`)?.value;
-        const done = document.getElementById(`${exId}-s${s}-done`)?.classList.contains('done');
-        if (reps || wt || done) { exSets.push({s,reps,wt,done}); anyData = true; }
+        const repsEl = document.getElementById(`${exId}-s${s}-reps`);
+        const wtEl = document.getElementById(`${exId}-s${s}-wt`);
+        const doneEl = document.getElementById(`${exId}-s${s}-done`);
+        const reps = repsEl?.value || '';
+        const wt = wtEl?.value || '';
+        const done = doneEl?.classList.contains('done') || false;
+        if (reps || wt || done) {
+          exSets.push({s, reps, wt, done});
+          anyData = true;
+          if (reps && wt) totalVol += parseFloat(reps) * parseFloat(wt);
+          // Check if matched last session exactly
+          if (lastSets) {
+            const last = lastSets.find(ls => ls.s === s);
+            if (!last || reps !== last.reps || wt !== last.wt) allMatched = false;
+          } else { allMatched = false; }
+        }
       }
-      if (exSets.length) entry.sets.push({exercise:activeEx.name, scheme:activeEx.scheme, sets:exSets});
+      if (exSets.length) {
+        entry.sets.push({
+          exercise: activeEx.name,
+          scheme: activeEx.scheme,
+          sets: exSets,
+          totalVol: totalVol > 0 ? Math.round(totalVol) : null
+        });
+        // Progressive overload nudge: matched last session on all sets
+        if (allMatched && lastSets && activeEx.hasWeight) {
+          const lastWt = lastSets[0]?.wt;
+          if (lastWt) nudges.push(`${activeEx.name}: try +5 lbs next time (${parseFloat(lastWt)+5} lbs)`);
+        }
+      }
     });
   });
 
@@ -1035,7 +1250,11 @@ function saveWorkout(key) {
   }
 
   updateGoalStrip();
-  alert(`${w.label} session saved ✓`);
+  updateStreakDisplay();
+
+  let msg = `${w.label} session saved ✓`;
+  if (nudges.length) msg += '\n\n📈 Next session:\n' + nudges.join('\n');
+  alert(msg);
 }
 
 // ── SAVE RUN ──────────────────────────────────────────────────────────
@@ -1065,6 +1284,7 @@ function saveRun() {
   log.unshift(entry);
   localStorage.setItem('trainingLog', JSON.stringify(log));
   updateGoalStrip();
+  updateStreakDisplay();
   alert('Run session saved ✓');
 }
 
@@ -1106,7 +1326,8 @@ function renderLog() {
     let detail='';
     if (e.sets) detail=e.sets.map(ex=>{
       const setStr=ex.sets.map(s=>s.wt&&s.reps?`${s.reps}×${s.wt}lb`:s.reps?`${s.reps} reps`:s.done?'✓':'—').join(', ');
-      return `<div><span style="color:var(--text)">${ex.exercise}</span>  ${setStr}</div>`;
+      const volStr = ex.totalVol ? ` <span style="color:var(--muted);font-size:10px">(${ex.totalVol.toLocaleString()} lbs vol)</span>` : '';
+      return `<div><span style="color:var(--text)">${ex.exercise}</span>  ${setStr}${volStr}</div>`;
     }).join('');
     else if (e.runData) detail=Object.entries(e.runData).filter(([,v])=>v).map(([k,v])=>
       `<div><span style="color:var(--text)">${k.charAt(0).toUpperCase()+k.slice(1)}</span>  ${v}</div>`).join('');
@@ -1126,6 +1347,7 @@ function deleteEntry(idx) {
   log.splice(idx,1);
   localStorage.setItem('trainingLog',JSON.stringify(log));
   renderLog();
+  updateStreakDisplay();
 }
 
 // ── GOALS ─────────────────────────────────────────────────────────────
