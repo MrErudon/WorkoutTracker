@@ -287,9 +287,34 @@
   .stretch-text { font-size:13px; flex:1; }
   .stretch-item.checked .stretch-text { color:var(--muted); text-decoration:line-through; }
   .stretch-duration { font-family:var(--font-mono); font-size:10px; color:var(--muted); }
+  /* DELOAD BANNER */
+  .deload-banner { display:none; background:linear-gradient(135deg,rgba(245,166,35,.15),rgba(245,166,35,.05)); border:1px solid rgba(245,166,35,.4); border-radius:10px; padding:10px 14px; margin-bottom:14px; font-size:12px; color:#F5A623; font-weight:600; text-align:center; letter-spacing:.03em; }
+  .deload-banner.active { display:block; }
+  .deload-toggle-wrap { display:flex; align-items:center; justify-content:space-between; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:10px 14px; margin-bottom:14px; }
+  .deload-toggle-label { font-size:12px; font-weight:600; color:var(--muted); }
+  .toggle-switch { position:relative; width:40px; height:22px; cursor:pointer; }
+  .toggle-switch input { opacity:0; width:0; height:0; }
+  .toggle-slider { position:absolute; inset:0; background:var(--border); border-radius:22px; transition:.2s; }
+  .toggle-slider:before { content:''; position:absolute; width:16px; height:16px; left:3px; bottom:3px; background:var(--muted); border-radius:50%; transition:.2s; }
+  .toggle-switch input:checked + .toggle-slider { background:#F5A623; }
+  .toggle-switch input:checked + .toggle-slider:before { transform:translateX(18px); background:#000; }
+  /* SESSION TIMER */
+  .session-timer { font-family:var(--font-mono); font-size:11px; color:var(--muted); text-align:right; padding:4px 0 10px; letter-spacing:.05em; }
+  /* BODYWEIGHT QUICK ENTRY */
+  .bw-quick { display:flex; align-items:center; gap:8px; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:8px 12px; margin-bottom:10px; }
+  .bw-quick-label { font-size:11px; color:var(--muted); font-weight:600; flex:1; }
+  .bw-quick-input { background:var(--surface2); border:1px solid var(--border); border-radius:6px; padding:5px 8px; color:var(--text); font-family:var(--font-mono); font-size:13px; width:70px; outline:none; text-align:center; }
+  .bw-quick-input:focus { border-color:#555; }
+  .bw-quick-unit { font-size:11px; color:var(--muted); }
+  .bw-quick-btn { background:var(--surface2); border:1px solid var(--border); border-radius:6px; padding:5px 10px; color:var(--text); font-size:11px; font-weight:700; cursor:pointer; transition:border-color .15s; }
+  .bw-quick-btn:hover { border-color:#555; }
+  /* REST TIMER SETTINGS */
+  .rest-settings { display:flex; align-items:center; gap:8px; padding:6px 14px 8px; font-size:11px; color:var(--muted); }
+  .rest-settings select { background:var(--surface2); border:1px solid var(--border); border-radius:5px; padding:3px 6px; color:var(--text); font-size:11px; outline:none; cursor:pointer; }
+  /* CSV EXPORT */
+  .export-btn { width:100%; padding:10px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; color:var(--muted); font-size:12px; font-weight:700; cursor:pointer; transition:all .15s; margin-top:10px; letter-spacing:.04em; }
+  .export-btn:hover { border-color:#555; color:var(--text); }
 </style>
-</head>
-<body>
 
 <div class="goal-strip">
   <div class="goal-card" style="--goal-color:#E84040">
@@ -344,6 +369,18 @@
     <div class="workout-badge" style="background:#E84040"></div>
     <div><div class="workout-title">Upper A</div><div class="workout-subtitle">Strength — Bench · Row · Pull-ups · Arms</div></div>
   </div>
+  <div class="deload-toggle-wrap">
+    <span class="deload-toggle-label">🔄 Deload Week (−40% volume/intensity)</span>
+    <label class="toggle-switch"><input type="checkbox" id="deload-upper-a" onchange="toggleDeload('upper-a')"><span class="toggle-slider"></span></label>
+  </div>
+  <div class="deload-banner" id="deload-banner-upper-a">⚡ DELOAD — Drop weight 40%, focus on form and recovery</div>
+  <div class="session-timer" id="timer-upper-a">0:00</div>
+  <div class="bw-quick">
+    <span class="bw-quick-label">📊 Today's weight</span>
+    <input class="bw-quick-input" type="number" id="bw-upper-a" placeholder="210">
+    <span class="bw-quick-unit">lbs</span>
+    <button class="bw-quick-btn" onclick="logBodyweight('bw-upper-a')">Save</button>
+  </div>
   <div class="warmup-card">
     <div class="warmup-title">⚡ Pre-Lift Warm-Up <span style="color:var(--muted);font-weight:400">(5–7 min)</span></div>
     <div class="warmup-item" onclick="toggleCheck(this)"><div class="warmup-check"></div><div class="warmup-text">Neck circles + side tilt</div><div class="warmup-duration">30 sec</div></div>
@@ -371,6 +408,18 @@
     <div class="workout-badge" style="background:#3DBE6E"></div>
     <div><div class="workout-title">Lower A</div><div class="workout-subtitle">Strength + Jump — Squat · Hex Bar · Plyo</div></div>
   </div>
+  <div class="deload-toggle-wrap">
+    <span class="deload-toggle-label">🔄 Deload Week (−40% volume/intensity)</span>
+    <label class="toggle-switch"><input type="checkbox" id="deload-lower-a" onchange="toggleDeload('lower-a')"><span class="toggle-slider"></span></label>
+  </div>
+  <div class="deload-banner" id="deload-banner-lower-a">⚡ DELOAD — Drop weight 40%, focus on form and recovery</div>
+  <div class="session-timer" id="timer-lower-a">0:00</div>
+  <div class="bw-quick">
+    <span class="bw-quick-label">📊 Today's weight</span>
+    <input class="bw-quick-input" type="number" id="bw-lower-a" placeholder="210">
+    <span class="bw-quick-unit">lbs</span>
+    <button class="bw-quick-btn" onclick="logBodyweight('bw-lower-a')">Save</button>
+  </div>
   <div id="lower-a-exercises"></div>
   <div class="save-bar"><button class="save-btn" style="background:#3DBE6E;color:#000" onclick="saveWorkout('lower-a')">Log Lower A Session</button></div>
 </div>
@@ -379,6 +428,18 @@
   <div class="workout-header">
     <div class="workout-badge" style="background:#4098E8"></div>
     <div><div class="workout-title">Upper B</div><div class="workout-subtitle">Volume — Incline · Lat Pulldown · Push-Ups</div></div>
+  </div>
+  <div class="deload-toggle-wrap">
+    <span class="deload-toggle-label">🔄 Deload Week (−40% volume/intensity)</span>
+    <label class="toggle-switch"><input type="checkbox" id="deload-upper-b" onchange="toggleDeload('upper-b')"><span class="toggle-slider"></span></label>
+  </div>
+  <div class="deload-banner" id="deload-banner-upper-b">⚡ DELOAD — Drop weight 40%, focus on form and recovery</div>
+  <div class="session-timer" id="timer-upper-b">0:00</div>
+  <div class="bw-quick">
+    <span class="bw-quick-label">📊 Today's weight</span>
+    <input class="bw-quick-input" type="number" id="bw-upper-b" placeholder="210">
+    <span class="bw-quick-unit">lbs</span>
+    <button class="bw-quick-btn" onclick="logBodyweight('bw-upper-b')">Save</button>
   </div>
   <div class="warmup-card">
     <div class="warmup-title">⚡ Pre-Lift Warm-Up <span style="color:var(--muted);font-weight:400">(5–7 min)</span></div>
@@ -406,6 +467,18 @@
   <div class="workout-header">
     <div class="workout-badge" style="background:#9B5DE5"></div>
     <div><div class="workout-title">Lower B</div><div class="workout-subtitle">Power + Athletic — Hex Bar · BSS · RDL · Plyo</div></div>
+  </div>
+  <div class="deload-toggle-wrap">
+    <span class="deload-toggle-label">🔄 Deload Week (−40% volume/intensity)</span>
+    <label class="toggle-switch"><input type="checkbox" id="deload-lower-b" onchange="toggleDeload('lower-b')"><span class="toggle-slider"></span></label>
+  </div>
+  <div class="deload-banner" id="deload-banner-lower-b">⚡ DELOAD — Drop weight 40%, focus on form and recovery</div>
+  <div class="session-timer" id="timer-lower-b">0:00</div>
+  <div class="bw-quick">
+    <span class="bw-quick-label">📊 Today's weight</span>
+    <input class="bw-quick-input" type="number" id="bw-lower-b" placeholder="210">
+    <span class="bw-quick-unit">lbs</span>
+    <button class="bw-quick-btn" onclick="logBodyweight('bw-lower-b')">Save</button>
   </div>
   <div id="lower-b-exercises"></div>
   <div class="save-bar"><button class="save-btn" style="background:#9B5DE5;color:#fff" onclick="saveWorkout('lower-b')">Log Lower B Session</button></div>
@@ -491,6 +564,22 @@
     </div>
     <button class="update-goals-btn" onclick="updateGoals()">Save Goal Metrics</button>
   </div>
+  <div class="goal-editor" style="margin-top:10px">
+    <h3>Rest Timer Duration</h3>
+    <div class="goal-inputs" style="grid-template-columns:1fr">
+      <div class="goal-input-wrap">
+        <label>Default rest (all exercises)</label>
+        <select class="goal-input" id="restDurationSelect" onchange="updateRestDuration()">
+          <option value="60">60 sec — Accessories</option>
+          <option value="90" selected>90 sec — Default</option>
+          <option value="120">2:00 — Moderate compounds</option>
+          <option value="180">3:00 — Heavy compounds</option>
+          <option value="0">Off — No timer</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  <button class="export-btn" onclick="exportCSV()">⬇ Export History as CSV</button>
 </div>
 </main>
 
@@ -869,6 +958,38 @@ const ALTERNATES = {
       { name:'DB Rear Delt Fly', scheme:'3×15', sets:3, hasWeight:true }
     ]
   },
+  'Single-Leg Calf Raise (weighted)': {
+    default: { name:'Single-Leg Calf Raise (weighted)', scheme:'3×12/leg', sets:3, hasWeight:true },
+    Bodyweight: [
+      { name:'Single-Leg Calf Raise', scheme:'3×20/leg', sets:3, hasWeight:false, repsLabel:'Reps' },
+      { name:'Bodyweight Calf Raise', scheme:'3×30', sets:3, hasWeight:false, repsLabel:'Reps' }
+    ],
+    Machine: [
+      { name:'Seated Calf Raise', scheme:'3×15', sets:3, hasWeight:true }
+    ]
+  },
+  'Decline Sit-Up': {
+    default: { name:'Decline Sit-Up', scheme:'3×12', sets:3, hasWeight:false, repsLabel:'Reps' },
+    Bodyweight: [
+      { name:'Hanging Knee Raise', scheme:'3×12', sets:3, hasWeight:false, repsLabel:'Reps' },
+      { name:'V-Ups', scheme:'3×12', sets:3, hasWeight:false, repsLabel:'Reps' },
+      { name:'Lying Leg Raise', scheme:'3×15', sets:3, hasWeight:false, repsLabel:'Reps' }
+    ],
+    Dumbbell: [
+      { name:'Weighted Decline Sit-Up', scheme:'3×12', sets:3, hasWeight:true }
+    ],
+    Machine: [
+      { name:'Machine Ab Crunch', scheme:'3×15', sets:3, hasWeight:true }
+    ]
+  },
+  'Scapular Push-Ups': {
+    default: { name:'Scapular Push-Ups', scheme:'2×15 (scap focus)', sets:2, hasWeight:false, repsLabel:'Reps' },
+    Bodyweight: [
+      { name:'Hand-Release Push-Ups', scheme:'2×AMRAP', sets:2, hasWeight:false, repsLabel:'Reps' },
+      { name:'Standard Push-Ups', scheme:'2×AMRAP', sets:2, hasWeight:false, repsLabel:'Reps' },
+      { name:'Wall Slides', scheme:'2×10', sets:2, hasWeight:false, repsLabel:'Reps' }
+    ]
+  },
   'Nordic Curl': {
     default: { name:'Nordic Curl', scheme:'3×5 (eccentric focus)', sets:3, hasWeight:false, repsLabel:'Reps' },
     Bodyweight: [
@@ -947,7 +1068,7 @@ const WORKOUTS = {
         { name:'Hanging Leg Raise', scheme:'3×10-15', sets:3, hasWeight:false, repsLabel:'Reps' }
       ]},
       { name:'Finisher', exercises:[
-        { name:'Hand-Release Push-Ups', altKey:'HRPU Finisher', scheme:'2×AMRAP', sets:2, hasWeight:false, repsLabel:'Reps' }
+        { name:'Scapular Push-Ups', altKey:'HRPU Finisher', scheme:'2×15 (scap focus)', sets:2, hasWeight:false, repsLabel:'Reps' }
       ]}
     ]
   },
@@ -971,11 +1092,13 @@ const WORKOUTS = {
       ]},
       { name:'Lower Leg', exercises:[
         { name:'Tibialis Machine', scheme:'3×20', sets:3, hasWeight:true },
-        { name:'Standing Calf Raise', scheme:'3×20', sets:3, hasWeight:true }
+        { name:'Single-Leg Calf Raise (weighted)', scheme:'3×12/leg', sets:3, hasWeight:true },
+        { name:'Standing Calf Raise', scheme:'2×20', sets:2, hasWeight:true }
       ]},
-      { name:'Core', exercises:[
+      { name:'Core + Hip Flexors', exercises:[
         { name:'Pendulums', scheme:'3×10-15', sets:3, hasWeight:false, repsLabel:'Reps' },
-        { name:'Hanging Leg Raise', scheme:'3×10-15', sets:3, hasWeight:false, repsLabel:'Reps' }
+        { name:'Hanging Leg Raise', scheme:'3×10-15', sets:3, hasWeight:false, repsLabel:'Reps' },
+        { name:'Decline Sit-Up', scheme:'3×12', sets:3, hasWeight:false, repsLabel:'Reps' }
       ]}
     ]
   },
@@ -1032,12 +1155,14 @@ const WORKOUTS = {
       ]},
       { name:'Lower Leg', exercises:[
         { name:'Tibialis Machine', scheme:'3×20', sets:3, hasWeight:true },
+        { name:'Single-Leg Calf Raise (weighted)', scheme:'3×12/leg', sets:3, hasWeight:true },
         { name:'Monkey Foot Leg Extensions', scheme:'3×12', sets:3, hasWeight:true },
         { name:'Monkey Foot Hamstring Curls', scheme:'3×12', sets:3, hasWeight:true }
       ]},
-      { name:'Core', exercises:[
+      { name:'Core + Hip Flexors', exercises:[
         { name:'Russian Twists', scheme:'3×20', sets:3, hasWeight:false, repsLabel:'Reps' },
-        { name:'Hanging Leg Raise', scheme:'3×10-15', sets:3, hasWeight:false, repsLabel:'Reps' }
+        { name:'Hanging Leg Raise', scheme:'3×10-15', sets:3, hasWeight:false, repsLabel:'Reps' },
+        { name:'Decline Sit-Up', scheme:'3×12', sets:3, hasWeight:false, repsLabel:'Reps' }
       ]}
     ]
   }
@@ -1068,6 +1193,7 @@ document.addEventListener('DOMContentLoaded', () => {
       t.classList.add('active');
       document.getElementById('panel-' + t.dataset.tab).classList.add('active');
       if (t.dataset.tab === 'log') { renderLog(); updateGoalStrip(); }
+      startTimerForTab(t.dataset.tab);
     });
   });
   document.addEventListener('click', e => {
@@ -1461,8 +1587,10 @@ function saveWorkout(key) {
 
   updateGoalStrip();
   updateStreakDisplay();
+  stopSessionTimer(key);
 
   let msg = `${w.label} session saved ✓`;
+  if (deloadActive[key]) msg += '\n(Deload week logged)';
   if (nudges.length) msg += '\n\n📈 Next session:\n' + nudges.join('\n');
   alert(msg);
 }
@@ -1589,7 +1717,109 @@ function updateGoalStrip() {
   if(sq) document.getElementById('gSquatBar').style.width=Math.max(10,Math.min(100,Math.round((sq-225)/(315-225)*100+50)))+'%';
 }
 
-// ── WARM-UP / COOL-DOWN TOGGLES ──────────────────────────────────────
+// ── DELOAD ────────────────────────────────────────────────────────────
+let deloadActive = {};
+function toggleDeload(key) {
+  const cb = document.getElementById('deload-' + key);
+  const banner = document.getElementById('deload-banner-' + key);
+  deloadActive[key] = cb.checked;
+  banner.classList.toggle('active', cb.checked);
+}
+
+// ── SESSION TIMER ─────────────────────────────────────────────────────
+const sessionTimers = {};
+const sessionTimerIntervals = {};
+
+function startSessionTimer(key) {
+  if (sessionTimerIntervals[key]) return; // already running
+  sessionTimers[key] = Date.now();
+  sessionTimerIntervals[key] = setInterval(() => {
+    const el = document.getElementById('timer-' + key);
+    if (!el) return;
+    const elapsed = Math.floor((Date.now() - sessionTimers[key]) / 1000);
+    const m = Math.floor(elapsed / 60), s = elapsed % 60;
+    el.textContent = `⏱ ${m}:${s.toString().padStart(2,'0')}`;
+  }, 1000);
+}
+
+function stopSessionTimer(key) {
+  clearInterval(sessionTimerIntervals[key]);
+  delete sessionTimerIntervals[key];
+  const el = document.getElementById('timer-' + key);
+  if (el) {
+    const elapsed = sessionTimers[key] ? Math.floor((Date.now() - sessionTimers[key]) / 1000) : 0;
+    const m = Math.floor(elapsed / 60), s = elapsed % 60;
+    el.textContent = `⏱ Session: ${m}:${s.toString().padStart(2,'0')}`;
+  }
+}
+
+// Start timer when a tab is opened
+function startTimerForTab(tab) {
+  const workoutKeys = ['upper-a','lower-a','upper-b','lower-b'];
+  if (workoutKeys.includes(tab)) startSessionTimer(tab);
+}
+
+// ── BODYWEIGHT QUICK LOG ──────────────────────────────────────────────
+function logBodyweight(inputId) {
+  const val = parseFloat(document.getElementById(inputId)?.value);
+  if (!val || val < 50 || val > 500) { alert('Enter a valid weight.'); return; }
+  goals.weight = val;
+  localStorage.setItem('trainingGoals', JSON.stringify(goals));
+  updateGoalStrip();
+  // Flash confirmation
+  const btn = document.getElementById(inputId)?.nextElementSibling?.nextElementSibling;
+  if (btn) { const orig = btn.textContent; btn.textContent = '✓'; setTimeout(() => btn.textContent = orig, 1500); }
+}
+
+// ── ADJUSTABLE REST TIMER ─────────────────────────────────────────────
+let REST_DURATION = 90;
+function updateRestDuration() {
+  const val = parseInt(document.getElementById('restDurationSelect')?.value || 90);
+  REST_DURATION = val;
+  localStorage.setItem('restDuration', val);
+}
+
+// ── CSV EXPORT ────────────────────────────────────────────────────────
+function exportCSV() {
+  if (!log.length) { alert('No sessions logged yet.'); return; }
+  const rows = [['Date','Type','Exercise','Set','Reps','Weight (lbs)','Volume','Notes']];
+  log.forEach(entry => {
+    const d = new Date(entry.date).toLocaleDateString('en-US');
+    if (entry.sets) {
+      entry.sets.forEach(ex => {
+        ex.sets.forEach(s => {
+          const vol = s.reps && s.wt ? parseInt(s.reps) * parseFloat(s.wt) : '';
+          rows.push([d, entry.label, ex.exercise, s.s, s.reps||'', s.wt||'', vol, s.done?'done':'']);
+        });
+      });
+    } else if (entry.runData) {
+      const notes = Object.entries(entry.runData).filter(([,v])=>v).map(([k,v])=>`${k}: ${v}`).join(' | ');
+      rows.push([d, 'Run', '', '', '', '', '', notes]);
+    } else if (entry.emomData) {
+      entry.emomData.rounds.forEach(r => {
+        rows.push([d, 'EMOM', 'Hand-Release Push-Ups', r.round, r.reps, '', '', '']);
+      });
+    }
+  });
+  const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type:'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `training-log-${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ── INIT REST DURATION FROM STORAGE ──────────────────────────────────
+const savedRest = localStorage.getItem('restDuration');
+if (savedRest) {
+  REST_DURATION = parseInt(savedRest);
+  document.addEventListener('DOMContentLoaded', () => {
+    const sel = document.getElementById('restDurationSelect');
+    if (sel) sel.value = savedRest;
+  });
+}
 function toggleCheck(el) { el.classList.toggle('checked'); }
 function toggleStretch(el) { el.classList.toggle('checked'); }
 
