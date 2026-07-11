@@ -55,6 +55,7 @@
   .tab[data-tab="upper-b"] { --tab-color:var(--upper-b); }
   .tab[data-tab="lower-b"] { --tab-color:var(--lower-b); }
   .tab[data-tab="run"] { --tab-color:var(--run); }
+  .tab[data-tab="emom"] { --tab-color:#00C9A7; }
   .tab[data-tab="log"] { --tab-color:#888; }
 
   main { padding:16px; }
@@ -219,6 +220,73 @@
     .goal-strip { grid-template-columns:repeat(2,1fr); }
     .sets-grid { grid-template-columns:22px 1fr 1fr 66px; }
   }
+
+  /* EMOM TIMER */
+  .emom-display {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 24px 20px;
+    text-align: center;
+    margin-bottom: 14px;
+    position: relative;
+    overflow: hidden;
+  }
+  .emom-round-label { font-size:10px; text-transform:uppercase; letter-spacing:.12em; color:var(--muted); margin-bottom:6px; }
+  .emom-exercise-name { font-size:22px; font-weight:800; margin-bottom:4px; letter-spacing:-.01em; }
+  .emom-exercise-sub { font-size:12px; color:var(--muted); margin-bottom:20px; }
+  .emom-clock { font-family:var(--font-mono); font-size:72px; font-weight:700; line-height:1; margin-bottom:6px; transition:color .3s; }
+  .emom-progress-ring { position:absolute; top:0;left:0;right:0;bottom:0; pointer-events:none; }
+  .emom-set-dots { display:flex; gap:6px; justify-content:center; flex-wrap:wrap; margin-bottom:20px; }
+  .emom-dot { width:10px; height:10px; border-radius:50%; background:var(--border); transition:background .3s; }
+  .emom-dot.done-hrpu { background:#E84040; }
+  .emom-dot.done-plank { background:#4098E8; }
+  .emom-dot.active { box-shadow:0 0 0 2px var(--text); }
+  .emom-controls { display:flex; gap:10px; justify-content:center; margin-bottom:16px; }
+  .emom-btn {
+    padding:12px 28px; border-radius:10px; border:none;
+    font-size:14px; font-weight:700; cursor:pointer; letter-spacing:.04em;
+    transition:opacity .15s;
+  }
+  .emom-btn:hover { opacity:.85; }
+  .emom-btn-start { background:#00C9A7; color:#000; }
+  .emom-btn-reset { background:var(--surface2); color:var(--muted); border:1px solid var(--border); }
+  .emom-log-row { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--border); }
+  .emom-log-round { font-family:var(--font-mono); font-size:11px; color:var(--muted); width:50px; }
+  .emom-log-ex { font-size:13px; font-weight:600; flex:1; }
+  .emom-log-input { background:var(--surface2); border:1px solid var(--border); border-radius:6px; padding:6px 10px; color:var(--text); font-family:var(--font-mono); font-size:13px; width:70px; outline:none; }
+  .emom-log-input:focus { border-color:#555; }
+  .emom-log-label { font-size:10px; color:var(--muted); }
+  .emom-log-section { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:14px; margin-bottom:14px; }
+  .emom-log-title { font-size:10px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); margin-bottom:10px; }
+  .emom-complete-banner {
+    background: linear-gradient(135deg, #00C9A7, #00907A);
+    border-radius:10px; padding:16px; text-align:center;
+    font-size:18px; font-weight:800; color:#000;
+    margin-bottom:14px; display:none;
+  }
+
+  /* WARM-UP CHECKLIST */
+  .warmup-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:14px; margin-bottom:10px; }
+  .warmup-title { font-size:10px; text-transform:uppercase; letter-spacing:.1em; color:#F5A623; font-weight:700; margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+  .warmup-item { display:flex; align-items:center; gap:10px; padding:7px 0; border-bottom:1px solid var(--border); cursor:pointer; user-select:none; }
+  .warmup-item:last-child { border-bottom:none; }
+  .warmup-check { width:18px; height:18px; border:1.5px solid var(--border); border-radius:4px; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:11px; transition:all .15s; }
+  .warmup-item.checked .warmup-check { background:#F5A623; border-color:#F5A623; color:#000; }
+  .warmup-text { font-size:13px; flex:1; }
+  .warmup-item.checked .warmup-text { color:var(--muted); text-decoration:line-through; }
+  .warmup-duration { font-family:var(--font-mono); font-size:10px; color:var(--muted); }
+
+  /* COOL-DOWN */
+  .cooldown-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:14px; margin-top:10px; }
+  .cooldown-title { font-size:10px; text-transform:uppercase; letter-spacing:.1em; color:#4098E8; font-weight:700; margin-bottom:10px; }
+  .stretch-item { display:flex; align-items:center; gap:10px; padding:7px 0; border-bottom:1px solid var(--border); cursor:pointer; user-select:none; }
+  .stretch-item:last-child { border-bottom:none; }
+  .stretch-check { width:18px; height:18px; border:1.5px solid var(--border); border-radius:4px; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:11px; transition:all .15s; }
+  .stretch-item.checked .stretch-check { background:#4098E8; border-color:#4098E8; color:#fff; }
+  .stretch-text { font-size:13px; flex:1; }
+  .stretch-item.checked .stretch-text { color:var(--muted); text-decoration:line-through; }
+  .stretch-duration { font-family:var(--font-mono); font-size:10px; color:var(--muted); }
 </style>
 </head>
 <body>
@@ -265,6 +333,7 @@
     <div class="tab" data-tab="upper-b">Upper B</div>
     <div class="tab" data-tab="lower-b">Lower B</div>
     <div class="tab" data-tab="run">Run</div>
+    <div class="tab" data-tab="emom">EMOM</div>
     <div class="tab" data-tab="log">History</div>
   </div>
 </div>
@@ -275,7 +344,25 @@
     <div class="workout-badge" style="background:#E84040"></div>
     <div><div class="workout-title">Upper A</div><div class="workout-subtitle">Strength — Bench · Row · Pull-ups · Arms</div></div>
   </div>
+  <div class="warmup-card">
+    <div class="warmup-title">⚡ Pre-Lift Warm-Up <span style="color:var(--muted);font-weight:400">(5–7 min)</span></div>
+    <div class="warmup-item" onclick="toggleCheck(this)"><div class="warmup-check"></div><div class="warmup-text">Neck circles + side tilt</div><div class="warmup-duration">30 sec</div></div>
+    <div class="warmup-item" onclick="toggleCheck(this)"><div class="warmup-check"></div><div class="warmup-text">Doorway chest stretch</div><div class="warmup-duration">60 sec</div></div>
+    <div class="warmup-item" onclick="toggleCheck(this)"><div class="warmup-check"></div><div class="warmup-text">Band pull-aparts (or straight arm)</div><div class="warmup-duration">2×15</div></div>
+    <div class="warmup-item" onclick="toggleCheck(this)"><div class="warmup-check"></div><div class="warmup-text">Wall slides</div><div class="warmup-duration">2×10</div></div>
+    <div class="warmup-item" onclick="toggleCheck(this)"><div class="warmup-check"></div><div class="warmup-text">Light DB external rotation</div><div class="warmup-duration">1×15/arm</div></div>
+    <div class="warmup-item" onclick="toggleCheck(this)"><div class="warmup-check"></div><div class="warmup-text">Light lat pulldown / band row</div><div class="warmup-duration">1×15</div></div>
+    <div class="warmup-item" onclick="toggleCheck(this)"><div class="warmup-check"></div><div class="warmup-text">Bench warm-up sets: bar×10 → 50%×5 → 75%×3</div><div class="warmup-duration">ramp</div></div>
+  </div>
   <div id="upper-a-exercises"></div>
+  <div class="cooldown-card">
+    <div class="cooldown-title">🧊 Cool-Down Stretches</div>
+    <div class="stretch-item" onclick="toggleStretch(this)"><div class="stretch-check"></div><div class="stretch-text">Levator scapulae stretch (ear to shoulder, hand on head)</div><div class="stretch-duration">45 sec/side</div></div>
+    <div class="stretch-item" onclick="toggleStretch(this)"><div class="stretch-check"></div><div class="stretch-text">Doorway chest stretch</div><div class="stretch-duration">60 sec</div></div>
+    <div class="stretch-item" onclick="toggleStretch(this)"><div class="stretch-check"></div><div class="stretch-text">Cross-body shoulder stretch</div><div class="stretch-duration">30 sec/side</div></div>
+    <div class="stretch-item" onclick="toggleStretch(this)"><div class="stretch-check"></div><div class="stretch-text">Lat stretch (hang from pull-up bar or doorframe)</div><div class="stretch-duration">45 sec</div></div>
+    <div class="stretch-item" onclick="toggleStretch(this)"><div class="stretch-check"></div><div class="stretch-text">Thread-the-needle (thoracic rotation)</div><div class="stretch-duration">30 sec/side</div></div>
+  </div>
   <div class="save-bar"><button class="save-btn" style="background:#E84040;color:#fff" onclick="saveWorkout('upper-a')">Log Upper A Session</button></div>
 </div>
 
@@ -293,7 +380,25 @@
     <div class="workout-badge" style="background:#4098E8"></div>
     <div><div class="workout-title">Upper B</div><div class="workout-subtitle">Volume — Incline · Lat Pulldown · Push-Ups</div></div>
   </div>
+  <div class="warmup-card">
+    <div class="warmup-title">⚡ Pre-Lift Warm-Up <span style="color:var(--muted);font-weight:400">(5–7 min)</span></div>
+    <div class="warmup-item" onclick="toggleCheck(this)"><div class="warmup-check"></div><div class="warmup-text">Neck circles + side tilt</div><div class="warmup-duration">30 sec</div></div>
+    <div class="warmup-item" onclick="toggleCheck(this)"><div class="warmup-check"></div><div class="warmup-text">Doorway chest stretch</div><div class="warmup-duration">60 sec</div></div>
+    <div class="warmup-item" onclick="toggleCheck(this)"><div class="warmup-check"></div><div class="warmup-text">Band pull-aparts (or straight arm)</div><div class="warmup-duration">2×15</div></div>
+    <div class="warmup-item" onclick="toggleCheck(this)"><div class="warmup-check"></div><div class="warmup-text">Wall slides</div><div class="warmup-duration">2×10</div></div>
+    <div class="warmup-item" onclick="toggleCheck(this)"><div class="warmup-check"></div><div class="warmup-text">Light DB external rotation</div><div class="warmup-duration">1×15/arm</div></div>
+    <div class="warmup-item" onclick="toggleCheck(this)"><div class="warmup-check"></div><div class="warmup-text">Light lat pulldown / band row</div><div class="warmup-duration">1×15</div></div>
+    <div class="warmup-item" onclick="toggleCheck(this)"><div class="warmup-check"></div><div class="warmup-text">Incline bench warm-up: bar×10 → 50%×5 → 75%×3</div><div class="warmup-duration">ramp</div></div>
+  </div>
   <div id="upper-b-exercises"></div>
+  <div class="cooldown-card">
+    <div class="cooldown-title">🧊 Cool-Down Stretches</div>
+    <div class="stretch-item" onclick="toggleStretch(this)"><div class="stretch-check"></div><div class="stretch-text">Levator scapulae stretch (ear to shoulder, hand on head)</div><div class="stretch-duration">45 sec/side</div></div>
+    <div class="stretch-item" onclick="toggleStretch(this)"><div class="stretch-check"></div><div class="stretch-text">Doorway chest stretch</div><div class="stretch-duration">60 sec</div></div>
+    <div class="stretch-item" onclick="toggleStretch(this)"><div class="stretch-check"></div><div class="stretch-text">Cross-body shoulder stretch</div><div class="stretch-duration">30 sec/side</div></div>
+    <div class="stretch-item" onclick="toggleStretch(this)"><div class="stretch-check"></div><div class="stretch-text">Lat stretch (hang from pull-up bar or doorframe)</div><div class="stretch-duration">45 sec</div></div>
+    <div class="stretch-item" onclick="toggleStretch(this)"><div class="stretch-check"></div><div class="stretch-text">Thread-the-needle (thoracic rotation)</div><div class="stretch-duration">30 sec/side</div></div>
+  </div>
   <div class="save-bar"><button class="save-btn" style="background:#4098E8;color:#fff" onclick="saveWorkout('upper-b')">Log Upper B Session</button></div>
 </div>
 
@@ -336,6 +441,37 @@
     </div>
   </div>
   <div class="save-bar"><button class="save-btn" style="background:#F5A623;color:#000" onclick="saveRun()">Log Run Session</button></div>
+</div>
+
+<div class="panel" id="panel-emom">
+  <div class="workout-header">
+    <div class="workout-badge" style="background:#00C9A7"></div>
+    <div><div class="workout-title">EMOM</div><div class="workout-subtitle">10 sets · Min 1: HRPU · Min 2: 50-sec Plank</div></div>
+  </div>
+
+  <div class="emom-display" id="emomDisplay">
+    <div class="emom-round-label" id="emomRoundLabel">ROUND 1 OF 10</div>
+    <div class="emom-exercise-name" id="emomExName" style="color:#E84040">Hand-Release Push-Ups</div>
+    <div class="emom-exercise-sub" id="emomExSub">Max reps · full minute</div>
+    <div class="emom-clock" id="emomClock" style="color:#E84040">1:00</div>
+    <div class="emom-set-dots" id="emomDots"></div>
+  </div>
+
+  <div class="emom-complete-banner" id="emomBanner">🏆 EMOM Complete! Great work.</div>
+
+  <div class="emom-controls">
+    <button class="emom-btn emom-btn-start" id="emomStartBtn" onclick="emomToggle()">Start</button>
+    <button class="emom-btn emom-btn-reset" onclick="emomReset()">Reset</button>
+  </div>
+
+  <div class="emom-log-section">
+    <div class="emom-log-title">HRPU Reps per Round</div>
+    <div id="emomLogRows"></div>
+  </div>
+
+  <div class="save-bar">
+    <button class="save-btn" style="background:#00C9A7;color:#000" onclick="saveEMOM()">Log EMOM Session</button>
+  </div>
 </div>
 
 <div class="panel" id="panel-log">
@@ -639,13 +775,6 @@ const ALTERNATES = {
       { name:'Lateral Bounds', scheme:'4×5/side', sets:4, hasWeight:false, repsLabel:'Reps' }
     ]
   },
-  'Depth Drops': {
-    default: { name:'Depth Drops', scheme:'3×5', sets:3, hasWeight:false, repsLabel:'Reps' },
-    Bodyweight: [
-      { name:'Single-Leg Landing', scheme:'3×5/leg', sets:3, hasWeight:false, repsLabel:'Reps' },
-      { name:'Pogo Hops', scheme:'3×10', sets:3, hasWeight:false, repsLabel:'Reps' }
-    ]
-  },
   'Bulgarian Split Squat': {
     default: { name:'Bulgarian Split Squat', scheme:'3×8/leg', sets:3, hasWeight:true },
     Barbell: [
@@ -713,6 +842,75 @@ const ALTERNATES = {
     Cable: [
       { name:'Cable Woodchop', scheme:'3×12/side', sets:3, hasWeight:true }
     ]
+  },
+  'Face Pulls': {
+    default: { name:'Face Pulls', scheme:'3×15-20', sets:3, hasWeight:true },
+    Cable: [
+      { name:'Cable Face Pull', scheme:'3×15-20', sets:3, hasWeight:true }
+    ],
+    Bodyweight: [
+      { name:'Band Face Pull', scheme:'3×20', sets:3, hasWeight:false, repsLabel:'Reps' },
+      { name:'Rear Delt Row (prone)', scheme:'3×15', sets:3, hasWeight:false, repsLabel:'Reps' }
+    ],
+    Dumbbell: [
+      { name:'DB Rear Delt Fly', scheme:'3×15', sets:3, hasWeight:true }
+    ]
+  },
+  'Band Pull-Aparts': {
+    default: { name:'Band Pull-Aparts', scheme:'3×20', sets:3, hasWeight:false, repsLabel:'Reps' },
+    Bodyweight: [
+      { name:'Wall Slides', scheme:'3×10', sets:3, hasWeight:false, repsLabel:'Reps' },
+      { name:'Scapular Retractions', scheme:'3×15', sets:3, hasWeight:false, repsLabel:'Reps' }
+    ],
+    Cable: [
+      { name:'Cable Reverse Fly', scheme:'3×15', sets:3, hasWeight:true }
+    ],
+    Dumbbell: [
+      { name:'DB Rear Delt Fly', scheme:'3×15', sets:3, hasWeight:true }
+    ]
+  },
+  'Nordic Curl': {
+    default: { name:'Nordic Curl', scheme:'3×5 (eccentric focus)', sets:3, hasWeight:false, repsLabel:'Reps' },
+    Bodyweight: [
+      { name:'Single-Leg Hip Hinge', scheme:'3×10/leg', sets:3, hasWeight:false, repsLabel:'Reps' },
+      { name:'Glute Bridge', scheme:'3×15', sets:3, hasWeight:false, repsLabel:'Reps' }
+    ],
+    Machine: [
+      { name:'Machine Leg Curl', scheme:'3×10', sets:3, hasWeight:true }
+    ],
+    Cable: [
+      { name:'Cable Hamstring Curl', scheme:'3×12', sets:3, hasWeight:true }
+    ]
+  },
+  'Hanging Leg Raise': {
+    default: { name:'Hanging Leg Raise', scheme:'3×10-15', sets:3, hasWeight:false, repsLabel:'Reps' },
+    Bodyweight: [
+      { name:'Lying Leg Raise', scheme:'3×15', sets:3, hasWeight:false, repsLabel:'Reps' },
+      { name:'Knee Tucks (hanging)', scheme:'3×12', sets:3, hasWeight:false, repsLabel:'Reps' },
+      { name:'Dead Bug', scheme:'3×10/side', sets:3, hasWeight:false, repsLabel:'Reps' }
+    ],
+    Cable: [
+      { name:'Cable Crunch', scheme:'3×15', sets:3, hasWeight:true }
+    ],
+    Machine: [
+      { name:'Machine Ab Crunch', scheme:'3×15', sets:3, hasWeight:true }
+    ]
+  },
+  'HRPU Finisher': {
+    default: { name:'Hand-Release Push-Ups', scheme:'2×AMRAP', sets:2, hasWeight:false, repsLabel:'Reps' },
+    Bodyweight: [
+      { name:'Scapular Push-Ups', scheme:'2×15', sets:2, hasWeight:false, repsLabel:'Reps' },
+      { name:'Standard Push-Ups', scheme:'2×AMRAP', sets:2, hasWeight:false, repsLabel:'Reps' },
+      { name:'Wide Push-Ups', scheme:'2×AMRAP', sets:2, hasWeight:false, repsLabel:'Reps' }
+    ]
+  },
+  'Depth Drops': {
+    default: { name:'Depth Drops', scheme:'3×5 → progress to Depth Jumps', sets:3, hasWeight:false, repsLabel:'Reps' },
+    Bodyweight: [
+      { name:'Depth Jumps', scheme:'3×5 (land + immediate jump)', sets:3, hasWeight:false, repsLabel:'Reps' },
+      { name:'Single-Leg Landing', scheme:'3×5/leg', sets:3, hasWeight:false, repsLabel:'Reps' },
+      { name:'Pogo Hops', scheme:'3×10', sets:3, hasWeight:false, repsLabel:'Reps' }
+    ]
   }
 };
 
@@ -737,14 +935,19 @@ const WORKOUTS = {
         { name:'DB Incline Bench', scheme:'3×8-10', sets:3, hasWeight:true }
       ]},
       { name:'Shoulders', exercises:[
-        { name:'DB Shoulder Press', scheme:'3×8-10', sets:3, hasWeight:true }
+        { name:'DB Shoulder Press', scheme:'3×8-10', sets:3, hasWeight:true },
+        { name:'Face Pulls', scheme:'3×15-20', sets:3, hasWeight:true }
       ]},
       { name:'Arms', exercises:[
         { name:'Barbell Curl', scheme:'3×10', sets:3, hasWeight:true },
         { name:'Lying DB Triceps Extension', scheme:'3×10', sets:3, hasWeight:true }
       ]},
       { name:'Core', exercises:[
-        { name:'Ab Roller', scheme:'3×AMRAP (controlled)', sets:3, hasWeight:false, repsLabel:'Reps' }
+        { name:'Ab Roller', scheme:'3×AMRAP (controlled)', sets:3, hasWeight:false, repsLabel:'Reps' },
+        { name:'Hanging Leg Raise', scheme:'3×10-15', sets:3, hasWeight:false, repsLabel:'Reps' }
+      ]},
+      { name:'Finisher', exercises:[
+        { name:'Hand-Release Push-Ups', altKey:'HRPU Finisher', scheme:'2×AMRAP', sets:2, hasWeight:false, repsLabel:'Reps' }
       ]}
     ]
   },
@@ -771,7 +974,8 @@ const WORKOUTS = {
         { name:'Standing Calf Raise', scheme:'3×20', sets:3, hasWeight:true }
       ]},
       { name:'Core', exercises:[
-        { name:'Pendulums', scheme:'3×10-15', sets:3, hasWeight:false, repsLabel:'Reps' }
+        { name:'Pendulums', scheme:'3×10-15', sets:3, hasWeight:false, repsLabel:'Reps' },
+        { name:'Hanging Leg Raise', scheme:'3×10-15', sets:3, hasWeight:false, repsLabel:'Reps' }
       ]}
     ]
   },
@@ -797,6 +1001,10 @@ const WORKOUTS = {
         { name:'Hammer Curl', scheme:'3×10-12', sets:3, hasWeight:true },
         { name:'Close-Grip Push-Ups', scheme:'3×AMRAP', sets:3, hasWeight:false, repsLabel:'Reps' }
       ]},
+      { name:'Rear Delt + Rotator Cuff', exercises:[
+        { name:'Face Pulls', scheme:'3×15-20', sets:3, hasWeight:true },
+        { name:'Band Pull-Aparts', scheme:'3×20', sets:3, hasWeight:false, repsLabel:'Reps' }
+      ]},
       { name:'Core', exercises:[
         { name:'Ab Roller', altKey:'Ab Roller', scheme:'3×8-10 (tempo)', sets:3, hasWeight:false, repsLabel:'Reps' }
       ]}
@@ -810,7 +1018,7 @@ const WORKOUTS = {
       ]},
       { name:'Plyo', exercises:[
         { name:'Broad Jumps', scheme:'4×3', sets:4, hasWeight:false, repsLabel:'Reps' },
-        { name:'Depth Drops', scheme:'3×5', sets:3, hasWeight:false, repsLabel:'Reps' }
+        { name:'Depth Drops', scheme:'3×5 → progress to Depth Jumps', sets:3, hasWeight:false, repsLabel:'Reps' }
       ]},
       { name:'Main Lift', exercises:[
         { name:'Hex Bar Deadlift', altKey:'Hex Bar Deadlift (Power)', scheme:'5×3', sets:5, hasWeight:true }
@@ -819,7 +1027,8 @@ const WORKOUTS = {
         { name:'Bulgarian Split Squat', scheme:'3×8/leg', sets:3, hasWeight:true }
       ]},
       { name:'Posterior Chain', exercises:[
-        { name:'Romanian Deadlift', scheme:'3×8', sets:3, hasWeight:true }
+        { name:'Romanian Deadlift', scheme:'3×8', sets:3, hasWeight:true },
+        { name:'Nordic Curl', scheme:'3×5 (eccentric focus)', sets:3, hasWeight:false, repsLabel:'Reps' }
       ]},
       { name:'Lower Leg', exercises:[
         { name:'Tibialis Machine', scheme:'3×20', sets:3, hasWeight:true },
@@ -827,7 +1036,8 @@ const WORKOUTS = {
         { name:'Monkey Foot Hamstring Curls', scheme:'3×12', sets:3, hasWeight:true }
       ]},
       { name:'Core', exercises:[
-        { name:'Russian Twists', scheme:'3×20', sets:3, hasWeight:false, repsLabel:'Reps' }
+        { name:'Russian Twists', scheme:'3×20', sets:3, hasWeight:false, repsLabel:'Reps' },
+        { name:'Hanging Leg Raise', scheme:'3×10-15', sets:3, hasWeight:false, repsLabel:'Reps' }
       ]}
     ]
   }
@@ -1316,7 +1526,7 @@ function renderLog() {
   const weekEnd=new Date(weekStart); weekEnd.setDate(weekStart.getDate()+7);
   const filtered=log.filter(e=>{ const d=new Date(e.date); return d>=weekStart&&d<weekEnd; });
   if (!filtered.length) { container.innerHTML=`<div class="empty-log">No sessions logged this week.<br>Hit the gym 💪</div>`; return; }
-  const colorMap={'upper-a':'#E84040','lower-a':'#3DBE6E','upper-b':'#4098E8','lower-b':'#9B5DE5','run':'#F5A623'};
+  const colorMap={'upper-a':'#E84040','lower-a':'#3DBE6E','upper-b':'#4098E8','lower-b':'#9B5DE5','run':'#F5A623','emom':'#00C9A7'};
   container.innerHTML=filtered.map(e=>{
     const d=new Date(e.date);
     const dateStr=d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
@@ -1331,6 +1541,8 @@ function renderLog() {
     }).join('');
     else if (e.runData) detail=Object.entries(e.runData).filter(([,v])=>v).map(([k,v])=>
       `<div><span style="color:var(--text)">${k.charAt(0).toUpperCase()+k.slice(1)}</span>  ${v}</div>`).join('');
+    else if (e.emomData) detail=`<div><span style="color:var(--text)">10 rounds complete</span>  Total HRPU: ${e.emomData.totalHRPU} reps</div>`
+      + e.emomData.rounds.map(r=>`<div>Round ${r.round}: <span style="color:var(--text)">${r.reps} reps</span></div>`).join('');
     return `
       <div class="log-entry" style="border-left:3px solid ${color}">
         <div class="log-entry-header">
@@ -1376,6 +1588,155 @@ function updateGoalStrip() {
   document.getElementById('gSquat').textContent=sq?sq+' lb':'—';
   if(sq) document.getElementById('gSquatBar').style.width=Math.max(10,Math.min(100,Math.round((sq-225)/(315-225)*100+50)))+'%';
 }
+
+// ── WARM-UP / COOL-DOWN TOGGLES ──────────────────────────────────────
+function toggleCheck(el) { el.classList.toggle('checked'); }
+function toggleStretch(el) { el.classList.toggle('checked'); }
+
+// ── EMOM ──────────────────────────────────────────────────────────────
+const EMOM_TOTAL_SETS = 10;
+const EMOM_MINUTE = 60;
+const EMOM_EXERCISES = [
+  { name:'Hand-Release Push-Ups', sub:'Max reps · full minute', color:'#E84040', logReps:true },
+  { name:'Plank', sub:'Hold 50 sec · rest 10 sec', color:'#4098E8', logReps:false }
+];
+
+let emomRunning = false;
+let emomInterval = null;
+let emomCurrentSet = 0;
+let emomSecondsLeft = EMOM_MINUTE;
+let emomDone = false;
+
+function emomExerciseForSet(setIdx) { return EMOM_EXERCISES[setIdx % 2]; }
+
+function initEMOM() {
+  const dots = document.getElementById('emomDots');
+  if (!dots) return;
+  dots.innerHTML = '';
+  for (let i = 0; i < EMOM_TOTAL_SETS; i++) {
+    const d = document.createElement('div');
+    d.className = 'emom-dot' + (i === 0 ? ' active' : '');
+    d.id = 'emom-dot-' + i;
+    dots.appendChild(d);
+  }
+  const rows = document.getElementById('emomLogRows');
+  rows.innerHTML = '';
+  for (let i = 0; i < EMOM_TOTAL_SETS; i++) {
+    const ex = emomExerciseForSet(i);
+    const row = document.createElement('div');
+    row.className = 'emom-log-row';
+    row.innerHTML = `
+      <div class="emom-log-round">Set ${i+1}</div>
+      <div class="emom-log-ex" style="color:${ex.color}">${ex.name}</div>
+      ${ex.logReps
+        ? `<input class="emom-log-input" type="number" id="emom-reps-${i}" placeholder="reps"><div class="emom-log-label">reps</div>`
+        : `<div class="emom-log-label" style="color:var(--muted);font-size:12px">50-sec hold</div>`}`;
+    rows.appendChild(row);
+  }
+  updateEMOMDisplay();
+}
+
+function updateEMOMDisplay() {
+  const ex = emomExerciseForSet(emomCurrentSet);
+  document.getElementById('emomRoundLabel').textContent = `ROUND ${emomCurrentSet+1} OF ${EMOM_TOTAL_SETS}`;
+  document.getElementById('emomExName').textContent = ex.name;
+  document.getElementById('emomExName').style.color = ex.color;
+  document.getElementById('emomExSub').textContent = ex.sub;
+  document.getElementById('emomClock').style.color = ex.color;
+  updateEMOMClock();
+  for (let i = 0; i < EMOM_TOTAL_SETS; i++) {
+    const dot = document.getElementById('emom-dot-' + i);
+    if (!dot) continue;
+    dot.className = 'emom-dot';
+    if (i < emomCurrentSet) dot.classList.add(emomExerciseForSet(i).logReps ? 'done-hrpu' : 'done-plank');
+    else if (i === emomCurrentSet) dot.classList.add('active');
+  }
+}
+
+function updateEMOMClock() {
+  const m = Math.floor(emomSecondsLeft/60), s = emomSecondsLeft%60;
+  document.getElementById('emomClock').textContent = `${m}:${s.toString().padStart(2,'0')}`;
+}
+
+function emomToggle() {
+  if (emomDone) return;
+  if (emomRunning) {
+    emomRunning = false;
+    clearInterval(emomInterval);
+    document.getElementById('emomStartBtn').textContent = 'Resume';
+  } else {
+    emomRunning = true;
+    document.getElementById('emomStartBtn').textContent = 'Pause';
+    emomInterval = setInterval(() => {
+      emomSecondsLeft--;
+      updateEMOMClock();
+      // Flash clock red in last 10 sec
+      if (emomSecondsLeft <= 10) {
+        document.getElementById('emomClock').style.opacity = emomSecondsLeft % 2 === 0 ? '1' : '0.35';
+      }
+      if (emomSecondsLeft <= 0) {
+        if (navigator.vibrate) navigator.vibrate([300,100,300]);
+        emomCurrentSet++;
+        if (emomCurrentSet >= EMOM_TOTAL_SETS) {
+          emomFinish();
+        } else {
+          emomSecondsLeft = EMOM_MINUTE;
+          updateEMOMDisplay();
+        }
+      }
+    }, 1000);
+  }
+}
+
+function emomFinish() {
+  clearInterval(emomInterval);
+  emomRunning = false; emomDone = true;
+  const btn = document.getElementById('emomStartBtn');
+  btn.textContent = 'Done ✓'; btn.style.background = '#2a4a3a'; btn.style.color = '#5aab5a';
+  document.getElementById('emomBanner').style.display = 'block';
+  document.getElementById('emomRoundLabel').textContent = 'COMPLETE ✓';
+  document.getElementById('emomClock').textContent = '0:00';
+  document.getElementById('emomClock').style.opacity = '1';
+  if (navigator.vibrate) navigator.vibrate([200,100,200,100,400]);
+  for (let i = 0; i < EMOM_TOTAL_SETS; i++) {
+    const dot = document.getElementById('emom-dot-' + i);
+    if (dot) dot.className = 'emom-dot ' + (emomExerciseForSet(i).logReps ? 'done-hrpu' : 'done-plank');
+  }
+}
+
+function emomReset() {
+  clearInterval(emomInterval);
+  emomRunning = false; emomDone = false; emomCurrentSet = 0; emomSecondsLeft = EMOM_MINUTE;
+  const btn = document.getElementById('emomStartBtn');
+  btn.textContent = 'Start'; btn.style.background = '#00C9A7'; btn.style.color = '#000';
+  document.getElementById('emomBanner').style.display = 'none';
+  initEMOM();
+}
+
+function saveEMOM() {
+  const repSets = [];
+  let totalReps = 0;
+  for (let i = 0; i < EMOM_TOTAL_SETS; i++) {
+    const ex = emomExerciseForSet(i);
+    if (ex.logReps) {
+      const val = document.getElementById('emom-reps-' + i)?.value || '0';
+      repSets.push({ round:i+1, reps:val });
+      totalReps += parseInt(val)||0;
+    }
+  }
+  if (totalReps === 0 && !emomDone) { alert('Complete or log at least one round before saving.'); return; }
+  const entry = { type:'emom', label:'EMOM', date:new Date().toISOString(),
+    emomData:{ sets:EMOM_TOTAL_SETS, totalHRPU:totalReps, rounds:repSets } };
+  const maxRound = Math.max(...repSets.map(r => parseInt(r.reps)||0));
+  if (maxRound > (goals.hrpu||0)) { goals.hrpu=maxRound; localStorage.setItem('trainingGoals',JSON.stringify(goals)); }
+  log.unshift(entry);
+  localStorage.setItem('trainingLog',JSON.stringify(log));
+  updateGoalStrip(); updateStreakDisplay();
+  alert(`EMOM saved ✓  Total HRPU: ${totalReps} reps across 5 rounds`);
+}
+
+// init EMOM on load
+document.addEventListener('DOMContentLoaded', () => { initEMOM(); });
 </script>
 <script>
 if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});}
