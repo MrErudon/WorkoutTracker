@@ -1176,7 +1176,7 @@ let viewWeekOffset = 0;
 const sessionSwaps = {};
 let restTimerInterval = null;
 let restTimerRemaining = 0;
-const REST_DURATION = 90; // seconds default
+let REST_DURATION = 90; // seconds default
 
 // ── INIT ──────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
@@ -1184,6 +1184,7 @@ document.addEventListener('DOMContentLoaded', () => {
     new Date().toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'});
   updateStreakDisplay();
   Object.keys(WORKOUTS).forEach(key => renderWorkout(key));
+  initEMOM();
   renderLog();
   updateGoalStrip();
   updateWeekLabel();
@@ -1772,7 +1773,6 @@ function logBodyweight(inputId) {
 }
 
 // ── ADJUSTABLE REST TIMER ─────────────────────────────────────────────
-let REST_DURATION = 90;
 function updateRestDuration() {
   const val = parseInt(document.getElementById('restDurationSelect')?.value || 90);
   REST_DURATION = val;
@@ -1965,8 +1965,7 @@ function saveEMOM() {
   alert(`EMOM saved ✓  Total HRPU: ${totalReps} reps across 5 rounds`);
 }
 
-// init EMOM on load
-document.addEventListener('DOMContentLoaded', () => { initEMOM(); });
+// init EMOM on load — called from main DOMContentLoaded
 </script>
 <script>
 if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});}
