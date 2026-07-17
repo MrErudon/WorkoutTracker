@@ -314,6 +314,25 @@
   /* CSV EXPORT */
   .export-btn { width:100%; padding:10px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; color:var(--muted); font-size:12px; font-weight:700; cursor:pointer; transition:all .15s; margin-top:10px; letter-spacing:.04em; }
   .export-btn:hover { border-color:#555; color:var(--text); }
+
+  /* METCON CIRCUITS */
+  .circuit-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; margin-bottom:12px; overflow:hidden; }
+  .circuit-header { padding:12px 14px; display:flex; align-items:center; justify-content:space-between; }
+  .circuit-name { font-size:13px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; }
+  .circuit-meta { font-size:11px; color:var(--muted); font-family:var(--font-mono); }
+  .circuit-exercises { padding:0 14px 4px; }
+  .circuit-exercise-row { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--border); }
+  .circuit-exercise-row:last-child { border-bottom:none; }
+  .circuit-exercise-num { width:20px; height:20px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:800; flex-shrink:0; }
+  .circuit-exercise-name { font-size:13px; font-weight:600; flex:1; }
+  .circuit-exercise-detail { font-size:11px; color:var(--muted); font-family:var(--font-mono); }
+  .circuit-rounds-log { padding:10px 14px 12px; background:var(--surface2); }
+  .circuit-rounds-label { font-size:9px; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); margin-bottom:8px; }
+  .circuit-round-row { display:flex; align-items:center; gap:6px; margin-bottom:6px; }
+  .circuit-round-num { font-size:11px; color:var(--muted); font-family:var(--font-mono); width:52px; }
+  .circuit-done-btn { padding:5px 12px; border-radius:6px; border:1px solid var(--border); background:var(--surface); color:var(--muted); font-size:11px; font-weight:700; cursor:pointer; transition:all .15s; }
+  .circuit-done-btn.done { background:#1a2e1a; border-color:#2e5c2e; color:#5aab5a; }
+  .circuit-notes { background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:6px 10px; color:var(--text); font-size:12px; flex:1; outline:none; }
 </style>
 
 <div class="goal-strip">
@@ -353,10 +372,10 @@
 
 <div class="tabs-wrap">
   <div class="tabs">
-    <div class="tab active" data-tab="upper-a">Upper A</div>
-    <div class="tab" data-tab="lower-a">Lower A</div>
-    <div class="tab" data-tab="upper-b">Upper B</div>
-    <div class="tab" data-tab="lower-b">Lower B</div>
+    <div class="tab active" data-tab="upper-a">Push+Pull</div>
+    <div class="tab" data-tab="lower-a">Lower+Carry</div>
+    <div class="tab" data-tab="upper-b">Metcon</div>
+    <div class="tab" data-tab="lower-b">Lower+Mob</div>
     <div class="tab" data-tab="run">Run</div>
     <div class="tab" data-tab="emom">EMOM</div>
     <div class="tab" data-tab="log">History</div>
@@ -367,7 +386,7 @@
 <div class="panel active" id="panel-upper-a">
   <div class="workout-header">
     <div class="workout-badge" style="background:#E84040"></div>
-    <div><div class="workout-title">Upper A</div><div class="workout-subtitle">Strength — Bench · Row · Pull-ups · Arms</div></div>
+    <div><div class="workout-title">Push + Pull</div><div class="workout-subtitle">Mon — Press · Pull · KB · Carries</div></div>
   </div>
   <div class="deload-toggle-wrap">
     <span class="deload-toggle-label">🔄 Deload Week (−40% volume/intensity)</span>
@@ -377,19 +396,18 @@
   <div class="session-timer" id="timer-upper-a">0:00</div>
   <div class="bw-quick">
     <span class="bw-quick-label">📊 Today's weight</span>
-    <input class="bw-quick-input" type="number" id="bw-upper-a" placeholder="210">
+    <input class="bw-quick-input" type="number" id="bw-upper-a" placeholder="217">
     <span class="bw-quick-unit">lbs</span>
     <button class="bw-quick-btn" onclick="logBodyweight('bw-upper-a')">Save</button>
   </div>
   <div class="warmup-card">
-    <div class="warmup-title">⚡ Pre-Lift Warm-Up <span style="color:var(--muted);font-weight:400">(5–7 min)</span></div>
+    <div class="warmup-title">⚡ Pre-Session Warm-Up <span style="color:var(--muted);font-weight:400">(5 min)</span></div>
+    <div class="warmup-item" onclick="toggleCheck(this)"><div class="warmup-check"></div><div class="warmup-text">Jump rope</div><div class="warmup-duration">2×3 min</div></div>
+    <div class="warmup-item" onclick="toggleCheck(this)"><div class="warmup-check"></div><div class="warmup-text">Band pull-aparts</div><div class="warmup-duration">2×20</div></div>
     <div class="warmup-item" onclick="toggleCheck(this)"><div class="warmup-check"></div><div class="warmup-text">Neck circles + side tilt</div><div class="warmup-duration">30 sec</div></div>
-    <div class="warmup-item" onclick="toggleCheck(this)"><div class="warmup-check"></div><div class="warmup-text">Doorway chest stretch</div><div class="warmup-duration">60 sec</div></div>
-    <div class="warmup-item" onclick="toggleCheck(this)"><div class="warmup-check"></div><div class="warmup-text">Band pull-aparts (or straight arm)</div><div class="warmup-duration">2×15</div></div>
     <div class="warmup-item" onclick="toggleCheck(this)"><div class="warmup-check"></div><div class="warmup-text">Wall slides</div><div class="warmup-duration">2×10</div></div>
     <div class="warmup-item" onclick="toggleCheck(this)"><div class="warmup-check"></div><div class="warmup-text">Light DB external rotation</div><div class="warmup-duration">1×15/arm</div></div>
-    <div class="warmup-item" onclick="toggleCheck(this)"><div class="warmup-check"></div><div class="warmup-text">Light lat pulldown / band row</div><div class="warmup-duration">1×15</div></div>
-    <div class="warmup-item" onclick="toggleCheck(this)"><div class="warmup-check"></div><div class="warmup-text">Bench warm-up sets: bar×10 → 50%×5 → 75%×3</div><div class="warmup-duration">ramp</div></div>
+    <div class="warmup-item" onclick="toggleCheck(this)"><div class="warmup-check"></div><div class="warmup-text">Press ramp: 50%×5 → 75%×3</div><div class="warmup-duration">ramp</div></div>
   </div>
   <div id="upper-a-exercises"></div>
   <div class="cooldown-card">
@@ -406,7 +424,7 @@
 <div class="panel" id="panel-lower-a">
   <div class="workout-header">
     <div class="workout-badge" style="background:#3DBE6E"></div>
-    <div><div class="workout-title">Lower A</div><div class="workout-subtitle">Strength + Jump — Squat · Hex Bar · Plyo</div></div>
+    <div><div class="workout-title">Lower + Carry</div><div class="workout-subtitle">Tue — Hex Bar · KB Swing · Carries · Single Leg</div></div>
   </div>
   <div class="deload-toggle-wrap">
     <span class="deload-toggle-label">🔄 Deload Week (−40% volume/intensity)</span>
@@ -416,7 +434,7 @@
   <div class="session-timer" id="timer-lower-a">0:00</div>
   <div class="bw-quick">
     <span class="bw-quick-label">📊 Today's weight</span>
-    <input class="bw-quick-input" type="number" id="bw-lower-a" placeholder="210">
+    <input class="bw-quick-input" type="number" id="bw-lower-a" placeholder="217">
     <span class="bw-quick-unit">lbs</span>
     <button class="bw-quick-btn" onclick="logBodyweight('bw-lower-a')">Save</button>
   </div>
@@ -427,46 +445,23 @@
 <div class="panel" id="panel-upper-b">
   <div class="workout-header">
     <div class="workout-badge" style="background:#4098E8"></div>
-    <div><div class="workout-title">Upper B</div><div class="workout-subtitle">Volume — Incline · Lat Pulldown · Push-Ups</div></div>
+    <div><div class="workout-title">Metcon</div><div class="workout-subtitle">Thu — 3 Circuits · KB · Carries · Conditioning</div></div>
   </div>
-  <div class="deload-toggle-wrap">
-    <span class="deload-toggle-label">🔄 Deload Week (−40% volume/intensity)</span>
-    <label class="toggle-switch"><input type="checkbox" id="deload-upper-b" onchange="toggleDeload('upper-b')"><span class="toggle-slider"></span></label>
-  </div>
-  <div class="deload-banner" id="deload-banner-upper-b">⚡ DELOAD — Drop weight 40%, focus on form and recovery</div>
   <div class="session-timer" id="timer-upper-b">0:00</div>
   <div class="bw-quick">
     <span class="bw-quick-label">📊 Today's weight</span>
-    <input class="bw-quick-input" type="number" id="bw-upper-b" placeholder="210">
+    <input class="bw-quick-input" type="number" id="bw-upper-b" placeholder="217">
     <span class="bw-quick-unit">lbs</span>
     <button class="bw-quick-btn" onclick="logBodyweight('bw-upper-b')">Save</button>
   </div>
-  <div class="warmup-card">
-    <div class="warmup-title">⚡ Pre-Lift Warm-Up <span style="color:var(--muted);font-weight:400">(5–7 min)</span></div>
-    <div class="warmup-item" onclick="toggleCheck(this)"><div class="warmup-check"></div><div class="warmup-text">Neck circles + side tilt</div><div class="warmup-duration">30 sec</div></div>
-    <div class="warmup-item" onclick="toggleCheck(this)"><div class="warmup-check"></div><div class="warmup-text">Doorway chest stretch</div><div class="warmup-duration">60 sec</div></div>
-    <div class="warmup-item" onclick="toggleCheck(this)"><div class="warmup-check"></div><div class="warmup-text">Band pull-aparts (or straight arm)</div><div class="warmup-duration">2×15</div></div>
-    <div class="warmup-item" onclick="toggleCheck(this)"><div class="warmup-check"></div><div class="warmup-text">Wall slides</div><div class="warmup-duration">2×10</div></div>
-    <div class="warmup-item" onclick="toggleCheck(this)"><div class="warmup-check"></div><div class="warmup-text">Light DB external rotation</div><div class="warmup-duration">1×15/arm</div></div>
-    <div class="warmup-item" onclick="toggleCheck(this)"><div class="warmup-check"></div><div class="warmup-text">Light lat pulldown / band row</div><div class="warmup-duration">1×15</div></div>
-    <div class="warmup-item" onclick="toggleCheck(this)"><div class="warmup-check"></div><div class="warmup-text">Incline bench warm-up: bar×10 → 50%×5 → 75%×3</div><div class="warmup-duration">ramp</div></div>
-  </div>
-  <div id="upper-b-exercises"></div>
-  <div class="cooldown-card">
-    <div class="cooldown-title">🧊 Cool-Down Stretches</div>
-    <div class="stretch-item" onclick="toggleStretch(this)"><div class="stretch-check"></div><div class="stretch-text">Levator scapulae stretch (ear to shoulder, hand on head)</div><div class="stretch-duration">45 sec/side</div></div>
-    <div class="stretch-item" onclick="toggleStretch(this)"><div class="stretch-check"></div><div class="stretch-text">Doorway chest stretch</div><div class="stretch-duration">60 sec</div></div>
-    <div class="stretch-item" onclick="toggleStretch(this)"><div class="stretch-check"></div><div class="stretch-text">Cross-body shoulder stretch</div><div class="stretch-duration">30 sec/side</div></div>
-    <div class="stretch-item" onclick="toggleStretch(this)"><div class="stretch-check"></div><div class="stretch-text">Lat stretch (hang from pull-up bar or doorframe)</div><div class="stretch-duration">45 sec</div></div>
-    <div class="stretch-item" onclick="toggleStretch(this)"><div class="stretch-check"></div><div class="stretch-text">Thread-the-needle (thoracic rotation)</div><div class="stretch-duration">30 sec/side</div></div>
-  </div>
-  <div class="save-bar"><button class="save-btn" style="background:#4098E8;color:#fff" onclick="saveWorkout('upper-b')">Log Upper B Session</button></div>
+  <div id="metcon-circuits"></div>
+  <div class="save-bar"><button class="save-btn" style="background:#4098E8;color:#fff" onclick="saveMetcon()">Log Metcon Session</button></div>
 </div>
 
 <div class="panel" id="panel-lower-b">
   <div class="workout-header">
     <div class="workout-badge" style="background:#9B5DE5"></div>
-    <div><div class="workout-title">Lower B</div><div class="workout-subtitle">Power + Athletic — Hex Bar · BSS · RDL · Plyo</div></div>
+    <div><div class="workout-title">Lower + Mobility</div><div class="workout-subtitle">Fri — Goblet · RDL · Turkish Get-Up · Stretch</div></div>
   </div>
   <div class="deload-toggle-wrap">
     <span class="deload-toggle-label">🔄 Deload Week (−40% volume/intensity)</span>
@@ -476,18 +471,28 @@
   <div class="session-timer" id="timer-lower-b">0:00</div>
   <div class="bw-quick">
     <span class="bw-quick-label">📊 Today's weight</span>
-    <input class="bw-quick-input" type="number" id="bw-lower-b" placeholder="210">
+    <input class="bw-quick-input" type="number" id="bw-lower-b" placeholder="217">
     <span class="bw-quick-unit">lbs</span>
     <button class="bw-quick-btn" onclick="logBodyweight('bw-lower-b')">Save</button>
   </div>
   <div id="lower-b-exercises"></div>
-  <div class="save-bar"><button class="save-btn" style="background:#9B5DE5;color:#fff" onclick="saveWorkout('lower-b')">Log Lower B Session</button></div>
+  <div class="cooldown-card" style="margin-top:12px">
+    <div class="cooldown-title">🧘 Mobility Circuit</div>
+    <div class="stretch-item" onclick="toggleStretch(this)"><div class="stretch-check"></div><div class="stretch-text">Hip 90/90 — sit tall, rotate shin forward</div><div class="stretch-duration">90 sec/side</div></div>
+    <div class="stretch-item" onclick="toggleStretch(this)"><div class="stretch-check"></div><div class="stretch-text">Pigeon pose</div><div class="stretch-duration">60 sec/side</div></div>
+    <div class="stretch-item" onclick="toggleStretch(this)"><div class="stretch-check"></div><div class="stretch-text">Couch stretch (hip flexor)</div><div class="stretch-duration">60 sec/side</div></div>
+    <div class="stretch-item" onclick="toggleStretch(this)"><div class="stretch-check"></div><div class="stretch-text">Thoracic rotation (thread the needle)</div><div class="stretch-duration">30 sec/side</div></div>
+    <div class="stretch-item" onclick="toggleStretch(this)"><div class="stretch-check"></div><div class="stretch-text">Ankle dorsiflexion stretch (wall)</div><div class="stretch-duration">45 sec/side</div></div>
+    <div class="stretch-item" onclick="toggleStretch(this)"><div class="stretch-check"></div><div class="stretch-text">Deep squat hold</div><div class="stretch-duration">60 sec</div></div>
+    <div class="stretch-item" onclick="toggleStretch(this)"><div class="stretch-check"></div><div class="stretch-text">Lat / overhead stretch (doorframe or bar)</div><div class="stretch-duration">45 sec/side</div></div>
+  </div>
+  <div class="save-bar"><button class="save-btn" style="background:#9B5DE5;color:#fff" onclick="saveWorkout('lower-b')">Log Lower+Mobility Session</button></div>
 </div>
 
 <div class="panel" id="panel-run">
   <div class="workout-header">
     <div class="workout-badge" style="background:#F5A623"></div>
-    <div><div class="workout-title">Run</div><div class="workout-subtitle">Easy · Intervals · Tempo</div></div>
+    <div><div class="workout-title">Run / Ruck</div><div class="workout-subtitle">Wed · Sat — Intervals · Tempo · Easy · Ruck</div></div>
   </div>
   <div class="run-option">
     <div class="run-type">Easy Run</div>
@@ -516,7 +521,24 @@
   <div class="save-bar"><button class="save-btn" style="background:#F5A623;color:#000" onclick="saveRun()">Log Run Session</button></div>
 </div>
 
-<div class="panel" id="panel-emom">
+  <div class="run-option" style="border-left:3px solid #9B5DE5">
+    <div class="run-type" style="color:#9B5DE5">Ruck (Sat)</div>
+    <div class="run-detail">
+      <strong>3–4 miles</strong> at a hard pace with pack<br>
+      Rucksack or weighted vest · alternate weeks with long easy run
+    </div>
+    <div class="run-log-area">
+      <div class="run-input-wrap"><label>Distance (mi)</label><input class="run-input" id="ruck-dist" type="number" step="0.1" placeholder="3.0"></div>
+      <div class="run-input-wrap"><label>Pack weight (lbs)</label><input class="run-input" id="ruck-weight" type="number" placeholder="25"></div>
+      <div class="run-input-wrap"><label>Time (mm:ss)</label><input class="run-input" id="ruck-time" type="text" placeholder="45:00"></div>
+      <div class="run-input-wrap"><label>Type</label>
+        <select class="run-input" id="ruck-type" style="cursor:pointer">
+          <option value="rucksack">Rucksack</option>
+          <option value="vest">Weighted Vest</option>
+        </select>
+      </div>
+    </div>
+  </div>
   <div class="workout-header">
     <div class="workout-badge" style="background:#00C9A7"></div>
     <div><div class="workout-title">EMOM</div><div class="workout-subtitle">10 sets · Min 1: HRPU · Min 2: 50-sec Plank</div></div>
@@ -857,6 +879,145 @@ const ALTERNATES = {
       { name:'EZ Bar Skull Crusher', scheme:'3×10', sets:3, hasWeight:true }
     ]
   },
+  'KB Swing': {
+    default: { name:'KB Swing', scheme:'4×15 (50lb)', sets:4, hasWeight:true },
+    Kettlebell: [
+      { name:'KB Sumo Deadlift', scheme:'4×10', sets:4, hasWeight:true },
+      { name:'KB Deadlift', scheme:'4×8', sets:4, hasWeight:true }
+    ],
+    Barbell: [
+      { name:'Romanian Deadlift', scheme:'4×10', sets:4, hasWeight:true }
+    ],
+    Bodyweight: [
+      { name:'Hip Hinge (bodyweight)', scheme:'4×15', sets:4, hasWeight:false, repsLabel:'Reps' }
+    ]
+  },
+  'KB Turkish Get-Up': {
+    default: { name:'KB Turkish Get-Up', scheme:'3×3/side (35lb)', sets:3, hasWeight:true },
+    Bodyweight: [
+      { name:'Bodyweight Get-Up', scheme:'3×5/side', sets:3, hasWeight:false, repsLabel:'Reps' },
+      { name:'Windmill Stretch', scheme:'3×8/side', sets:3, hasWeight:false, repsLabel:'Reps' }
+    ],
+    Dumbbell: [
+      { name:'DB Turkish Get-Up', scheme:'3×3/side', sets:3, hasWeight:true }
+    ]
+  },
+  'KB Renegade Row': {
+    default: { name:'KB Renegade Row', scheme:'3×8/side (35lb)', sets:3, hasWeight:true },
+    Dumbbell: [
+      { name:'DB Renegade Row', scheme:'3×8/side', sets:3, hasWeight:true }
+    ],
+    Cable: [
+      { name:'Cable Single-Arm Row', scheme:'3×10', sets:3, hasWeight:true }
+    ],
+    Bodyweight: [
+      { name:'Inverted Row', scheme:'3×AMRAP', sets:3, hasWeight:false, repsLabel:'Reps' }
+    ]
+  },
+  'KB Single-Arm Press': {
+    default: { name:'KB Single-Arm Press', scheme:'3×8/side (35lb)', sets:3, hasWeight:true },
+    Dumbbell: [
+      { name:'DB Single-Arm Press', scheme:'3×10/side', sets:3, hasWeight:true }
+    ],
+    Barbell: [
+      { name:'Military Press', scheme:'3×6-8', sets:3, hasWeight:true }
+    ],
+    Bodyweight: [
+      { name:'Pike Push-Ups', scheme:'3×AMRAP', sets:3, hasWeight:false, repsLabel:'Reps' }
+    ]
+  },
+  'KB Clean + Press': {
+    default: { name:'KB Clean + Press', scheme:'5/side (35lb)', sets:3, hasWeight:true },
+    Dumbbell: [
+      { name:'DB Clean + Press', scheme:'5/side', sets:3, hasWeight:true }
+    ],
+    Barbell: [
+      { name:'Push Press', scheme:'5 reps', sets:3, hasWeight:true }
+    ]
+  },
+  'KB Goblet Squat': {
+    default: { name:'KB Goblet Squat', scheme:'4×12 (50lb)', sets:4, hasWeight:true },
+    Barbell: [
+      { name:'Front Squat', scheme:'4×8', sets:4, hasWeight:true },
+      { name:'Back Squat', scheme:'4×8', sets:4, hasWeight:true }
+    ],
+    Dumbbell: [
+      { name:'DB Goblet Squat', scheme:'4×12', sets:4, hasWeight:true }
+    ],
+    Bodyweight: [
+      { name:'Bodyweight Squat', scheme:'4×20', sets:4, hasWeight:false, repsLabel:'Reps' }
+    ],
+    Machine: [
+      { name:'Leg Press', scheme:'4×12', sets:4, hasWeight:true }
+    ]
+  },
+  'Farmers Carry': {
+    default: { name:'Farmers Carry', scheme:'4×40 yds', sets:4, hasWeight:true },
+    Kettlebell: [
+      { name:'KB Farmers Carry', scheme:'4×40 yds', sets:4, hasWeight:true }
+    ],
+    Dumbbell: [
+      { name:'DB Farmers Carry', scheme:'4×40 yds', sets:4, hasWeight:true }
+    ],
+    Bodyweight: [
+      { name:'Suitcase Carry (one hand)', scheme:'3×40 yds/side', sets:3, hasWeight:false, repsLabel:'Yds' }
+    ]
+  },
+  'Suitcase Carry': {
+    default: { name:'Suitcase Carry', scheme:'3×40 yds/side', sets:3, hasWeight:true },
+    Dumbbell: [
+      { name:'DB Suitcase Carry', scheme:'3×40 yds/side', sets:3, hasWeight:true }
+    ],
+    Bodyweight: [
+      { name:'Overhead Carry', scheme:'3×20 yds/side', sets:3, hasWeight:false, repsLabel:'Yds' }
+    ]
+  },
+  'Single-Leg RDL': {
+    default: { name:'Single-Leg RDL', scheme:'3×10/leg', sets:3, hasWeight:true },
+    Kettlebell: [
+      { name:'KB Single-Leg RDL', scheme:'3×10/leg (35lb)', sets:3, hasWeight:true }
+    ],
+    Dumbbell: [
+      { name:'DB Single-Leg RDL', scheme:'3×10/leg', sets:3, hasWeight:true }
+    ],
+    Bodyweight: [
+      { name:'Bodyweight Single-Leg Hinge', scheme:'3×12/leg', sets:3, hasWeight:false, repsLabel:'Reps' }
+    ],
+    Machine: [
+      { name:'Machine Leg Curl', scheme:'3×12', sets:3, hasWeight:true }
+    ]
+  },
+  'Incline DB Press': {
+    default: { name:'Incline DB Press', scheme:'4×8', sets:4, hasWeight:true },
+    Barbell: [
+      { name:'Incline Barbell Bench', scheme:'4×6-8', sets:4, hasWeight:true },
+      { name:'Barbell Bench Press', scheme:'4×6-8', sets:4, hasWeight:true }
+    ],
+    Cable: [
+      { name:'Cable Incline Fly', scheme:'4×12', sets:4, hasWeight:true }
+    ],
+    Bodyweight: [
+      { name:'Push-Ups', scheme:'4×AMRAP', sets:4, hasWeight:false, repsLabel:'Reps' },
+      { name:'Hand-Release Push-Ups', scheme:'4×AMRAP', sets:4, hasWeight:false, repsLabel:'Reps' }
+    ],
+    Machine: [
+      { name:'Machine Chest Press (Incline)', scheme:'4×10', sets:4, hasWeight:true }
+    ]
+  },
+  'Hip 90/90 Stretch': {
+    default: { name:'Hip 90/90 Stretch', scheme:'90 sec/side', sets:1, hasWeight:false, repsLabel:'Secs' },
+    Bodyweight: [
+      { name:'Pigeon Pose', scheme:'60 sec/side', sets:1, hasWeight:false, repsLabel:'Secs' },
+      { name:'Couch Stretch', scheme:'60 sec/side', sets:1, hasWeight:false, repsLabel:'Secs' }
+    ]
+  },
+  'Ankle Circles + Leg Swings': {
+    default: { name:'Ankle Circles + Leg Swings', scheme:'60 sec', sets:1, hasWeight:false, repsLabel:'Secs' },
+    Bodyweight: [
+      { name:'Banded Ankle Distraction', scheme:'60 sec/side', sets:1, hasWeight:false, repsLabel:'Secs' },
+      { name:'Calf Raises (slow)', scheme:'2×15', sets:2, hasWeight:false, repsLabel:'Reps' }
+    ]
+  },
   'Broad Jumps': {
     default: { name:'Broad Jumps', scheme:'4×3', sets:4, hasWeight:false, repsLabel:'Reps' },
     Bodyweight: [
@@ -1038,131 +1199,124 @@ const ALTERNATES = {
 // ── WORKOUTS ─────────────────────────────────────────────────────────
 const WORKOUTS = {
   'upper-a': {
-    label: 'Upper A',
+    label: 'Push + Pull',
     sections: [
       { name:'Warm-Up', exercises:[
-        { name:'Jump Rope', altKey:'Jump Rope (Upper)', scheme:'1×10 min steady', sets:1, hasWeight:false, repsLabel:'Min' }
+        { name:'Jump Rope', altKey:'Jump Rope (Upper)', scheme:'2×3 min', sets:2, hasWeight:false, repsLabel:'Min' },
+        { name:'Band Pull-Aparts', scheme:'2×20', sets:2, hasWeight:false, repsLabel:'Reps' }
       ]},
-      { name:'Main Lift', exercises:[
-        { name:'Barbell Bench Press', scheme:'5×5', sets:5, hasWeight:true }
+      { name:'Press', exercises:[
+        { name:'Incline DB Press', scheme:'4×8', sets:4, hasWeight:true },
+        { name:'KB Single-Arm Press', scheme:'3×8/side (35lb)', sets:3, hasWeight:true }
       ]},
-      { name:'Vertical Pull', exercises:[
-        { name:'Pull-Ups', scheme:'4×AMRAP', sets:4, hasWeight:false, repsLabel:'Reps' }
+      { name:'Pull', exercises:[
+        { name:'Pull-Ups', scheme:'4×AMRAP', sets:4, hasWeight:false, repsLabel:'Reps' },
+        { name:'Barbell Row', scheme:'4×10', sets:4, hasWeight:true },
+        { name:'KB Renegade Row', scheme:'3×8/side (35lb)', sets:3, hasWeight:true }
       ]},
-      { name:'Horizontal Pull', exercises:[
-        { name:'Barbell Row', scheme:'4×6-8', sets:4, hasWeight:true }
+      { name:'Shoulder Health', exercises:[
+        { name:'Face Pulls', scheme:'3×20', sets:3, hasWeight:true }
       ]},
-      { name:'Secondary Press', exercises:[
-        { name:'DB Incline Bench', scheme:'3×8-10', sets:3, hasWeight:true }
-      ]},
-      { name:'Shoulders', exercises:[
-        { name:'DB Shoulder Press', scheme:'3×8-10', sets:3, hasWeight:true },
-        { name:'Face Pulls', scheme:'3×15-20', sets:3, hasWeight:true }
-      ]},
-      { name:'Arms', exercises:[
-        { name:'Barbell Curl', scheme:'3×10', sets:3, hasWeight:true },
-        { name:'Lying DB Triceps Extension', scheme:'3×10', sets:3, hasWeight:true }
-      ]},
-      { name:'Core', exercises:[
-        { name:'Ab Roller', scheme:'3×AMRAP (controlled)', sets:3, hasWeight:false, repsLabel:'Reps' },
-        { name:'Hanging Leg Raise', scheme:'3×10-15', sets:3, hasWeight:false, repsLabel:'Reps' }
-      ]},
-      { name:'Finisher', exercises:[
-        { name:'Scapular Push-Ups', altKey:'HRPU Finisher', scheme:'2×15 (scap focus)', sets:2, hasWeight:false, repsLabel:'Reps' }
+      { name:'Core + Finisher', exercises:[
+        { name:'Ab Roller', scheme:'3×AMRAP', sets:3, hasWeight:false, repsLabel:'Reps' },
+        { name:'Hand-Release Push-Ups', scheme:'3×AMRAP', sets:3, hasWeight:false, repsLabel:'Reps' }
       ]}
     ]
   },
   'lower-a': {
-    label: 'Lower A',
+    label: 'Lower + Carry',
     sections: [
       { name:'Warm-Up', exercises:[
-        { name:'Jump Rope', scheme:'3×3 min (1 min rest)', sets:3, hasWeight:false, repsLabel:'Min' }
+        { name:'Jump Rope', scheme:'2×3 min', sets:2, hasWeight:false, repsLabel:'Min' },
+        { name:'Hip 90/90 Stretch', scheme:'60 sec/side', sets:1, hasWeight:false, repsLabel:'Secs' }
       ]},
-      { name:'Plyo', exercises:[
-        { name:'Vertical Jumps', scheme:'5×3', sets:5, hasWeight:false, repsLabel:'Reps' }
-      ]},
-      { name:'Main Lift', exercises:[
-        { name:'Back Squat', scheme:'5×5', sets:5, hasWeight:true }
-      ]},
-      { name:'Posterior Chain', exercises:[
-        { name:'Hex Bar Deadlift', scheme:'3×5', sets:3, hasWeight:true }
+      { name:'Hinge + Power', exercises:[
+        { name:'Hex Bar Deadlift', scheme:'4×5', sets:4, hasWeight:true },
+        { name:'KB Swing', scheme:'4×15 (50lb)', sets:4, hasWeight:true }
       ]},
       { name:'Single Leg', exercises:[
-        { name:'Walking Lunges', scheme:'3×10/leg', sets:3, hasWeight:true }
+        { name:'Bulgarian Split Squat', scheme:'3×8/leg', sets:3, hasWeight:true },
+        { name:'Single-Leg RDL', scheme:'3×10/leg', sets:3, hasWeight:true }
+      ]},
+      { name:'Carry', exercises:[
+        { name:'Farmers Carry', scheme:'4×40 yds', sets:4, hasWeight:true },
+        { name:'Suitcase Carry', scheme:'3×40 yds/side', sets:3, hasWeight:true }
       ]},
       { name:'Lower Leg', exercises:[
         { name:'Tibialis Machine', scheme:'3×20', sets:3, hasWeight:true },
-        { name:'Single-Leg Calf Raise (weighted)', scheme:'3×12/leg', sets:3, hasWeight:true },
-        { name:'Standing Calf Raise', scheme:'2×20', sets:2, hasWeight:true }
+        { name:'Single-Leg Calf Raise (weighted)', scheme:'3×12/leg', sets:3, hasWeight:true }
       ]},
       { name:'Core + Hip Flexors', exercises:[
-        { name:'Pendulums', scheme:'3×10-15', sets:3, hasWeight:false, repsLabel:'Reps' },
-        { name:'Hanging Leg Raise', scheme:'3×10-15', sets:3, hasWeight:false, repsLabel:'Reps' },
+        { name:'Hanging Leg Raise', scheme:'3×12', sets:3, hasWeight:false, repsLabel:'Reps' },
         { name:'Decline Sit-Up', scheme:'3×12', sets:3, hasWeight:false, repsLabel:'Reps' }
       ]}
     ]
   },
   'upper-b': {
-    label: 'Upper B',
-    sections: [
-      { name:'Warm-Up', exercises:[
-        { name:'Jump Rope', altKey:'Jump Rope (Upper)', scheme:'1×10 min steady', sets:1, hasWeight:false, repsLabel:'Min' }
-      ]},
-      { name:'Main Lift', exercises:[
-        { name:'Incline Barbell Bench', scheme:'4×6-8', sets:4, hasWeight:true }
-      ]},
-      { name:'Vertical Pull', exercises:[
-        { name:'Lat Pulldown', scheme:'4×8-12', sets:4, hasWeight:true }
-      ]},
-      { name:'Horizontal Pull', exercises:[
-        { name:'1-Arm DB Row', scheme:'3×10', sets:3, hasWeight:true }
-      ]},
-      { name:'Bodyweight Push', exercises:[
-        { name:'Hand-Release Push-Ups', scheme:'3×AMRAP', sets:3, hasWeight:false, repsLabel:'Reps' }
-      ]},
-      { name:'Arms', exercises:[
-        { name:'Hammer Curl', scheme:'3×10-12', sets:3, hasWeight:true },
-        { name:'Close-Grip Push-Ups', scheme:'3×AMRAP', sets:3, hasWeight:false, repsLabel:'Reps' }
-      ]},
-      { name:'Rear Delt + Rotator Cuff', exercises:[
-        { name:'Face Pulls', scheme:'3×15-20', sets:3, hasWeight:true },
-        { name:'Band Pull-Aparts', scheme:'3×20', sets:3, hasWeight:false, repsLabel:'Reps' }
-      ]},
-      { name:'Core', exercises:[
-        { name:'Ab Roller', altKey:'Ab Roller', scheme:'3×8-10 (tempo)', sets:3, hasWeight:false, repsLabel:'Reps' }
-      ]}
+    label: 'Metcon',
+    isMetcon: true,
+    circuits: [
+      {
+        name: 'Circuit A',
+        color: '#E84040',
+        rounds: 4,
+        restSecs: 90,
+        exercises: [
+          { name:'KB Swing', detail:'50lb · 15 reps' },
+          { name:'Pull-Ups', detail:'max reps' },
+          { name:'Push-Ups', detail:'max reps' }
+        ]
+      },
+      {
+        name: 'Circuit B',
+        color: '#F5A623',
+        rounds: 3,
+        restSecs: 60,
+        exercises: [
+          { name:'KB Clean + Press', detail:'35lb · 5/side' },
+          { name:'Barbell Row', detail:'10 reps' },
+          { name:'Hanging Leg Raise', detail:'12 reps' }
+        ]
+      },
+      {
+        name: 'Circuit C',
+        color: '#9B5DE5',
+        rounds: 3,
+        restSecs: 60,
+        exercises: [
+          { name:'Suitcase Carry', detail:'50lb · 40 yds/side' },
+          { name:'KB Goblet Squat', detail:'50lb · 12 reps' },
+          { name:'Face Pulls', detail:'20 reps' }
+        ]
+      }
     ]
   },
   'lower-b': {
-    label: 'Lower B',
+    label: 'Lower + Mobility',
     sections: [
-      { name:'Warm-Up', exercises:[
-        { name:'Jump Rope', scheme:'3×3 min (1 min rest)', sets:3, hasWeight:false, repsLabel:'Min' }
+      { name:'Warm-Up + Mobility', exercises:[
+        { name:'Hip 90/90 Stretch', scheme:'90 sec/side', sets:1, hasWeight:false, repsLabel:'Secs' },
+        { name:'Ankle Circles + Leg Swings', scheme:'60 sec', sets:1, hasWeight:false, repsLabel:'Secs' }
       ]},
-      { name:'Plyo', exercises:[
-        { name:'Broad Jumps', scheme:'4×3', sets:4, hasWeight:false, repsLabel:'Reps' },
-        { name:'Depth Drops', scheme:'3×5 → progress to Depth Jumps', sets:3, hasWeight:false, repsLabel:'Reps' }
-      ]},
-      { name:'Main Lift', exercises:[
-        { name:'Hex Bar Deadlift', altKey:'Hex Bar Deadlift (Power)', scheme:'5×3', sets:5, hasWeight:true }
-      ]},
-      { name:'Single Leg', exercises:[
-        { name:'Bulgarian Split Squat', scheme:'3×8/leg', sets:3, hasWeight:true }
+      { name:'Strength', exercises:[
+        { name:'KB Goblet Squat', scheme:'4×12 (50lb)', sets:4, hasWeight:true },
+        { name:'Walking Lunges', scheme:'3×12/leg', sets:3, hasWeight:true }
       ]},
       { name:'Posterior Chain', exercises:[
-        { name:'Romanian Deadlift', scheme:'3×8', sets:3, hasWeight:true },
+        { name:'Romanian Deadlift', scheme:'3×10', sets:3, hasWeight:true },
         { name:'Nordic Curl', scheme:'3×5 (eccentric focus)', sets:3, hasWeight:false, repsLabel:'Reps' }
+      ]},
+      { name:'Movement Quality', exercises:[
+        { name:'KB Turkish Get-Up', scheme:'3×3/side (35lb)', sets:3, hasWeight:true },
+        { name:'Broad Jumps', scheme:'3×3 (light, crisp)', sets:3, hasWeight:false, repsLabel:'Reps' }
       ]},
       { name:'Lower Leg', exercises:[
         { name:'Tibialis Machine', scheme:'3×20', sets:3, hasWeight:true },
-        { name:'Single-Leg Calf Raise (weighted)', scheme:'3×12/leg', sets:3, hasWeight:true },
-        { name:'Monkey Foot Leg Extensions', scheme:'3×12', sets:3, hasWeight:true },
-        { name:'Monkey Foot Hamstring Curls', scheme:'3×12', sets:3, hasWeight:true }
+        { name:'Single-Leg Calf Raise (weighted)', scheme:'3×12/leg', sets:3, hasWeight:true }
       ]},
-      { name:'Core + Hip Flexors', exercises:[
-        { name:'Russian Twists', scheme:'3×20', sets:3, hasWeight:false, repsLabel:'Reps' },
-        { name:'Hanging Leg Raise', scheme:'3×10-15', sets:3, hasWeight:false, repsLabel:'Reps' },
-        { name:'Decline Sit-Up', scheme:'3×12', sets:3, hasWeight:false, repsLabel:'Reps' }
+      { name:'Core', exercises:[
+        { name:'Pendulums', scheme:'3×12', sets:3, hasWeight:false, repsLabel:'Reps' },
+        { name:'Russian Twists', scheme:'3×20', sets:3, hasWeight:false, repsLabel:'Reps' }
       ]}
     ]
   }
@@ -1183,7 +1337,8 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('headerDate').textContent =
     new Date().toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'});
   updateStreakDisplay();
-  Object.keys(WORKOUTS).forEach(key => renderWorkout(key));
+  Object.keys(WORKOUTS).forEach(key => { if (!WORKOUTS[key].isMetcon) renderWorkout(key); });
+  renderMetcon();
   initEMOM();
   renderLog();
   updateGoalStrip();
@@ -1604,11 +1759,16 @@ function saveRun() {
   const intPace = document.getElementById('int-pace').value;
   const tempoDur = document.getElementById('tempo-dur').value;
   const tempoSpeed = document.getElementById('tempo-speed').value;
-  if (!easyDist && !easyTime && !intReps && !tempoDur) { alert('Log at least one run before saving.'); return; }
+  const ruckDist = document.getElementById('ruck-dist')?.value;
+  const ruckWeight = document.getElementById('ruck-weight')?.value;
+  const ruckTime = document.getElementById('ruck-time')?.value;
+  const ruckType = document.getElementById('ruck-type')?.value;
+  if (!easyDist && !easyTime && !intReps && !tempoDur && !ruckDist) { alert('Log at least one activity before saving.'); return; }
   const entry = { type:'run', label:'Run', date:new Date().toISOString(), runData:{
     easy: easyDist||easyTime ? `${easyDist||'?'} mi · ${easyTime||'?'}` : null,
     intervals: intReps ? `${intReps} × 400m @ ${intPace||'?'}/rep` : null,
-    tempo: tempoDur ? `${tempoDur} min @ ${tempoSpeed||'?'} mph` : null
+    tempo: tempoDur ? `${tempoDur} min @ ${tempoSpeed||'?'} mph` : null,
+    ruck: ruckDist ? `${ruckDist} mi · ${ruckWeight||'?'}lb ${ruckType||'ruck'} · ${ruckTime||'?'}` : null
   }};
   if (easyDist >= 2 && easyTime) {
     const parts = easyTime.split(':');
@@ -1624,7 +1784,7 @@ function saveRun() {
   localStorage.setItem('trainingLog', JSON.stringify(log));
   updateGoalStrip();
   updateStreakDisplay();
-  alert('Run session saved ✓');
+  alert('Session saved ✓');
 }
 
 function timeToSec(str) {
@@ -1655,7 +1815,7 @@ function renderLog() {
   const weekEnd=new Date(weekStart); weekEnd.setDate(weekStart.getDate()+7);
   const filtered=log.filter(e=>{ const d=new Date(e.date); return d>=weekStart&&d<weekEnd; });
   if (!filtered.length) { container.innerHTML=`<div class="empty-log">No sessions logged this week.<br>Hit the gym 💪</div>`; return; }
-  const colorMap={'upper-a':'#E84040','lower-a':'#3DBE6E','upper-b':'#4098E8','lower-b':'#9B5DE5','run':'#F5A623','emom':'#00C9A7'};
+  const colorMap={'upper-a':'#E84040','lower-a':'#3DBE6E','upper-b':'#4098E8','lower-b':'#9B5DE5','run':'#F5A623','emom':'#00C9A7','Metcon':'#4098E8'};
   container.innerHTML=filtered.map(e=>{
     const d=new Date(e.date);
     const dateStr=d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
@@ -1672,6 +1832,10 @@ function renderLog() {
       `<div><span style="color:var(--text)">${k.charAt(0).toUpperCase()+k.slice(1)}</span>  ${v}</div>`).join('');
     else if (e.emomData) detail=`<div><span style="color:var(--text)">10 rounds complete</span>  Total HRPU: ${e.emomData.totalHRPU} reps</div>`
       + e.emomData.rounds.map(r=>`<div>Round ${r.round}: <span style="color:var(--text)">${r.reps} reps</span></div>`).join('');
+    else if (e.metconData) detail=e.metconData.map(c=>{
+      const doneRounds = c.rounds.filter(r=>r.done).length;
+      return `<div><span style="color:var(--text)">${c.name}</span>  ${doneRounds}/${c.rounds.length} rounds</div>`;
+    }).join('');
     return `
       <div class="log-entry" style="border-left:3px solid ${color}">
         <div class="log-entry-header">
@@ -1822,6 +1986,63 @@ if (savedRest) {
 }
 function toggleCheck(el) { el.classList.toggle('checked'); }
 function toggleStretch(el) { el.classList.toggle('checked'); }
+
+// ── METCON CIRCUITS ───────────────────────────────────────────────────
+function renderMetcon() {
+  const container = document.getElementById('metcon-circuits');
+  if (!container) return;
+  const w = WORKOUTS['upper-b'];
+  container.innerHTML = w.circuits.map((circuit, ci) => {
+    const exRows = circuit.exercises.map((ex, ei) => `
+      <div class="circuit-exercise-row">
+        <div class="circuit-exercise-num" style="background:${circuit.color}22;color:${circuit.color}">${ei+1}</div>
+        <div class="circuit-exercise-name">${ex.name}</div>
+        <div class="circuit-exercise-detail">${ex.detail}</div>
+      </div>`).join('');
+    const roundRows = Array.from({length: circuit.rounds}, (_, ri) => `
+      <div class="circuit-round-row">
+        <div class="circuit-round-num">Round ${ri+1}</div>
+        <button class="circuit-done-btn" id="circ-${ci}-r${ri}" onclick="toggleCircuitRound('circ-${ci}-r${ri}')">✓ Done</button>
+        <input class="circuit-notes" type="text" placeholder="notes..." id="circ-${ci}-r${ri}-notes">
+      </div>`).join('');
+    return `
+      <div class="circuit-card">
+        <div class="circuit-header" style="border-left:3px solid ${circuit.color}">
+          <div class="circuit-name" style="color:${circuit.color}">${circuit.name}</div>
+          <div class="circuit-meta">${circuit.rounds} rounds · ${circuit.restSecs}s rest</div>
+        </div>
+        <div class="circuit-exercises">${exRows}</div>
+        <div class="circuit-rounds-log">
+          <div class="circuit-rounds-label">Round Log</div>
+          ${roundRows}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function toggleCircuitRound(id) {
+  document.getElementById(id)?.classList.toggle('done');
+}
+
+function saveMetcon() {
+  const w = WORKOUTS['upper-b'];
+  const circuitData = w.circuits.map((circuit, ci) => {
+    const rounds = Array.from({length: circuit.rounds}, (_, ri) => ({
+      round: ri+1,
+      done: document.getElementById(`circ-${ci}-r${ri}`)?.classList.contains('done') || false,
+      notes: document.getElementById(`circ-${ci}-r${ri}-notes`)?.value || ''
+    }));
+    return { name: circuit.name, rounds };
+  });
+  const anyDone = circuitData.some(c => c.rounds.some(r => r.done));
+  if (!anyDone) { alert('Complete at least one round before saving.'); return; }
+  const entry = { type:'upper-b', label:'Metcon', date:new Date().toISOString(), metconData: circuitData };
+  log.unshift(entry);
+  localStorage.setItem('trainingLog', JSON.stringify(log));
+  stopSessionTimer('upper-b');
+  updateGoalStrip(); updateStreakDisplay();
+  alert('Metcon session saved ✓');
+}
 
 // ── EMOM ──────────────────────────────────────────────────────────────
 const EMOM_TOTAL_SETS = 10;
