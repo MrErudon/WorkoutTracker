@@ -1439,6 +1439,8 @@ const DB_CIRCUITS = {
 };
 
 
+// ── STATE ─────────────────────────────────────────────────────────────
+let log = JSON.parse(localStorage.getItem('trainingLog') || '[]');
 let goals = JSON.parse(localStorage.getItem('trainingGoals') || '{"weight":210,"mile2":null,"hrpu":null,"squat":225}');
 let prs = JSON.parse(localStorage.getItem('exercisePRs') || '{}'); // { exerciseName: maxWeight }
 let viewWeekOffset = 0;
