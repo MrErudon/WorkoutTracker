@@ -55,6 +55,7 @@
   .tab[data-tab="upper-b"] { --tab-color:var(--upper-b); }
   .tab[data-tab="lower-b"] { --tab-color:var(--lower-b); }
   .tab[data-tab="run"] { --tab-color:var(--run); }
+  .tab[data-tab="dbcircuit"] { --tab-color:#FF6B9D; }
   .tab[data-tab="emom"] { --tab-color:#00C9A7; }
   .tab[data-tab="log"] { --tab-color:#888; }
 
@@ -315,6 +316,37 @@
   .export-btn { width:100%; padding:10px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; color:var(--muted); font-size:12px; font-weight:700; cursor:pointer; transition:all .15s; margin-top:10px; letter-spacing:.04em; }
   .export-btn:hover { border-color:#555; color:var(--text); }
 
+  /* GLOBAL EQUIPMENT SWAP */
+  .equip-mode-wrap { display:flex; align-items:center; gap:6px; }
+  .equip-mode-label { font-size:9px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); }
+  .equip-mode-select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 10px;
+    color: var(--text);
+    font-size: 11px;
+    font-weight: 700;
+    outline: none;
+    cursor: pointer;
+    transition: border-color .15s;
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 22px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236B6E78'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 7px center;
+  }
+  .equip-mode-select:focus { border-color: #555; }
+  .equip-mode-select.active { border-color: #F5A623; color: #F5A623; }
+  .equip-mode-badge {
+    font-size: 9px; font-weight: 700; letter-spacing: .06em;
+    text-transform: uppercase; padding: 2px 7px;
+    border-radius: 4px; margin-left: 4px;
+    display: none;
+  }
+  .equip-mode-badge.visible { display: inline-block; }
+
   /* METCON CIRCUITS */
   .circuit-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; margin-bottom:12px; overflow:hidden; }
   .circuit-header { padding:12px 14px; display:flex; align-items:center; justify-content:space-between; }
@@ -376,6 +408,7 @@
     <div class="tab" data-tab="lower-a">Lower+Carry</div>
     <div class="tab" data-tab="upper-b">Metcon</div>
     <div class="tab" data-tab="lower-b">Lower+Mob</div>
+    <div class="tab" data-tab="dbcircuit">DB Circuit</div>
     <div class="tab" data-tab="run">Run</div>
     <div class="tab" data-tab="emom">EMOM</div>
     <div class="tab" data-tab="log">History</div>
@@ -387,6 +420,16 @@
   <div class="workout-header">
     <div class="workout-badge" style="background:#E84040"></div>
     <div><div class="workout-title">Push + Pull</div><div class="workout-subtitle">Mon — Press · Pull · KB · Carries</div></div>
+    <div class="equip-mode-wrap">
+      <span class="equip-mode-label">Mode</span>
+      <select class="equip-mode-select" id="equip-upper-a" onchange="applyEquipmentMode('upper-a', this.value, this)">
+        <option value="default">🏠 Home</option>
+        <option value="Dumbbell">🏨 Hotel DB</option>
+        <option value="Bodyweight">🪖 Bodyweight</option>
+        <option value="Cable">🔌 Cable/Machine</option>
+        <option value="Kettlebell">🔔 KB Only</option>
+      </select>
+    </div>
   </div>
   <div class="deload-toggle-wrap">
     <span class="deload-toggle-label">🔄 Deload Week (−40% volume/intensity)</span>
@@ -425,6 +468,16 @@
   <div class="workout-header">
     <div class="workout-badge" style="background:#3DBE6E"></div>
     <div><div class="workout-title">Lower + Carry</div><div class="workout-subtitle">Tue — Hex Bar · KB Swing · Carries · Single Leg</div></div>
+    <div class="equip-mode-wrap">
+      <span class="equip-mode-label">Mode</span>
+      <select class="equip-mode-select" id="equip-lower-a" onchange="applyEquipmentMode('lower-a', this.value, this)">
+        <option value="default">🏠 Home</option>
+        <option value="Dumbbell">🏨 Hotel DB</option>
+        <option value="Bodyweight">🪖 Bodyweight</option>
+        <option value="Kettlebell">🔔 KB Only</option>
+        <option value="Machine">🏋 Machine</option>
+      </select>
+    </div>
   </div>
   <div class="deload-toggle-wrap">
     <span class="deload-toggle-label">🔄 Deload Week (−40% volume/intensity)</span>
@@ -462,6 +515,16 @@
   <div class="workout-header">
     <div class="workout-badge" style="background:#9B5DE5"></div>
     <div><div class="workout-title">Lower + Mobility</div><div class="workout-subtitle">Fri — Goblet · RDL · Turkish Get-Up · Stretch</div></div>
+    <div class="equip-mode-wrap">
+      <span class="equip-mode-label">Mode</span>
+      <select class="equip-mode-select" id="equip-lower-b" onchange="applyEquipmentMode('lower-b', this.value, this)">
+        <option value="default">🏠 Home</option>
+        <option value="Dumbbell">🏨 Hotel DB</option>
+        <option value="Bodyweight">🪖 Bodyweight</option>
+        <option value="Kettlebell">🔔 KB Only</option>
+        <option value="Machine">🏋 Machine</option>
+      </select>
+    </div>
   </div>
   <div class="deload-toggle-wrap">
     <span class="deload-toggle-label">🔄 Deload Week (−40% volume/intensity)</span>
@@ -487,6 +550,50 @@
     <div class="stretch-item" onclick="toggleStretch(this)"><div class="stretch-check"></div><div class="stretch-text">Lat / overhead stretch (doorframe or bar)</div><div class="stretch-duration">45 sec/side</div></div>
   </div>
   <div class="save-bar"><button class="save-btn" style="background:#9B5DE5;color:#fff" onclick="saveWorkout('lower-b')">Log Lower+Mobility Session</button></div>
+</div>
+
+<div class="panel" id="panel-dbcircuit">
+  <div class="workout-header">
+    <div class="workout-badge" style="background:#FF6B9D"></div>
+    <div><div class="workout-title">DB Circuit</div><div class="workout-subtitle">Hotel · Travel · 15-20 min full body</div></div>
+  </div>
+  <div class="session-timer" id="timer-dbcircuit">0:00</div>
+  <div class="bw-quick">
+    <span class="bw-quick-label">📊 Today's weight</span>
+    <input class="bw-quick-input" type="number" id="bw-dbcircuit" placeholder="217">
+    <span class="bw-quick-unit">lbs</span>
+    <button class="bw-quick-btn" onclick="logBodyweight('bw-dbcircuit')">Save</button>
+  </div>
+
+  <div class="deload-toggle-wrap" style="margin-bottom:14px">
+    <span class="deload-toggle-label">Circuit Variant</span>
+    <select class="equip-mode-select" id="dbCircuitSelect" onchange="renderDBCircuit()" style="min-width:170px">
+      <option value="A">A — Squat / Push / Pull</option>
+      <option value="B">B — Hinge / Press / Single-Leg</option>
+      <option value="C">C — Full-Body Density</option>
+    </select>
+  </div>
+
+  <div class="warmup-card">
+    <div class="warmup-title">⚡ Warm-Up <span style="color:var(--muted);font-weight:400">(3 min)</span></div>
+    <div class="warmup-item" onclick="toggleCheck(this)"><div class="warmup-check"></div><div class="warmup-text">Jump rope or high knees</div><div class="warmup-duration">60 sec</div></div>
+    <div class="warmup-item" onclick="toggleCheck(this)"><div class="warmup-check"></div><div class="warmup-text">Bodyweight squats</div><div class="warmup-duration">15 reps</div></div>
+    <div class="warmup-item" onclick="toggleCheck(this)"><div class="warmup-check"></div><div class="warmup-text">Arm circles</div><div class="warmup-duration">30 sec</div></div>
+    <div class="warmup-item" onclick="toggleCheck(this)"><div class="warmup-check"></div><div class="warmup-text">Easy push-ups</div><div class="warmup-duration">10 reps</div></div>
+  </div>
+
+  <div id="dbcircuit-rounds"></div>
+
+  <div class="run-option" style="margin-top:10px">
+    <div class="run-type" style="color:#F5A623">Treadmill Finisher (optional)</div>
+    <div class="run-detail">Easy walk/jog or intervals after the circuit</div>
+    <div class="run-log-area">
+      <div class="run-input-wrap"><label>Duration (min)</label><input class="run-input" id="dbc-tm-dur" type="number" placeholder="15"></div>
+      <div class="run-input-wrap"><label>Speed / Incline</label><input class="run-input" id="dbc-tm-detail" type="text" placeholder="3.5 mph @ 8%"></div>
+    </div>
+  </div>
+
+  <div class="save-bar"><button class="save-btn" style="background:#FF6B9D;color:#fff" onclick="saveDBCircuit()">Log DB Circuit Session</button></div>
 </div>
 
 <div class="panel" id="panel-run">
@@ -1206,19 +1313,16 @@ const WORKOUTS = {
         { name:'Band Pull-Aparts', scheme:'2×20', sets:2, hasWeight:false, repsLabel:'Reps' }
       ]},
       { name:'Press', exercises:[
-        { name:'Incline DB Press', scheme:'4×8', sets:4, hasWeight:true },
-        { name:'KB Single-Arm Press', scheme:'3×8/side (35lb)', sets:3, hasWeight:true }
+        { name:'Incline DB Press', scheme:'4×8', sets:4, hasWeight:true }
       ]},
       { name:'Pull', exercises:[
         { name:'Pull-Ups', scheme:'4×AMRAP', sets:4, hasWeight:false, repsLabel:'Reps' },
-        { name:'Barbell Row', scheme:'4×10', sets:4, hasWeight:true },
-        { name:'KB Renegade Row', scheme:'3×8/side (35lb)', sets:3, hasWeight:true }
+        { name:'Barbell Row', scheme:'4×10', sets:4, hasWeight:true }
       ]},
       { name:'Shoulder Health', exercises:[
         { name:'Face Pulls', scheme:'3×20', sets:3, hasWeight:true }
       ]},
-      { name:'Core + Finisher', exercises:[
-        { name:'Ab Roller', scheme:'3×AMRAP', sets:3, hasWeight:false, repsLabel:'Reps' },
+      { name:'Finisher', exercises:[
         { name:'Hand-Release Push-Ups', scheme:'3×AMRAP', sets:3, hasWeight:false, repsLabel:'Reps' }
       ]}
     ]
@@ -1235,20 +1339,13 @@ const WORKOUTS = {
         { name:'KB Swing', scheme:'4×15 (50lb)', sets:4, hasWeight:true }
       ]},
       { name:'Single Leg', exercises:[
-        { name:'Bulgarian Split Squat', scheme:'3×8/leg', sets:3, hasWeight:true },
-        { name:'Single-Leg RDL', scheme:'3×10/leg', sets:3, hasWeight:true }
+        { name:'Bulgarian Split Squat', scheme:'3×8/leg', sets:3, hasWeight:true }
       ]},
       { name:'Carry', exercises:[
-        { name:'Farmers Carry', scheme:'4×40 yds', sets:4, hasWeight:true },
-        { name:'Suitcase Carry', scheme:'3×40 yds/side', sets:3, hasWeight:true }
+        { name:'Farmers Carry', scheme:'4×40 yds', sets:4, hasWeight:true }
       ]},
       { name:'Lower Leg', exercises:[
-        { name:'Tibialis Machine', scheme:'3×20', sets:3, hasWeight:true },
         { name:'Single-Leg Calf Raise (weighted)', scheme:'3×12/leg', sets:3, hasWeight:true }
-      ]},
-      { name:'Core + Hip Flexors', exercises:[
-        { name:'Hanging Leg Raise', scheme:'3×12', sets:3, hasWeight:false, repsLabel:'Reps' },
-        { name:'Decline Sit-Up', scheme:'3×12', sets:3, hasWeight:false, repsLabel:'Reps' }
       ]}
     ]
   },
@@ -1277,17 +1374,6 @@ const WORKOUTS = {
           { name:'Barbell Row', detail:'10 reps' },
           { name:'Hanging Leg Raise', detail:'12 reps' }
         ]
-      },
-      {
-        name: 'Circuit C',
-        color: '#9B5DE5',
-        rounds: 3,
-        restSecs: 60,
-        exercises: [
-          { name:'Suitcase Carry', detail:'50lb · 40 yds/side' },
-          { name:'KB Goblet Squat', detail:'50lb · 12 reps' },
-          { name:'Face Pulls', detail:'20 reps' }
-        ]
       }
     ]
   },
@@ -1299,31 +1385,60 @@ const WORKOUTS = {
         { name:'Ankle Circles + Leg Swings', scheme:'60 sec', sets:1, hasWeight:false, repsLabel:'Secs' }
       ]},
       { name:'Strength', exercises:[
-        { name:'KB Goblet Squat', scheme:'4×12 (50lb)', sets:4, hasWeight:true },
-        { name:'Walking Lunges', scheme:'3×12/leg', sets:3, hasWeight:true }
+        { name:'KB Goblet Squat', scheme:'4×12 (50lb)', sets:4, hasWeight:true }
       ]},
       { name:'Posterior Chain', exercises:[
         { name:'Romanian Deadlift', scheme:'3×10', sets:3, hasWeight:true },
         { name:'Nordic Curl', scheme:'3×5 (eccentric focus)', sets:3, hasWeight:false, repsLabel:'Reps' }
       ]},
       { name:'Movement Quality', exercises:[
-        { name:'KB Turkish Get-Up', scheme:'3×3/side (35lb)', sets:3, hasWeight:true },
-        { name:'Broad Jumps', scheme:'3×3 (light, crisp)', sets:3, hasWeight:false, repsLabel:'Reps' }
+        { name:'KB Turkish Get-Up', scheme:'3×3/side (35lb)', sets:3, hasWeight:true }
       ]},
       { name:'Lower Leg', exercises:[
-        { name:'Tibialis Machine', scheme:'3×20', sets:3, hasWeight:true },
         { name:'Single-Leg Calf Raise (weighted)', scheme:'3×12/leg', sets:3, hasWeight:true }
-      ]},
-      { name:'Core', exercises:[
-        { name:'Pendulums', scheme:'3×12', sets:3, hasWeight:false, repsLabel:'Reps' },
-        { name:'Russian Twists', scheme:'3×20', sets:3, hasWeight:false, repsLabel:'Reps' }
       ]}
     ]
   }
 };
 
-// ── STATE ─────────────────────────────────────────────────────────────
-let log = JSON.parse(localStorage.getItem('trainingLog') || '[]');
+// ── DB CIRCUIT (Hotel/Travel) ───────────────────────────────────────
+const DB_CIRCUITS = {
+  A: {
+    label: 'Strength A — Squat, Push, Pull',
+    rounds: 4,
+    exercises: [
+      { name:'Goblet Squat', detail:'8-10 reps' },
+      { name:'DB Bench Press', detail:'8-10 reps' },
+      { name:'Pull-Ups', detail:'4-8 reps' },
+      { name:'DB Romanian Deadlift', detail:'8-10 reps' },
+      { name:'Plank', detail:'30-40 sec' }
+    ]
+  },
+  B: {
+    label: 'Strength B — Hinge, Vertical Push, Single-Leg',
+    rounds: 4,
+    exercises: [
+      { name:'DB Romanian Deadlift', detail:'8 reps' },
+      { name:'Standing DB Overhead Press', detail:'6-10 reps' },
+      { name:'Reverse Lunge', detail:'6-8/leg' },
+      { name:'Chin-Ups', detail:'4-8 reps' },
+      { name:'Farmer Carry / Heavy Hold', detail:'30-40 sec' }
+    ]
+  },
+  C: {
+    label: 'Strength C — Full-Body Density',
+    rounds: 4,
+    exercises: [
+      { name:'DB Front Squat', detail:'8 reps' },
+      { name:'One-Arm DB Row', detail:'8/side' },
+      { name:'DB Floor or Incline Press', detail:'8 reps' },
+      { name:'DB Hip Thrust', detail:'10-12 reps' },
+      { name:'Farmer Carry', detail:'30-40 sec' }
+    ]
+  }
+};
+
+
 let goals = JSON.parse(localStorage.getItem('trainingGoals') || '{"weight":210,"mile2":null,"hrpu":null,"squat":225}');
 let prs = JSON.parse(localStorage.getItem('exercisePRs') || '{}'); // { exerciseName: maxWeight }
 let viewWeekOffset = 0;
@@ -1339,6 +1454,7 @@ document.addEventListener('DOMContentLoaded', () => {
   updateStreakDisplay();
   Object.keys(WORKOUTS).forEach(key => { if (!WORKOUTS[key].isMetcon) renderWorkout(key); });
   renderMetcon();
+  renderDBCircuit();
   initEMOM();
   renderLog();
   updateGoalStrip();
@@ -1815,7 +1931,7 @@ function renderLog() {
   const weekEnd=new Date(weekStart); weekEnd.setDate(weekStart.getDate()+7);
   const filtered=log.filter(e=>{ const d=new Date(e.date); return d>=weekStart&&d<weekEnd; });
   if (!filtered.length) { container.innerHTML=`<div class="empty-log">No sessions logged this week.<br>Hit the gym 💪</div>`; return; }
-  const colorMap={'upper-a':'#E84040','lower-a':'#3DBE6E','upper-b':'#4098E8','lower-b':'#9B5DE5','run':'#F5A623','emom':'#00C9A7','Metcon':'#4098E8'};
+  const colorMap={'upper-a':'#E84040','lower-a':'#3DBE6E','upper-b':'#4098E8','lower-b':'#9B5DE5','run':'#F5A623','emom':'#00C9A7','Metcon':'#4098E8','dbcircuit':'#FF6B9D'};
   container.innerHTML=filtered.map(e=>{
     const d=new Date(e.date);
     const dateStr=d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
@@ -1836,6 +1952,11 @@ function renderLog() {
       const doneRounds = c.rounds.filter(r=>r.done).length;
       return `<div><span style="color:var(--text)">${c.name}</span>  ${doneRounds}/${c.rounds.length} rounds</div>`;
     }).join('');
+    else if (e.dbCircuitData) {
+      const doneRounds = e.dbCircuitData.rounds.filter(r=>r.done).length;
+      detail = `<div><span style="color:var(--text)">${e.dbCircuitData.label}</span>  ${doneRounds}/${e.dbCircuitData.rounds.length} rounds</div>`;
+      if (e.treadmill) detail += `<div><span style="color:var(--text)">Treadmill</span>  ${e.treadmill.duration} min · ${e.treadmill.detail||''}</div>`;
+    }
     return `
       <div class="log-entry" style="border-left:3px solid ${color}">
         <div class="log-entry-header">
@@ -1920,7 +2041,7 @@ function stopSessionTimer(key) {
 
 // Start timer when a tab is opened
 function startTimerForTab(tab) {
-  const workoutKeys = ['upper-a','lower-a','upper-b','lower-b'];
+  const workoutKeys = ['upper-a','lower-a','upper-b','lower-b','dbcircuit'];
   if (workoutKeys.includes(tab)) startSessionTimer(tab);
 }
 
@@ -1987,7 +2108,156 @@ if (savedRest) {
 function toggleCheck(el) { el.classList.toggle('checked'); }
 function toggleStretch(el) { el.classList.toggle('checked'); }
 
-// ── METCON CIRCUITS ───────────────────────────────────────────────────
+// ── GLOBAL EQUIPMENT MODE SWAP ────────────────────────────────────────
+function applyEquipmentMode(workoutKey, mode, selectEl) {
+  const w = WORKOUTS[workoutKey];
+  if (!w || w.isMetcon) return;
+
+  // Update select styling
+  selectEl.classList.toggle('active', mode !== 'default');
+
+  w.sections.forEach(section => {
+    section.exercises.forEach((ex, ei) => {
+      const exId = workoutKey + '-' + section.name.replace(/\s+/g,'-') + '-' + ei;
+      const altKey = ex.altKey || ex.name;
+      const alts = ALTERNATES[altKey];
+      if (!alts) return;
+
+      let targetEx = null;
+
+      if (mode === 'default') {
+        // Reset to default
+        targetEx = null;
+        delete sessionSwaps[exId];
+      } else {
+        // Find first match in the selected equipment category
+        const categoryAlts = alts[mode];
+        if (categoryAlts && categoryAlts.length > 0) {
+          targetEx = categoryAlts[0];
+        } else {
+          // No match for this category — keep default
+          delete sessionSwaps[exId];
+          targetEx = null;
+        }
+      }
+
+      if (targetEx) {
+        sessionSwaps[exId] = targetEx;
+      }
+
+      // Update the DOM if the card exists
+      const nameEl = document.getElementById('exname-' + exId);
+      const schemeEl = document.getElementById('exscheme-' + exId);
+      const loggerEl = document.getElementById('logger-' + exId);
+      const activeEx = sessionSwaps[exId] || ex;
+
+      if (nameEl) nameEl.textContent = activeEx.name;
+      if (schemeEl) schemeEl.textContent = activeEx.scheme;
+      if (loggerEl) loggerEl.innerHTML = buildSetLogger(exId, activeEx);
+
+      // Rebuild swap dropdown
+      const oldDrop = document.getElementById('swap-' + exId);
+      if (oldDrop) {
+        const tmp = document.createElement('div');
+        tmp.innerHTML = buildSwapDropdown(exId, altKey, ex);
+        if (tmp.firstElementChild) oldDrop.replaceWith(tmp.firstElementChild);
+      }
+    });
+  });
+
+  // Show toast
+  const modeLabels = {
+    default: '🏠 Home mode', Dumbbell: '🏨 Hotel DB mode',
+    Bodyweight: '🪖 Bodyweight mode', Cable: '🔌 Cable/Machine mode',
+    Kettlebell: '🔔 KB Only mode', Machine: '🏋 Machine mode'
+  };
+  showToast(modeLabels[mode] || mode);
+}
+
+// ── TOAST NOTIFICATION ────────────────────────────────────────────────
+function showToast(msg) {
+  let toast = document.getElementById('globalToast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'globalToast';
+    toast.style.cssText = `
+      position:fixed; bottom:90px; left:50%; transform:translateX(-50%);
+      background:#1E2025; border:1px solid #3a3b40; border-radius:8px;
+      padding:10px 18px; font-size:13px; font-weight:600; color:#E8E9EC;
+      z-index:999; opacity:0; transition:opacity .2s; white-space:nowrap;
+      pointer-events:none;
+    `;
+    document.body.appendChild(toast);
+  }
+  toast.textContent = msg;
+  toast.style.opacity = '1';
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => { toast.style.opacity = '0'; }, 2000);
+}
+
+// ── DB CIRCUIT RENDER + SAVE ──────────────────────────────────────────
+function renderDBCircuit() {
+  const sel = document.getElementById('dbCircuitSelect');
+  const variant = sel ? sel.value : 'A';
+  const circuit = DB_CIRCUITS[variant];
+  const container = document.getElementById('dbcircuit-rounds');
+  if (!container) return;
+
+  const exRows = circuit.exercises.map((ex, ei) => `
+    <div class="circuit-exercise-row">
+      <div class="circuit-exercise-num" style="background:#FF6B9D22;color:#FF6B9D">${ei+1}</div>
+      <div class="circuit-exercise-name">${ex.name}</div>
+      <div class="circuit-exercise-detail">${ex.detail}</div>
+    </div>`).join('');
+
+  const roundRows = Array.from({length: circuit.rounds}, (_, ri) => `
+    <div class="circuit-round-row">
+      <div class="circuit-round-num">Round ${ri+1}</div>
+      <button class="circuit-done-btn" id="dbc-r${ri}" onclick="toggleCircuitRound('dbc-r${ri}')">✓ Done</button>
+      <input class="circuit-notes" type="text" placeholder="notes..." id="dbc-r${ri}-notes">
+    </div>`).join('');
+
+  container.innerHTML = `
+    <div class="circuit-card">
+      <div class="circuit-header" style="border-left:3px solid #FF6B9D">
+        <div class="circuit-name" style="color:#FF6B9D">${circuit.label}</div>
+        <div class="circuit-meta">${circuit.rounds} rounds · as many quality rounds as possible in 15 min</div>
+      </div>
+      <div class="circuit-exercises">${exRows}</div>
+      <div class="circuit-rounds-log">
+        <div class="circuit-rounds-label">Round Log</div>
+        ${roundRows}
+      </div>
+    </div>`;
+}
+
+function saveDBCircuit() {
+  const variant = document.getElementById('dbCircuitSelect')?.value || 'A';
+  const circuit = DB_CIRCUITS[variant];
+  const rounds = Array.from({length: circuit.rounds}, (_, ri) => ({
+    round: ri+1,
+    done: document.getElementById(`dbc-r${ri}`)?.classList.contains('done') || false,
+    notes: document.getElementById(`dbc-r${ri}-notes`)?.value || ''
+  }));
+  const anyDone = rounds.some(r => r.done);
+  const tmDur = document.getElementById('dbc-tm-dur')?.value;
+  const tmDetail = document.getElementById('dbc-tm-detail')?.value;
+
+  if (!anyDone && !tmDur) { alert('Complete at least one round or log treadmill before saving.'); return; }
+
+  const entry = {
+    type: 'dbcircuit', label: 'DB Circuit (' + variant + ')', date: new Date().toISOString(),
+    dbCircuitData: { variant, label: circuit.label, rounds },
+    treadmill: tmDur ? { duration: tmDur, detail: tmDetail || '' } : null
+  };
+  log.unshift(entry);
+  localStorage.setItem('trainingLog', JSON.stringify(log));
+  stopSessionTimer('dbcircuit');
+  updateGoalStrip();
+  updateStreakDisplay();
+  alert('DB Circuit session saved ✓');
+}
+
 function renderMetcon() {
   const container = document.getElementById('metcon-circuits');
   if (!container) return;
