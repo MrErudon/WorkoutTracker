@@ -288,7 +288,12 @@
   .stretch-text { font-size:13px; flex:1; }
   .stretch-item.checked .stretch-text { color:var(--muted); text-decoration:line-through; }
   .stretch-duration { font-family:var(--font-mono); font-size:10px; color:var(--muted); }
-  /* DAY SUB-NAV */
+  /* WEEK SUMMARY */
+  .week-summary { display:none; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:14px; }
+  .week-summary-stat { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:12px 8px; text-align:center; }
+  .week-summary-value { font-family:var(--font-mono); font-size:20px; font-weight:800; color:var(--text); }
+  .week-summary-label { font-size:9px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin-top:3px; }
+  .log-cal-badge { font-size:10px; color:#F5A623; font-weight:600; margin-left:6px; }
   .day-subnav-wrap { padding:10px 16px 0; overflow-x:auto; display:block; }
   .day-subnav-wrap.hidden { display:none; }
   .day-subnav { display:flex; gap:6px; min-width:max-content; }
@@ -699,6 +704,7 @@
     <div class="week-label" id="weekLabel"></div>
     <button onclick="shiftWeek(1)">›</button>
   </div>
+  <div class="week-summary" id="weekSummary"></div>
   <div id="logList"></div>
   <div class="goal-editor">
     <h3>Update Goal Metrics</h3>
@@ -1825,6 +1831,43 @@ function skipRest(exId) {
   stopRestTimer(exId);
 }
 
+// ── CALORIE ESTIMATION (MET-based) ─────────────────────────────────────
+// MET values: standard exercise science estimates
+const MET_VALUES = {
+  'upper-a': 5.0,      // moderate resistance training
+  'lower-a': 6.5,      // heavier compound + KB swing + carries
+  'upper-b': 8.0,      // metcon circuits, higher intensity
+  'lower-b': 5.5,      // moderate + mobility work
+  'dbcircuit': 7.0,     // circuit-style DB training
+  'emom': 8.5,          // HRPU + plank, high intensity intervals
+  'run-easy': 9.0,
+  'run-intervals': 11.0,
+  'run-tempo': 10.0,
+  'ruck': 7.5           // weighted carry walking, scales with pack weight
+};
+
+function estimateCalories(metKey, durationMinutes, packWeightLbs) {
+  const bw = goals.weight || 210;
+  const bwKg = bw * 0.453592;
+  let met = MET_VALUES[metKey] || 6.0;
+
+  // Ruck calories scale up with pack weight
+  if (metKey === 'ruck' && packWeightLbs) {
+    const packKg = packWeightLbs * 0.453592;
+    const loadFactor = 1 + (packKg / bwKg) * 0.5; // rough load penalty
+    met = met * loadFactor;
+  }
+
+  const hours = (durationMinutes || 0) / 60;
+  return Math.round(met * bwKg * hours);
+}
+
+function getSessionDurationMinutes(key) {
+  if (!sessionTimers[key]) return 45; // fallback estimate if timer wasn't running
+  const elapsed = Math.floor((Date.now() - sessionTimers[key]) / 1000 / 60);
+  return elapsed > 0 ? elapsed : 45;
+}
+
 // ── SAVE WORKOUT ──────────────────────────────────────────────────────
 function saveWorkout(key) {
   const w = WORKOUTS[key];
@@ -1876,6 +1919,11 @@ function saveWorkout(key) {
   });
 
   if (!anyData) { alert('Log at least one set before saving.'); return; }
+
+  const durationMin = getSessionDurationMinutes(key);
+  entry.calories = estimateCalories(key, durationMin);
+  entry.durationMin = durationMin;
+
   log.unshift(entry);
   localStorage.setItem('trainingLog', JSON.stringify(log));
 
@@ -1904,11 +1952,12 @@ function saveWorkout(key) {
 
   updateGoalStrip();
   updateStreakDisplay();
-  stopSessionTimer(key);
 
   let msg = `${w.label} session saved ✓`;
+  if (entry.calories) msg += `\n🔥 ~${entry.calories} calories · ${entry.durationMin} min`;
   if (deloadActive[key]) msg += '\n(Deload week logged)';
   if (nudges.length) msg += '\n\n📈 Next session:\n' + nudges.join('\n');
+  stopSessionTimer(key);
   alert(msg);
 }
 
@@ -1941,11 +1990,22 @@ function saveRun() {
       if (!goals.mile2 || twoMileSec < timeToSec(goals.mile2)) { goals.mile2=str; localStorage.setItem('trainingGoals',JSON.stringify(goals)); }
     }
   }
+
+  // Calorie estimate — sum across whichever activities were logged
+  let totalCals = 0;
+  if (easyTime) totalCals += estimateCalories('run-easy', timeToSec(easyTime)/60);
+  if (intReps && intPace) totalCals += estimateCalories('run-intervals', (timeToSec(intPace) * intReps)/60);
+  if (tempoDur) totalCals += estimateCalories('run-tempo', parseFloat(tempoDur));
+  if (ruckDist && ruckTime) totalCals += estimateCalories('ruck', timeToSec(ruckTime)/60, parseFloat(ruckWeight)||25);
+  if (totalCals > 0) entry.calories = Math.round(totalCals);
+
   log.unshift(entry);
   localStorage.setItem('trainingLog', JSON.stringify(log));
   updateGoalStrip();
   updateStreakDisplay();
-  alert('Session saved ✓');
+  let msg = 'Session saved ✓';
+  if (entry.calories) msg += `\n🔥 ~${entry.calories} calories`;
+  alert(msg);
 }
 
 function timeToSec(str) {
@@ -1975,6 +2035,33 @@ function renderLog() {
   weekStart.setHours(0,0,0,0);
   const weekEnd=new Date(weekStart); weekEnd.setDate(weekStart.getDate()+7);
   const filtered=log.filter(e=>{ const d=new Date(e.date); return d>=weekStart&&d<weekEnd; });
+
+  // Weekly summary card
+  const summaryEl = document.getElementById('weekSummary');
+  if (filtered.length) {
+    const totalCals = filtered.reduce((sum,e) => sum + (e.calories||0), 0);
+    const totalVol = filtered.reduce((sum,e) => {
+      if (!e.sets) return sum;
+      return sum + e.sets.reduce((s,ex) => s + (ex.totalVol||0), 0);
+    }, 0);
+    summaryEl.style.display = 'grid';
+    summaryEl.innerHTML = `
+      <div class="week-summary-stat">
+        <div class="week-summary-value">${filtered.length}</div>
+        <div class="week-summary-label">Sessions</div>
+      </div>
+      <div class="week-summary-stat">
+        <div class="week-summary-value">${totalCals.toLocaleString()}</div>
+        <div class="week-summary-label">Calories</div>
+      </div>
+      <div class="week-summary-stat">
+        <div class="week-summary-value">${totalVol.toLocaleString()}</div>
+        <div class="week-summary-label">Lbs Volume</div>
+      </div>`;
+  } else {
+    summaryEl.style.display = 'none';
+  }
+
   if (!filtered.length) { container.innerHTML=`<div class="empty-log">No sessions logged this week.<br>Hit the gym 💪</div>`; return; }
   const colorMap={'upper-a':'#E84040','lower-a':'#3DBE6E','upper-b':'#4098E8','lower-b':'#9B5DE5','run':'#F5A623','emom':'#00C9A7','Metcon':'#4098E8','dbcircuit':'#FF6B9D'};
   container.innerHTML=filtered.map(e=>{
@@ -2002,10 +2089,11 @@ function renderLog() {
       detail = `<div><span style="color:var(--text)">${e.dbCircuitData.label}</span>  ${doneRounds}/${e.dbCircuitData.rounds.length} rounds</div>`;
       if (e.treadmill) detail += `<div><span style="color:var(--text)">Treadmill</span>  ${e.treadmill.duration} min · ${e.treadmill.detail||''}</div>`;
     }
+    const calBadge = e.calories ? `<span class="log-cal-badge">🔥 ${e.calories} cal</span>` : '';
     return `
       <div class="log-entry" style="border-left:3px solid ${color}">
         <div class="log-entry-header">
-          <div><div class="log-entry-day">${e.label}</div><div class="log-entry-date">${dateStr} · ${timeStr}</div></div>
+          <div><div class="log-entry-day">${e.label} ${calBadge}</div><div class="log-entry-date">${dateStr} · ${timeStr}${e.durationMin?` · ${e.durationMin} min`:''}</div></div>
           <button class="log-entry-delete" onclick="deleteEntry(${origIdx})">🗑</button>
         </div>
         <div class="log-sets">${detail}</div>
@@ -2295,12 +2383,21 @@ function saveDBCircuit() {
     dbCircuitData: { variant, label: circuit.label, rounds },
     treadmill: tmDur ? { duration: tmDur, detail: tmDetail || '' } : null
   };
+
+  const durationMin = getSessionDurationMinutes('dbcircuit');
+  let cals = estimateCalories('dbcircuit', durationMin);
+  if (tmDur) cals += estimateCalories('run-easy', parseFloat(tmDur));
+  entry.calories = cals;
+  entry.durationMin = durationMin;
+
   log.unshift(entry);
   localStorage.setItem('trainingLog', JSON.stringify(log));
-  stopSessionTimer('dbcircuit');
   updateGoalStrip();
   updateStreakDisplay();
-  alert('DB Circuit session saved ✓');
+  let msg = 'DB Circuit session saved ✓';
+  if (entry.calories) msg += `\n🔥 ~${entry.calories} calories · ${durationMin} min`;
+  stopSessionTimer('dbcircuit');
+  alert(msg);
 }
 
 function renderMetcon() {
@@ -2352,11 +2449,18 @@ function saveMetcon() {
   const anyDone = circuitData.some(c => c.rounds.some(r => r.done));
   if (!anyDone) { alert('Complete at least one round before saving.'); return; }
   const entry = { type:'upper-b', label:'Metcon', date:new Date().toISOString(), metconData: circuitData };
+
+  const durationMin = getSessionDurationMinutes('upper-b');
+  entry.calories = estimateCalories('upper-b', durationMin);
+  entry.durationMin = durationMin;
+
   log.unshift(entry);
   localStorage.setItem('trainingLog', JSON.stringify(log));
-  stopSessionTimer('upper-b');
   updateGoalStrip(); updateStreakDisplay();
-  alert('Metcon session saved ✓');
+  let msg = 'Metcon session saved ✓';
+  if (entry.calories) msg += `\n🔥 ~${entry.calories} calories · ${durationMin} min`;
+  stopSessionTimer('upper-b');
+  alert(msg);
 }
 
 // ── EMOM ──────────────────────────────────────────────────────────────
@@ -2495,10 +2599,14 @@ function saveEMOM() {
     emomData:{ sets:EMOM_TOTAL_SETS, totalHRPU:totalReps, rounds:repSets } };
   const maxRound = Math.max(...repSets.map(r => parseInt(r.reps)||0));
   if (maxRound > (goals.hrpu||0)) { goals.hrpu=maxRound; localStorage.setItem('trainingGoals',JSON.stringify(goals)); }
+
+  entry.calories = estimateCalories('emom', 10); // EMOM is always exactly 10 min
+  entry.durationMin = 10;
+
   log.unshift(entry);
   localStorage.setItem('trainingLog',JSON.stringify(log));
   updateGoalStrip(); updateStreakDisplay();
-  alert(`EMOM saved ✓  Total HRPU: ${totalReps} reps across 5 rounds`);
+  alert(`EMOM saved ✓  Total HRPU: ${totalReps} reps across 5 rounds\n🔥 ~${entry.calories} calories`);
 }
 
 // init EMOM on load — called from main DOMContentLoaded
