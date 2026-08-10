@@ -57,6 +57,7 @@
   .tab[data-tab="run"] { --tab-color:var(--run); }
   .tab[data-tab="dbcircuit"] { --tab-color:#FF6B9D; }
   .tab[data-tab="emom"] { --tab-color:#00C9A7; }
+  .tab[data-tab="gtg"] { --tab-color:#FFD23F; }
   .tab[data-tab="log"] { --tab-color:#888; }
 
   main { padding:16px; }
@@ -288,7 +289,56 @@
   .stretch-text { font-size:13px; flex:1; }
   .stretch-item.checked .stretch-text { color:var(--muted); text-decoration:line-through; }
   .stretch-duration { font-family:var(--font-mono); font-size:10px; color:var(--muted); }
-  /* WEEK SUMMARY */
+  /* GTG CHALLENGE */
+  .gtg-status-card {
+    background: linear-gradient(135deg, rgba(255,210,63,.12), rgba(255,210,63,.04));
+    border: 1px solid rgba(255,210,63,.35);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 14px;
+    text-align: center;
+  }
+  .gtg-status-title { font-size:11px; text-transform:uppercase; letter-spacing:.1em; color:#FFD23F; font-weight:700; margin-bottom:6px; }
+  .gtg-status-main { font-size:20px; font-weight:800; color:var(--text); margin-bottom:4px; }
+  .gtg-status-sub { font-size:12px; color:var(--muted); }
+  .gtg-compare-grid { display:grid; grid-template-columns:1fr auto 1fr; gap:10px; margin-top:14px; align-items:center; }
+  .gtg-compare-stat { text-align:center; }
+  .gtg-compare-value { font-family:var(--font-mono); font-size:26px; font-weight:800; }
+  .gtg-compare-label { font-size:9px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin-top:2px; }
+  .gtg-compare-arrow { font-size:18px; color:#FFD23F; }
+  .gtg-compare-delta { font-size:11px; font-weight:700; color:#3DBE6E; margin-top:4px; }
+
+  .gtg-day-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:6px; margin-bottom:14px; }
+  .gtg-day-cell {
+    aspect-ratio:1; border-radius:8px; border:1px solid var(--border);
+    background:var(--surface); display:flex; flex-direction:column;
+    align-items:center; justify-content:center; cursor:pointer;
+    transition:all .15s; position:relative;
+  }
+  .gtg-day-cell:hover { border-color:#555; }
+  .gtg-day-cell.today { border-color:#FFD23F; border-width:2px; }
+  .gtg-day-cell.done { background:rgba(61,190,110,.12); border-color:#3DBE6E; }
+  .gtg-day-cell.rest { background:rgba(107,110,120,.1); }
+  .gtg-day-cell.test { background:rgba(255,210,63,.12); border-color:#FFD23F; }
+  .gtg-day-num { font-family:var(--font-mono); font-size:14px; font-weight:800; color:var(--text); }
+  .gtg-day-type { font-size:8px; text-transform:uppercase; letter-spacing:.04em; color:var(--muted); margin-top:2px; }
+  .gtg-day-check { position:absolute; top:2px; right:4px; font-size:9px; color:#3DBE6E; }
+
+  .gtg-active-day { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px; margin-bottom:14px; }
+  .gtg-active-title { font-size:16px; font-weight:800; margin-bottom:4px; }
+  .gtg-active-sub { font-size:12px; color:var(--muted); margin-bottom:14px; }
+  .gtg-test-inputs { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
+  .gtg-input-wrap label { font-size:10px; color:var(--muted); display:block; margin-bottom:4px; letter-spacing:.05em; text-transform:uppercase; }
+  .gtg-input { background:var(--surface2); border:1px solid var(--border); border-radius:6px; padding:9px 10px; color:var(--text); font-family:var(--font-mono); font-size:15px; width:100%; outline:none; text-align:center; }
+  .gtg-input:focus { border-color:#555; }
+  .gtg-hourly-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:6px; margin-bottom:12px; }
+  .gtg-hour-btn { padding:10px 4px; border-radius:8px; border:1px solid var(--border); background:var(--surface2); color:var(--muted); font-size:11px; font-weight:700; cursor:pointer; transition:all .15s; text-align:center; }
+  .gtg-hour-btn.done { background:rgba(61,190,110,.15); border-color:#3DBE6E; color:#5aab5a; }
+  .gtg-hour-label { font-size:9px; opacity:.7; display:block; }
+  .gtg-save-day-btn { width:100%; padding:12px; border-radius:10px; border:none; background:#FFD23F; color:#000; font-size:14px; font-weight:800; cursor:pointer; letter-spacing:.03em; }
+  .gtg-save-day-btn:hover { opacity:.85; }
+  .gtg-controls { display:flex; flex-direction:column; gap:8px; }
+  .gtg-rest-note { text-align:center; padding:30px 20px; color:var(--muted); font-size:14px; }
   .week-summary { display:none; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:14px; }
   .week-summary-stat { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:12px 8px; text-align:center; }
   .week-summary-value { font-family:var(--font-mono); font-size:20px; font-weight:800; color:var(--text); }
@@ -422,6 +472,7 @@
     <div class="tab active" data-tab="train">Train</div>
     <div class="tab" data-tab="run">Run</div>
     <div class="tab" data-tab="emom">EMOM</div>
+    <div class="tab" data-tab="gtg">GTG</div>
     <div class="tab" data-tab="log">History</div>
   </div>
 </div>
@@ -695,6 +746,24 @@
 
   <div class="save-bar">
     <button class="save-btn" style="background:#00C9A7;color:#000" onclick="saveEMOM()">Log EMOM Session</button>
+  </div>
+</div>
+
+<div class="panel" id="panel-gtg">
+  <div class="workout-header">
+    <div class="workout-badge" style="background:#FFD23F"></div>
+    <div><div class="workout-title">GTG Challenge</div><div class="workout-subtitle">14-Day HRPU + Pull-Up Protocol</div></div>
+  </div>
+
+  <div class="gtg-status-card" id="gtgStatusCard"></div>
+
+  <div class="gtg-day-grid" id="gtgDayGrid"></div>
+
+  <div class="gtg-active-day" id="gtgActiveDay"></div>
+
+  <div class="gtg-controls">
+    <button class="update-goals-btn" onclick="gtgStartChallenge()" id="gtgStartBtn">Start 14-Day Challenge</button>
+    <button class="export-btn" onclick="gtgResetChallenge()" id="gtgResetBtn" style="display:none">Reset Challenge</button>
   </div>
 </div>
 
@@ -1481,6 +1550,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderMetcon();
   renderDBCircuit();
   initEMOM();
+  renderGTG();
   renderLog();
   updateGoalStrip();
   updateWeekLabel();
@@ -1503,6 +1573,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.panel').forEach(el => el.classList.remove('active'));
         document.getElementById('panel-' + tabKey).classList.add('active');
         if (tabKey === 'log') { renderLog(); updateGoalStrip(); }
+        if (tabKey === 'gtg') { renderGTG(); }
         startTimerForTab(tabKey);
       }
     });
@@ -2063,7 +2134,7 @@ function renderLog() {
   }
 
   if (!filtered.length) { container.innerHTML=`<div class="empty-log">No sessions logged this week.<br>Hit the gym 💪</div>`; return; }
-  const colorMap={'upper-a':'#E84040','lower-a':'#3DBE6E','upper-b':'#4098E8','lower-b':'#9B5DE5','run':'#F5A623','emom':'#00C9A7','Metcon':'#4098E8','dbcircuit':'#FF6B9D'};
+  const colorMap={'upper-a':'#E84040','lower-a':'#3DBE6E','upper-b':'#4098E8','lower-b':'#9B5DE5','run':'#F5A623','emom':'#00C9A7','Metcon':'#4098E8','dbcircuit':'#FF6B9D','gtg':'#FFD23F'};
   container.innerHTML=filtered.map(e=>{
     const d=new Date(e.date);
     const dateStr=d.toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
@@ -2088,6 +2159,14 @@ function renderLog() {
       const doneRounds = e.dbCircuitData.rounds.filter(r=>r.done).length;
       detail = `<div><span style="color:var(--text)">${e.dbCircuitData.label}</span>  ${doneRounds}/${e.dbCircuitData.rounds.length} rounds</div>`;
       if (e.treadmill) detail += `<div><span style="color:var(--text)">Treadmill</span>  ${e.treadmill.duration} min · ${e.treadmill.detail||''}</div>`;
+    }
+    else if (e.gtgData) {
+      const g = e.gtgData;
+      if (g.dayType === 'B') {
+        detail = `<div><span style="color:var(--text)">B Day</span>  ${g.hoursCompleted}/10 hrs · ~${g.totalHRPU} HRPU · ~${g.totalPullups} pull-ups</div>`;
+      } else {
+        detail = `<div><span style="color:var(--text)">${g.dayType === 'test' ? 'Test' : 'A Day'}</span>  ${g.hrpu} HRPU · ${g.pullup} pull-ups</div>`;
+      }
     }
     const calBadge = e.calories ? `<span class="log-cal-badge">🔥 ${e.calories} cal</span>` : '';
     return `
@@ -2607,6 +2686,260 @@ function saveEMOM() {
   localStorage.setItem('trainingLog',JSON.stringify(log));
   updateGoalStrip(); updateStreakDisplay();
   alert(`EMOM saved ✓  Total HRPU: ${totalReps} reps across 5 rounds\n🔥 ~${entry.calories} calories`);
+}
+
+// ── GTG CHALLENGE (14-Day HRPU + Pull-Up Protocol) ────────────────────
+// Day types: 1=test, 2-11=alternating A/B, 12-13=rest, 14=test
+const GTG_DAY_TYPES = {
+  1: 'test', 2:'A', 3:'B', 4:'A', 5:'B', 6:'A', 7:'B', 8:'A', 9:'B', 10:'A', 11:'B',
+  12:'rest', 13:'rest', 14:'test'
+};
+const GTG_HOURS = ['9a','10a','11a','12p','1p','2p','3p','4p','5p','6p'];
+
+function gtgLoadState() {
+  return JSON.parse(localStorage.getItem('gtgChallenge') || 'null');
+}
+function gtgSaveState(state) {
+  localStorage.setItem('gtgChallenge', JSON.stringify(state));
+}
+
+function gtgStartChallenge() {
+  if (gtgLoadState()) {
+    if (!confirm('A challenge is already in progress. Start a new one? This resets all progress.')) return;
+  }
+  const state = {
+    startDate: new Date().toISOString().slice(0,10),
+    currentDay: 1,
+    days: {}, // dayNum -> { done, hrpuMax, pullupMax, hourly: [bool x10] }
+    baselineHRPU: null,
+    baselinePullup: null,
+    finalHRPU: null,
+    finalPullup: null
+  };
+  gtgSaveState(state);
+  renderGTG();
+}
+
+function gtgResetChallenge() {
+  if (!confirm('Reset the entire GTG challenge? This cannot be undone.')) return;
+  localStorage.removeItem('gtgChallenge');
+  renderGTG();
+}
+
+function gtgGetDayNumber(state) {
+  const start = new Date(state.startDate);
+  const now = new Date();
+  const diffDays = Math.floor((now - start) / (1000*60*60*24)) + 1;
+  return Math.max(1, Math.min(14, diffDays));
+}
+
+function renderGTG() {
+  const state = gtgLoadState();
+  const statusCard = document.getElementById('gtgStatusCard');
+  const dayGrid = document.getElementById('gtgDayGrid');
+  const activeDay = document.getElementById('gtgActiveDay');
+  const startBtn = document.getElementById('gtgStartBtn');
+  const resetBtn = document.getElementById('gtgResetBtn');
+
+  if (!state) {
+    statusCard.innerHTML = `
+      <div class="gtg-status-title">🔥 Greasing The Groove</div>
+      <div class="gtg-status-main">HRPU + Pull-Up Protocol</div>
+      <div class="gtg-status-sub">Day 1: Baseline test · Days 2-11: Alternating A/B · Days 12-13: Rest · Day 14: Retest</div>`;
+    dayGrid.innerHTML = '';
+    activeDay.innerHTML = '';
+    startBtn.style.display = 'block';
+    resetBtn.style.display = 'none';
+    return;
+  }
+
+  startBtn.style.display = 'none';
+  resetBtn.style.display = 'block';
+
+  const today = gtgGetDayNumber(state);
+  const daysDone = Object.values(state.days).filter(d => d.done).length;
+
+  // Status card
+  let statusHtml = `<div class="gtg-status-title">🔥 Day ${today} of 14</div>`;
+  if (state.baselineHRPU && state.finalHRPU) {
+    const hrpuDelta = state.finalHRPU - state.baselineHRPU;
+    const pullupDelta = state.finalPullup - state.baselinePullup;
+    statusHtml += `
+      <div class="gtg-status-main">Challenge Complete 🏆</div>
+      <div class="gtg-compare-grid">
+        <div class="gtg-compare-stat">
+          <div class="gtg-compare-value">${state.baselineHRPU}</div>
+          <div class="gtg-compare-label">HRPU Start</div>
+        </div>
+        <div class="gtg-compare-arrow">→</div>
+        <div class="gtg-compare-stat">
+          <div class="gtg-compare-value" style="color:#FFD23F">${state.finalHRPU}</div>
+          <div class="gtg-compare-label">HRPU Final</div>
+          <div class="gtg-compare-delta">${hrpuDelta>=0?'+':''}${hrpuDelta}</div>
+        </div>
+      </div>
+      <div class="gtg-compare-grid">
+        <div class="gtg-compare-stat">
+          <div class="gtg-compare-value">${state.baselinePullup}</div>
+          <div class="gtg-compare-label">Pull-Up Start</div>
+        </div>
+        <div class="gtg-compare-arrow">→</div>
+        <div class="gtg-compare-stat">
+          <div class="gtg-compare-value" style="color:#FFD23F">${state.finalPullup}</div>
+          <div class="gtg-compare-label">Pull-Up Final</div>
+          <div class="gtg-compare-delta">${pullupDelta>=0?'+':''}${pullupDelta}</div>
+        </div>
+      </div>`;
+  } else {
+    statusHtml += `<div class="gtg-status-main">${daysDone}/14 days logged</div>
+      <div class="gtg-status-sub">${state.baselineHRPU ? `Baseline: ${state.baselineHRPU} HRPU · ${state.baselinePullup} pull-ups` : 'Complete Day 1 to set your baseline'}</div>`;
+  }
+  statusCard.innerHTML = statusHtml;
+
+  // Day grid
+  dayGrid.innerHTML = Array.from({length:14}, (_,i) => {
+    const dayNum = i+1;
+    const type = GTG_DAY_TYPES[dayNum];
+    const dayData = state.days[dayNum];
+    const isDone = dayData?.done;
+    const isToday = dayNum === today;
+    let cls = 'gtg-day-cell';
+    if (isDone) cls += ' done';
+    if (isToday) cls += ' today';
+    if (type === 'rest') cls += ' rest';
+    if (type === 'test') cls += ' test';
+    return `
+      <div class="${cls}" onclick="gtgSelectDay(${dayNum})">
+        ${isDone ? '<div class="gtg-day-check">✓</div>' : ''}
+        <div class="gtg-day-num">${dayNum}</div>
+        <div class="gtg-day-type">${type === 'rest' ? 'Rest' : type === 'test' ? 'Test' : type}</div>
+      </div>`;
+  }).join('');
+
+  // Show today's active day by default
+  gtgSelectDay(state.selectedDay || today);
+}
+
+function gtgSelectDay(dayNum) {
+  const state = gtgLoadState();
+  if (!state) return;
+  state.selectedDay = dayNum;
+  gtgSaveState(state);
+
+  const type = GTG_DAY_TYPES[dayNum];
+  const dayData = state.days[dayNum] || {};
+  const container = document.getElementById('gtgActiveDay');
+
+  // Update grid highlighting
+  document.querySelectorAll('.gtg-day-cell').forEach((el,i) => {
+    el.classList.toggle('today', i+1 === dayNum);
+  });
+
+  if (type === 'rest') {
+    container.innerHTML = `
+      <div class="gtg-active-title">Day ${dayNum} — Rest</div>
+      <div class="gtg-rest-note">🛌 Full rest day. No HRPU or pull-up work.<br>Let your shoulders and CNS recover before the retest.</div>`;
+    return;
+  }
+
+  if (type === 'test') {
+    const label = dayNum === 1 ? 'Baseline Test' : 'Final Retest';
+    container.innerHTML = `
+      <div class="gtg-active-title">Day ${dayNum} — ${label}</div>
+      <div class="gtg-active-sub">Max effort, strict form. Rest 2-3 min between tests.</div>
+      <div class="gtg-test-inputs">
+        <div class="gtg-input-wrap"><label>HRPU Max</label><input class="gtg-input" type="number" id="gtg-hrpu-${dayNum}" value="${dayData.hrpuMax||''}" placeholder="0"></div>
+        <div class="gtg-input-wrap"><label>Pull-Up Max</label><input class="gtg-input" type="number" id="gtg-pullup-${dayNum}" value="${dayData.pullupMax||''}" placeholder="0"></div>
+      </div>
+      <button class="gtg-save-day-btn" onclick="gtgSaveTest(${dayNum})">Save Test Results</button>`;
+    return;
+  }
+
+  if (type === 'A') {
+    container.innerHTML = `
+      <div class="gtg-active-title">Day ${dayNum} — A Day (Max Effort)</div>
+      <div class="gtg-active-sub">HRPU: as many as possible, strict form (breaks OK). Pull-ups: one max set.</div>
+      <div class="gtg-test-inputs">
+        <div class="gtg-input-wrap"><label>HRPU Total</label><input class="gtg-input" type="number" id="gtg-hrpu-${dayNum}" value="${dayData.hrpuMax||''}" placeholder="0"></div>
+        <div class="gtg-input-wrap"><label>Pull-Up Max</label><input class="gtg-input" type="number" id="gtg-pullup-${dayNum}" value="${dayData.pullupMax||''}" placeholder="0"></div>
+      </div>
+      <button class="gtg-save-day-btn" onclick="gtgSaveTest(${dayNum})">Log A Day</button>`;
+    return;
+  }
+
+  if (type === 'B') {
+    const hourly = dayData.hourly || Array(10).fill(false);
+    const hourBtns = GTG_HOURS.map((h,i) => `
+      <button class="gtg-hour-btn ${hourly[i]?'done':''}" onclick="gtgToggleHour(${dayNum},${i})">
+        <span class="gtg-hour-label">${h}</span>10+3
+      </button>`).join('');
+    const completedHours = hourly.filter(Boolean).length;
+    container.innerHTML = `
+      <div class="gtg-active-title">Day ${dayNum} — B Day (Grease the Groove)</div>
+      <div class="gtg-active-sub">Tap each hour you complete ~10 HRPU + 3-5 pull-ups. ${completedHours}/10 hours done.</div>
+      <div class="gtg-hourly-grid">${hourBtns}</div>
+      <button class="gtg-save-day-btn" onclick="gtgSaveHourly(${dayNum})">Log B Day</button>`;
+    return;
+  }
+}
+
+function gtgToggleHour(dayNum, hourIdx) {
+  const state = gtgLoadState();
+  if (!state.days[dayNum]) state.days[dayNum] = { hourly: Array(10).fill(false) };
+  if (!state.days[dayNum].hourly) state.days[dayNum].hourly = Array(10).fill(false);
+  state.days[dayNum].hourly[hourIdx] = !state.days[dayNum].hourly[hourIdx];
+  gtgSaveState(state);
+  gtgSelectDay(dayNum);
+}
+
+function gtgSaveTest(dayNum) {
+  const state = gtgLoadState();
+  const hrpu = parseInt(document.getElementById(`gtg-hrpu-${dayNum}`)?.value || 0);
+  const pullup = parseInt(document.getElementById(`gtg-pullup-${dayNum}`)?.value || 0);
+  if (!hrpu && !pullup) { alert('Log at least one number before saving.'); return; }
+
+  state.days[dayNum] = { ...(state.days[dayNum]||{}), done: true, hrpuMax: hrpu, pullupMax: pullup };
+
+  if (dayNum === 1) { state.baselineHRPU = hrpu; state.baselinePullup = pullup; }
+  if (dayNum === 14) { state.finalHRPU = hrpu; state.finalPullup = pullup; }
+
+  gtgSaveState(state);
+
+  // Also log to main training log for calorie/history tracking
+  const entry = {
+    type:'gtg', label:`GTG Day ${dayNum}`, date:new Date().toISOString(),
+    gtgData:{ day:dayNum, hrpu, pullup, dayType:GTG_DAY_TYPES[dayNum] }
+  };
+  log.unshift(entry);
+  localStorage.setItem('trainingLog', JSON.stringify(log));
+
+  if (hrpu > (goals.hrpu||0)) { goals.hrpu = hrpu; localStorage.setItem('trainingGoals', JSON.stringify(goals)); }
+
+  renderGTG();
+  alert(`Day ${dayNum} logged ✓`);
+}
+
+function gtgSaveHourly(dayNum) {
+  const state = gtgLoadState();
+  const hourly = state.days[dayNum]?.hourly || Array(10).fill(false);
+  const completedHours = hourly.filter(Boolean).length;
+  if (completedHours === 0) { alert('Log at least one hour before saving.'); return; }
+
+  state.days[dayNum] = { ...(state.days[dayNum]||{}), done: true, hourly };
+  gtgSaveState(state);
+
+  const totalHRPU = completedHours * 10;
+  const totalPullups = completedHours * 4; // avg of 3-5
+
+  const entry = {
+    type:'gtg', label:`GTG Day ${dayNum}`, date:new Date().toISOString(),
+    gtgData:{ day:dayNum, hoursCompleted:completedHours, totalHRPU, totalPullups, dayType:'B' }
+  };
+  log.unshift(entry);
+  localStorage.setItem('trainingLog', JSON.stringify(log));
+
+  renderGTG();
+  alert(`Day ${dayNum} logged ✓  ${completedHours}/10 hours · ~${totalHRPU} HRPU total`);
 }
 
 // init EMOM on load — called from main DOMContentLoaded
