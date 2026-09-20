@@ -675,14 +675,31 @@
 <div class="panel" id="panel-run">
   <div class="workout-header">
     <div class="workout-badge" style="background:#F5A623"></div>
-    <div><div class="workout-title">Run / Ruck</div><div class="workout-subtitle">Wed · Sat — Intervals · Tempo · Easy · Ruck</div></div>
+    <div><div class="workout-title">Run / Ruck</div><div class="workout-subtitle">Manual entry · GPS optional</div></div>
   </div>
   <div class="run-option">
-    <div class="run-type">Easy Run</div>
-    <div class="run-detail"><strong>3–4 miles</strong> easy pace<br>Finish: <strong>4–6 × 20-sec strides</strong></div>
+    <div class="run-type">Run · manual entry</div>
+    <div class="run-detail">Enter your completed run. Distance is optional; time alone is enough.</div>
     <div class="run-log-area">
       <div class="run-input-wrap"><label>Distance (mi)</label><input class="run-input" id="easy-dist" type="number" step="0.1" placeholder="3.5"></div>
-      <div class="run-input-wrap"><label>Time (mm:ss)</label><input class="run-input" id="easy-time" type="text" placeholder="28:00"></div>
+      <div class="run-input-wrap"><label>Time (minutes or mm:ss)</label><input class="run-input" id="easy-time" type="text" placeholder="28:00"></div>
+    </div>
+  </div>
+  <div class="run-option" style="border-left:3px solid #9B5DE5">
+    <div class="run-type" style="color:#9B5DE5">Ruck · manual entry</div>
+    <div class="run-detail">
+      Enter your completed ruck with a backpack or weighted vest. Distance is optional.
+    </div>
+    <div class="run-log-area">
+      <div class="run-input-wrap"><label>Distance (mi)</label><input class="run-input" id="ruck-dist" type="number" step="0.1" placeholder="3.0"></div>
+      <div class="run-input-wrap"><label>Pack weight (lbs)</label><input class="run-input" id="ruck-weight" type="number" placeholder="25"></div>
+      <div class="run-input-wrap"><label>Time (minutes or mm:ss)</label><input class="run-input" id="ruck-time" type="text" placeholder="45:00"></div>
+      <div class="run-input-wrap"><label>Type</label>
+        <select class="run-input" id="ruck-type" style="cursor:pointer">
+          <option value="rucksack">Rucksack</option>
+          <option value="vest">Weighted Vest</option>
+        </select>
+      </div>
     </div>
   </div>
   <div class="run-option">
@@ -701,25 +718,7 @@
       <div class="run-input-wrap"><label>Avg speed (mph)</label><input class="run-input" id="tempo-speed" type="number" step="0.1" placeholder="8.4"></div>
     </div>
   </div>
-  <div class="run-option" style="border-left:3px solid #9B5DE5">
-    <div class="run-type" style="color:#9B5DE5">Ruck (Sat)</div>
-    <div class="run-detail">
-      <strong>3–4 miles</strong> at a hard pace with pack<br>
-      Rucksack or weighted vest · alternate weeks with long easy run
-    </div>
-    <div class="run-log-area">
-      <div class="run-input-wrap"><label>Distance (mi)</label><input class="run-input" id="ruck-dist" type="number" step="0.1" placeholder="3.0"></div>
-      <div class="run-input-wrap"><label>Pack weight (lbs)</label><input class="run-input" id="ruck-weight" type="number" placeholder="25"></div>
-      <div class="run-input-wrap"><label>Time (mm:ss)</label><input class="run-input" id="ruck-time" type="text" placeholder="45:00"></div>
-      <div class="run-input-wrap"><label>Type</label>
-        <select class="run-input" id="ruck-type" style="cursor:pointer">
-          <option value="rucksack">Rucksack</option>
-          <option value="vest">Weighted Vest</option>
-        </select>
-      </div>
-    </div>
-  </div>
-  <div class="save-bar"><button class="save-btn" style="background:#F5A623;color:#000" onclick="saveRun()">Log Run Session</button></div>
+  <div class="save-bar"><button class="save-btn" style="background:#F5A623;color:#000" onclick="saveRun()">Save manual run / ruck</button></div>
 </div>
 
 <div class="panel" id="panel-emom">
@@ -2054,6 +2053,21 @@ function saveWorkout(key) {
 
 // ── SAVE RUN ──────────────────────────────────────────────────────────
 function saveRun() {
+  // Normalize supported manual time formats before estimates or history writes.
+  const normalized = [];
+  for (const id of ['easy-time','ruck-time','int-pace']) {
+    const input = document.getElementById(id), raw = input.value.trim();
+    if (!raw) continue;
+    const parts = raw.split(':');
+    let seconds = NaN;
+    if (/^\d+(?:\.\d+)?$/.test(raw)) seconds = Number(raw) * 60;
+    else if (/^\d+:\d{2}(?::\d{2})?$/.test(raw) && parts.slice(1).every(p=>Number(p)<60))
+      seconds = parts.length===3 ? Number(parts[0])*3600+Number(parts[1])*60+Number(parts[2]) : Number(parts[0])*60+Number(parts[1]);
+    if (!Number.isFinite(seconds) || seconds<=0 || seconds>86400) { alert('Enter a time up to 24 hours: minutes, mm:ss or hh:mm:ss.'); input.focus(); return; }
+    seconds=Math.round(seconds);
+    normalized.push([input,`${Math.floor(seconds/60)}:${String(seconds%60).padStart(2,'0')}`]);
+  }
+  normalized.forEach(([input,value])=>input.value=value);
   const easyDist = document.getElementById('easy-dist').value;
   const easyTime = document.getElementById('easy-time').value;
   const intReps = document.getElementById('int-reps').value;
@@ -2064,12 +2078,12 @@ function saveRun() {
   const ruckWeight = document.getElementById('ruck-weight')?.value;
   const ruckTime = document.getElementById('ruck-time')?.value;
   const ruckType = document.getElementById('ruck-type')?.value;
-  if (!easyDist && !easyTime && !intReps && !tempoDur && !ruckDist) { alert('Log at least one activity before saving.'); return; }
-  const entry = { type:'run', label:'Run', date:new Date().toISOString(), runData:{
+  if (!easyDist && !easyTime && !intReps && !tempoDur && !ruckDist && !ruckTime) { alert('Log at least one activity before saving.'); return; }
+  const entry = { type:'run', label:ruckDist||ruckTime ? (easyDist||easyTime||intReps||tempoDur ? 'Run + Ruck' : 'Ruck') : 'Run', date:new Date().toISOString(), source:'manual', runData:{
     easy: easyDist||easyTime ? `${easyDist||'?'} mi · ${easyTime||'?'}` : null,
     intervals: intReps ? `${intReps} × 400m @ ${intPace||'?'}/rep` : null,
     tempo: tempoDur ? `${tempoDur} min @ ${tempoSpeed||'?'} mph` : null,
-    ruck: ruckDist ? `${ruckDist} mi · ${ruckWeight||'?'}lb ${ruckType||'ruck'} · ${ruckTime||'?'}` : null
+    ruck: ruckDist||ruckTime ? `${ruckDist||'?'} mi · ${ruckWeight||'?'}lb ${ruckType||'ruck'} · ${ruckTime||'?'}` : null
   }};
   if (easyDist >= 2 && easyTime) {
     const parts = easyTime.split(':');
@@ -2087,7 +2101,8 @@ function saveRun() {
   if (easyTime) totalCals += estimateCalories('run-easy', timeToSec(easyTime)/60);
   if (intReps && intPace) totalCals += estimateCalories('run-intervals', (timeToSec(intPace) * intReps)/60);
   if (tempoDur) totalCals += estimateCalories('run-tempo', parseFloat(tempoDur));
-  if (ruckDist && ruckTime) totalCals += estimateCalories('ruck', timeToSec(ruckTime)/60, parseFloat(ruckWeight)||25);
+  if (ruckTime) totalCals += estimateCalories('ruck', timeToSec(ruckTime)/60, ruckWeight ? parseFloat(ruckWeight) : 25);
+  entry.durationMin = ((easyTime ? timeToSec(easyTime) : 0) + (ruckTime ? timeToSec(ruckTime) : 0) + (intReps && intPace ? Number(intReps)*timeToSec(intPace) : 0))/60 + Number(tempoDur||0);
   if (totalCals > 0) entry.calories = Math.round(totalCals);
 
   log.unshift(entry);

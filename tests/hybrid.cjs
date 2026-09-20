@@ -6,7 +6,7 @@ const server=http.createServer((req,res)=>{const f=path.join(root,req.url==='/'?
 page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.accept());
 await page.goto('http://localhost:8766');
 assert.equal(await page.locator('.panel.active').getAttribute('id'),'panel-hybrid-a');
-assert.equal(await page.locator('#hybrid-a-exercises .exercise-card').count(),4);
+assert.equal(await page.locator('#hybrid-a-exercises .exercise-card').count(),5);
 assert.ok(!/carry/i.test(await page.locator('#hybrid-a-exercises').textContent()));
 await page.locator('#equip-hybrid-a').selectOption('Commercial Gym');
 assert.equal(await page.locator('#exname-hybrid-a-Strength-0').textContent(),'Hack Squat Machine');
@@ -31,6 +31,25 @@ assert.ok((await page.locator('#hybridNext button').textContent()).includes('Str
 await page.reload();assert.equal(await page.locator('.panel.active').getAttribute('id'),'panel-hybrid-d');
 await page.locator('[data-day=hybrid-a]').click();
 for(const width of [320,390,430]){await page.setViewportSize({width,height:844});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'overflow '+width);}
+await page.locator('[data-tab=run]').click();
+assert.equal(await page.locator('#gpsDetails').getAttribute('open'),null);
+await page.locator('#ruck-time').fill('1:15:00');
+await page.locator('#ruck-weight').fill('30');
+await page.reload();await page.locator('[data-tab=run]').click();
+assert.equal(await page.locator('#ruck-time').inputValue(),'1:15:00');
+const before=await page.evaluate(()=>log.length);
+await page.evaluate(()=>saveRun());
+assert.equal(await page.evaluate(()=>log.length),before+1);
+assert.equal(await page.evaluate(()=>log[0].label),'Ruck');
+assert.equal(await page.evaluate(()=>log[0].durationMin),75);
+assert.ok(await page.evaluate(()=>log[0].calories>0));
+assert.equal(await page.locator('#gpsPack').inputValue(),'25','Manual save preserves GPS settings');
+await page.evaluate(()=>saveRun());assert.equal(await page.evaluate(()=>log.length),before+1);
+await page.locator('#easy-time').fill('12:99');await page.evaluate(()=>saveRun());
+assert.equal(await page.evaluate(()=>log.length),before+1,'Reject malformed time');
+await page.locator('#easy-time').fill('30');await page.evaluate(()=>saveRun());
+assert.equal(await page.evaluate(()=>log[0].durationMin),30);
+for(const key of ['a','b','c','d'])assert.equal(await page.locator('#exname-hybrid-'+key+'-Strength-4').textContent(),'Frog Crunches');
 await page.screenshot({path:'/tmp/hybrid-preview.png',fullPage:true});
 assert.deepEqual(errors,[]);await browser.close();server.close();console.log('PASS: Hybrid plan, gym set counts, draft recovery, save/deduplication, next-session rotation, optional session, mobile widths.');
 })().catch(e=>{console.error(e);process.exit(1);});
