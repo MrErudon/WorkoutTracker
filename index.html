@@ -431,6 +431,9 @@
   .circuit-done-btn.done { background:#1a2e1a; border-color:#2e5c2e; color:#5aab5a; }
   .circuit-notes { background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:6px 10px; color:var(--text); font-size:12px; flex:1; outline:none; }
 </style>
+<link rel="stylesheet" href="mobile.css">
+</head>
+<body>
 
 <div class="goal-strip">
   <div class="goal-card" style="--goal-color:#E84040">
@@ -461,7 +464,7 @@
 
 <header>
   <div>
-    <h1>Training Log</h1>
+    <div class="brand-eyebrow">ATHLETIC / PERSONAL TRAINING</div><h1>Make every rep count.</h1>
     <div class="header-date" id="headerDate"></div>
   </div>
   <div id="streakDisplay" style="font-size:13px;font-weight:700;color:#F5A623;font-family:var(--font-mono)"></div>
@@ -533,7 +536,7 @@
     <div class="stretch-item" onclick="toggleStretch(this)"><div class="stretch-check"></div><div class="stretch-text">Lat stretch (hang from pull-up bar or doorframe)</div><div class="stretch-duration">45 sec</div></div>
     <div class="stretch-item" onclick="toggleStretch(this)"><div class="stretch-check"></div><div class="stretch-text">Thread-the-needle (thoracic rotation)</div><div class="stretch-duration">30 sec/side</div></div>
   </div>
-  <div class="save-bar"><button class="save-btn" style="background:#E84040;color:#fff" onclick="saveWorkout('upper-a')">Log Upper A Session</button></div>
+  <div class="save-bar"><button class="save-btn" style="background:#E84040;color:#fff" onclick="saveWorkout('upper-a')">Finish Push + Pull</button></div>
 </div>
 
 <div class="panel" id="panel-lower-a">
@@ -564,7 +567,7 @@
     <button class="bw-quick-btn" onclick="logBodyweight('bw-lower-a')">Save</button>
   </div>
   <div id="lower-a-exercises"></div>
-  <div class="save-bar"><button class="save-btn" style="background:#3DBE6E;color:#000" onclick="saveWorkout('lower-a')">Log Lower A Session</button></div>
+  <div class="save-bar"><button class="save-btn" style="background:#3DBE6E;color:#000" onclick="saveWorkout('lower-a')">Finish Lower + Carry</button></div>
 </div>
 
 <div class="panel" id="panel-upper-b">
@@ -580,7 +583,7 @@
     <button class="bw-quick-btn" onclick="logBodyweight('bw-upper-b')">Save</button>
   </div>
   <div id="metcon-circuits"></div>
-  <div class="save-bar"><button class="save-btn" style="background:#4098E8;color:#fff" onclick="saveMetcon()">Log Metcon Session</button></div>
+  <div class="save-bar"><button class="save-btn" style="background:#4098E8;color:#fff" onclick="saveMetcon()">Finish Metcon</button></div>
 </div>
 
 <div class="panel" id="panel-lower-b">
@@ -621,7 +624,7 @@
     <div class="stretch-item" onclick="toggleStretch(this)"><div class="stretch-check"></div><div class="stretch-text">Deep squat hold</div><div class="stretch-duration">60 sec</div></div>
     <div class="stretch-item" onclick="toggleStretch(this)"><div class="stretch-check"></div><div class="stretch-text">Lat / overhead stretch (doorframe or bar)</div><div class="stretch-duration">45 sec/side</div></div>
   </div>
-  <div class="save-bar"><button class="save-btn" style="background:#9B5DE5;color:#fff" onclick="saveWorkout('lower-b')">Log Lower+Mobility Session</button></div>
+  <div class="save-bar"><button class="save-btn" style="background:#9B5DE5;color:#fff" onclick="saveWorkout('lower-b')">Finish Lower + Mobility</button></div>
 </div>
 
 <div class="panel" id="panel-dbcircuit">
@@ -665,7 +668,7 @@
     </div>
   </div>
 
-  <div class="save-bar"><button class="save-btn" style="background:#FF6B9D;color:#fff" onclick="saveDBCircuit()">Log DB Circuit Session</button></div>
+  <div class="save-bar"><button class="save-btn" style="background:#FF6B9D;color:#fff" onclick="saveDBCircuit()">Finish DB Circuit</button></div>
 </div>
 
 <div class="panel" id="panel-run">
@@ -1778,7 +1781,7 @@ function applySwap(exId, altKey, altData) {
   const oldDrop = document.getElementById('swap-' + exId);
   if (oldDrop) {
     let origEx = null;
-    Object.values(WORKOUTS).forEach(w => w.sections.forEach(s => s.exercises.forEach((e, ei) => {
+    Object.values(WORKOUTS).forEach(w => w.sections?.forEach(s => s.exercises.forEach((e, ei) => {
       const id = Object.keys(WORKOUTS).find(k => WORKOUTS[k] === w) + '-' + s.name.replace(/\s+/g,'-') + '-' + ei;
       if (id === exId) origEx = e;
     })));
@@ -1859,13 +1862,14 @@ function startRestTimer(exId) {
   }
   activeRestExId = exId;
   restTimerRemaining = REST_DURATION;
+  const restDeadline = Date.now() + REST_DURATION * 1000;
   const timerEl = document.getElementById('rest-' + exId);
   const countEl = document.getElementById('restcount-' + exId);
   const barEl = document.getElementById('restbar-' + exId);
   timerEl.style.display = 'block';
   updateRestDisplay(countEl, barEl);
   restTimerInterval = setInterval(() => {
-    restTimerRemaining--;
+    restTimerRemaining = Math.max(0, Math.ceil((restDeadline - Date.now()) / 1000));
     if (restTimerRemaining <= 0) {
       clearInterval(restTimerInterval);
       restTimerInterval = null;
@@ -1934,9 +1938,9 @@ function estimateCalories(metKey, durationMinutes, packWeightLbs) {
 }
 
 function getSessionDurationMinutes(key) {
-  if (!sessionTimers[key]) return 45; // fallback estimate if timer wasn't running
+  if (!sessionTimers[key]) return 0;
   const elapsed = Math.floor((Date.now() - sessionTimers[key]) / 1000 / 60);
-  return elapsed > 0 ? elapsed : 45;
+  return Math.max(1, elapsed);
 }
 
 // ── SAVE WORKOUT ──────────────────────────────────────────────────────
@@ -2230,7 +2234,7 @@ const sessionTimerIntervals = {};
 
 function startSessionTimer(key) {
   if (sessionTimerIntervals[key]) return; // already running
-  sessionTimers[key] = Date.now();
+  sessionTimers[key] ||= Date.now();
   sessionTimerIntervals[key] = setInterval(() => {
     const el = document.getElementById('timer-' + key);
     if (!el) return;
@@ -2254,7 +2258,7 @@ function stopSessionTimer(key) {
 // Start timer when a tab is opened
 function startTimerForTab(tab) {
   const workoutKeys = ['upper-a','lower-a','upper-b','lower-b','dbcircuit'];
-  if (workoutKeys.includes(tab)) startSessionTimer(tab);
+  // Browsing a workout should not start its session clock.
 }
 
 // ── BODYWEIGHT QUICK LOG ──────────────────────────────────────────────
@@ -2947,5 +2951,6 @@ function gtgSaveHourly(dayNum) {
 <script>
 if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});}
 </script>
+<script src="mobile.js"></script>
 </body>
 </html>
