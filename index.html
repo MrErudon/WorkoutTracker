@@ -4,12 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Athletic Tracker</title>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#0D0D0F">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Training">
-<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-title" content="Athletic">
+<link rel="apple-touch-icon" href="icon-180-v3.png">
 <style>
   :root {
     --bg: #0D0D0F;
@@ -498,7 +499,7 @@
     <div class="equip-mode-wrap">
       <span class="equip-mode-label">Mode</span>
       <select class="equip-mode-select" id="equip-upper-a" onchange="applyEquipmentMode('upper-a', this.value, this)">
-        <option value="default">🏠 Home</option>
+        <option value="Commercial Gym">Commercial Gym</option><option value="default" selected>🏠 Home</option>
         <option value="Dumbbell">🏨 Hotel DB</option>
         <option value="Bodyweight">🪖 Bodyweight</option>
         <option value="Cable">🔌 Cable/Machine</option>
@@ -546,7 +547,7 @@
     <div class="equip-mode-wrap">
       <span class="equip-mode-label">Mode</span>
       <select class="equip-mode-select" id="equip-lower-a" onchange="applyEquipmentMode('lower-a', this.value, this)">
-        <option value="default">🏠 Home</option>
+        <option value="Commercial Gym">Commercial Gym</option><option value="default" selected>🏠 Home</option>
         <option value="Dumbbell">🏨 Hotel DB</option>
         <option value="Bodyweight">🪖 Bodyweight</option>
         <option value="Kettlebell">🔔 KB Only</option>
@@ -593,7 +594,7 @@
     <div class="equip-mode-wrap">
       <span class="equip-mode-label">Mode</span>
       <select class="equip-mode-select" id="equip-lower-b" onchange="applyEquipmentMode('lower-b', this.value, this)">
-        <option value="default">🏠 Home</option>
+        <option value="Commercial Gym">Commercial Gym</option><option value="default" selected>🏠 Home</option>
         <option value="Dumbbell">🏨 Hotel DB</option>
         <option value="Bodyweight">🪖 Bodyweight</option>
         <option value="Kettlebell">🔔 KB Only</option>
@@ -1399,6 +1400,21 @@ const ALTERNATES = {
 };
 
 // ── WORKOUTS ─────────────────────────────────────────────────────────
+const GYM_EXERCISES = {
+  'Incline DB Press': {name:'Incline Machine Chest Press', scheme:'4×8', hasWeight:true},
+  'Pull-Ups': {name:'Lat Pulldown', scheme:'4×10', hasWeight:true},
+  'Barbell Row': {name:'Chest-Supported Machine Row', scheme:'4×10', hasWeight:true},
+  'Face Pulls': {name:'Cable Face Pull', scheme:'3×20', hasWeight:true},
+  'Hex Bar Deadlift': {name:'Trap Bar Deadlift', scheme:'4×5', hasWeight:true},
+  'KB Swing': {name:'Cable Pull-Through', scheme:'4×15', hasWeight:true},
+  'Bulgarian Split Squat': {name:'Dumbbell Bulgarian Split Squat', scheme:'3×8/leg', hasWeight:true},
+  'Farmers Carry': {name:'Heavy Dumbbell Farmers Carry', scheme:'4×40 yds', hasWeight:true},
+  'Single-Leg Calf Raise (weighted)': {name:'Standing Calf Raise Machine', scheme:'3×12', hasWeight:true},
+  'KB Goblet Squat': {name:'Hack Squat Machine', scheme:'4×12', hasWeight:true},
+  'Romanian Deadlift': {name:'Barbell Romanian Deadlift', scheme:'3×10', hasWeight:true},
+  'Nordic Curl': {name:'Seated Leg Curl', scheme:'3×12', hasWeight:true},
+  'KB Turkish Get-Up': {name:'Dumbbell Turkish Get-Up', scheme:'3×3/side', hasWeight:true}
+};
 const WORKOUTS = {
   'upper-a': {
     label: 'Push + Pull',
@@ -1946,7 +1962,7 @@ function getSessionDurationMinutes(key) {
 // ── SAVE WORKOUT ──────────────────────────────────────────────────────
 function saveWorkout(key) {
   const w = WORKOUTS[key];
-  const entry = { type:key, label:w.label, date:new Date().toISOString(), sets:[] };
+  const entry = { type:key, label:w.label, date:new Date().toISOString(), equipmentMode:document.getElementById('equip-'+key)?.value || 'default', sets:[] };
   let anyData = false;
   const nudges = []; // progressive overload suggestions
 
@@ -2172,6 +2188,7 @@ function renderLog() {
         detail = `<div><span style="color:var(--text)">${g.dayType === 'test' ? 'Test' : 'A Day'}</span>  ${g.hrpu} HRPU · ${g.pullup} pull-ups</div>`;
       }
     }
+    if (e.outdoor) detail += `<div>${e.outdoor.distanceMiles.toFixed(2)} mi · ${e.outdoor.packLbs} lb pack · GPS</div><button class="backup-button" onclick="exportRoute(${origIdx})">Export GPX route</button>`;
     const calBadge = e.calories ? `<span class="log-cal-badge">🔥 ${e.calories} cal</span>` : '';
     return `
       <div class="log-entry" style="border-left:3px solid ${color}">
@@ -2329,6 +2346,11 @@ function applyEquipmentMode(workoutKey, mode, selectEl) {
   const w = WORKOUTS[workoutKey];
   if (!w || w.isMetcon) return;
 
+  const panel = document.getElementById('panel-' + workoutKey);
+  if (Array.from(panel.querySelectorAll('.set-input')).some(el => el.value) && !confirm('Changing equipment resets the sets in this workout. Continue?')) {
+    selectEl.value = selectEl.dataset.previousMode || 'default'; return;
+  }
+  selectEl.dataset.previousMode = mode;
   // Update select styling
   selectEl.classList.toggle('active', mode !== 'default');
 
@@ -2337,17 +2359,20 @@ function applyEquipmentMode(workoutKey, mode, selectEl) {
       const exId = workoutKey + '-' + section.name.replace(/\s+/g,'-') + '-' + ei;
       const altKey = ex.altKey || ex.name;
       const alts = ALTERNATES[altKey];
-      if (!alts) return;
+      if (!alts && !GYM_EXERCISES[ex.name]) return;
 
       let targetEx = null;
 
-      if (mode === 'default') {
+      if (mode === 'Commercial Gym') {
+        targetEx = GYM_EXERCISES[ex.name] ? {...ex, ...GYM_EXERCISES[ex.name]} : null;
+        delete sessionSwaps[exId];
+      } else if (mode === 'default') {
         // Reset to default
         targetEx = null;
         delete sessionSwaps[exId];
       } else {
         // Find first match in the selected equipment category
-        const categoryAlts = alts[mode];
+        const categoryAlts = alts?.[mode];
         if (categoryAlts && categoryAlts.length > 0) {
           targetEx = categoryAlts[0];
         } else {
@@ -2383,6 +2408,7 @@ function applyEquipmentMode(workoutKey, mode, selectEl) {
 
   // Show toast
   const modeLabels = {
+    'Commercial Gym': 'Commercial Gym · machines, cables and free weights',
     default: '🏠 Home mode', Dumbbell: '🏨 Hotel DB mode',
     Bodyweight: '🪖 Bodyweight mode', Cable: '🔌 Cable/Machine mode',
     Kettlebell: '🔔 KB Only mode', Machine: '🏋 Machine mode'
@@ -2952,5 +2978,6 @@ function gtgSaveHourly(dayNum) {
 if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});}
 </script>
 <script src="mobile.js"></script>
+<script src="outdoor.js"></script>
 </body>
 </html>

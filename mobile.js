@@ -58,7 +58,7 @@ function refreshProgress() {
 function exportBackup() {
   persistDraft();
   const data={version:1,exportedAt:new Date().toISOString(),data:{}};
-  ['trainingLog','trainingGoals','exercisePRs','gtgChallenge','restDuration',DRAFT_KEY].forEach(key=>{const v=localStorage.getItem(key);if(v!==null)data.data[key]=JSON.parse(v);});
+  ['trainingLog','trainingGoals','exercisePRs','gtgChallenge','restDuration','athleticOutdoorV1',DRAFT_KEY].forEach(key=>{const v=localStorage.getItem(key);if(v!==null)data.data[key]=JSON.parse(v);});
   const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
   const a=document.createElement('a');a.href=url;a.download=`athletic-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if(variant){document.getElementById(variant[0]).value=variant[1];renderDBCircuit();}
     Object.entries(draft.panels).forEach(([id,data])=>{
       const panel=document.getElementById(id);if(!panel)return;
-      data.inputs?.forEach(([inputId,value])=>{const el=document.getElementById(inputId);if(el){if(el.type==='checkbox')el.checked=value;else el.value=value;}});
+      data.inputs?.forEach(([inputId,value])=>{const el=document.getElementById(inputId);if(el){if(el.type==='checkbox')el.checked=value;else {el.value=value;if(el.id.startsWith('equip-'))el.dataset.previousMode=value;}}});
       data.done?.forEach(([doneId,cls])=>{if(['done','open'].includes(cls))document.getElementById(doneId)?.classList.add(cls);});
       panel.querySelectorAll('.warmup-item,.stretch-item').forEach((el,i)=>el.classList.toggle('checked',!!data.checks?.[i]));
       panel.querySelectorAll('[id^=deload-][type=checkbox]').forEach(el=>toggleDeload(el.id.slice(7)));
