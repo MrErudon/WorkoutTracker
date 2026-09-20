@@ -101,11 +101,11 @@ document.addEventListener('DOMContentLoaded', () => {
   Object.entries(saves).forEach(([name,fixed])=>{
     const original=window[name];window[name]=function(...args){
       const key=fixed||args[0],panel=document.getElementById('panel-'+key),before=log.length;
-      const invalid=Array.from(panel.querySelectorAll('input[type=number]')).find(el=>el.value && (!Number.isFinite(Number(el.value)) || Number(el.value)<0));
+      const invalid=Array.from(panel.querySelectorAll(key==='run'?'.run-option input[type=number]':'input[type=number]')).find(el=>el.value && (!Number.isFinite(Number(el.value)) || Number(el.value)<0));
       if(invalid){showToast('Use a positive number or zero.');invalid.focus();return;}
       try{original(...args);}catch(error){if(log.length>before)log.shift();showToast('Unable to save. Your session is still here; export a backup and try again.');return;}
       if(log.length>before){
-        panel.querySelectorAll('input:not([type=checkbox])').forEach(el=>el.value='');
+        panel.querySelectorAll(key==='run'?'.run-option input': 'input:not([type=checkbox])').forEach(el=>el.value='');
         panel.querySelectorAll('.done,.checked').forEach(el=>el.classList.remove('done','checked'));
         clearInterval(sessionTimerIntervals[key]);delete sessionTimerIntervals[key];delete sessionTimers[key];
         if(activeRestExId)stopRestTimer(activeRestExId);

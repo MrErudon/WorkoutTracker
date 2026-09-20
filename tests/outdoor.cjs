@@ -9,7 +9,7 @@ await page.goto('http://localhost:8766');
 await page.locator('.hybrid-legacy summary').click();await page.locator('[data-day=upper-a]').click();
 assert.equal(await page.locator('#equip-upper-a').inputValue(),'default');await page.locator('#equip-upper-a').selectOption('Commercial Gym');assert.equal(await page.locator('#exname-upper-a-Press-0').textContent(),'Incline Machine Chest Press');await page.reload();await page.locator('.hybrid-legacy summary').click();await page.locator('[data-day=upper-a]').click();assert.equal(await page.locator('#equip-upper-a').inputValue(),'Commercial Gym');assert.equal(await page.locator('#exname-upper-a-Press-0').textContent(),'Incline Machine Chest Press');
 await page.locator('#equip-upper-a').selectOption('default');assert.equal(await page.locator('#exname-upper-a-Press-0').textContent(),'Incline DB Press');
-await page.locator('[data-tab=run]').click();await page.locator('#gpsStart').click();
+await page.locator('[data-tab=run]').click();await page.locator('#gpsDetails summary').first().click();await page.locator('#gpsStart').click();
 await page.evaluate(()=>{const now=Date.now();gpsSuccess({timestamp:now-10000,coords:{latitude:40,longitude:-74,accuracy:5}});gpsSuccess({timestamp:now,coords:{latitude:40.0005,longitude:-74,accuracy:5}});});
 assert.ok(await page.evaluate(()=>outdoor.meters>50&&outdoor.meters<60));
 await page.evaluate(()=>{gpsSuccess({timestamp:Date.now()+1000,coords:{latitude:41,longitude:-74,accuracy:5}});});assert.equal(await page.evaluate(()=>outdoor.points.length),2,'Reject GPS jump');
