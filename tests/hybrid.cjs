@@ -6,7 +6,7 @@ const server=http.createServer((req,res)=>{const f=path.join(root,req.url==='/'?
 page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.accept());
 await page.goto('http://localhost:8766');
 assert.equal(await page.locator('.panel.active').getAttribute('id'),'panel-hybrid-a');
-assert.equal(await page.locator('#hybrid-a-exercises .exercise-card').count(),5);
+assert.equal(await page.locator('#hybrid-a-exercises .exercise-card').count(),6);
 assert.ok(!/carry/i.test(await page.locator('#hybrid-a-exercises').textContent()));
 await page.locator('#equip-hybrid-a').selectOption('Commercial Gym');
 assert.equal(await page.locator('#exname-hybrid-a-Strength-0').textContent(),'Hack Squat Machine');
@@ -50,6 +50,14 @@ assert.equal(await page.evaluate(()=>log.length),before+1,'Reject malformed time
 await page.locator('#easy-time').fill('30');await page.evaluate(()=>saveRun());
 assert.equal(await page.evaluate(()=>log[0].durationMin),30);
 for(const key of ['a','b','c','d'])assert.equal(await page.locator('#exname-hybrid-'+key+'-Strength-4').textContent(),'Frog Crunches');
+for(const [key,name] of [['a','DB Lateral Raise'],['b','DB Standing Calf Raise'],['c','DB Hammer Curl'],['d','Glute Bridge']]) {
+  assert.equal(await page.locator('#hybrid-'+key+'-exercises .exercise-card').count(),6);
+  await page.evaluate(key=>{const select=document.getElementById('equip-hybrid-'+key);select.value='default';applyHybridMode('hybrid-'+key,select);},key);
+  assert.equal(await page.locator('#exname-hybrid-'+key+'-Strength-5').textContent(),name);
+}
+await page.evaluate(()=>{const select=document.getElementById('equip-hybrid-a');select.value='Commercial Gym';applyHybridMode('hybrid-a',select);});
+assert.equal(await page.locator('#exname-hybrid-a-Strength-5').textContent(),'Cable Lateral Raise');
+assert.equal(await page.locator('#logger-hybrid-a-Strength-5 .complete-btn').count(),3);
 await page.screenshot({path:'/tmp/hybrid-preview.png',fullPage:true});
 assert.deepEqual(errors,[]);await browser.close();server.close();console.log('PASS: Hybrid plan, gym set counts, draft recovery, save/deduplication, next-session rotation, optional session, mobile widths.');
 })().catch(e=>{console.error(e);process.exit(1);});
