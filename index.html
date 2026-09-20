@@ -2001,7 +2001,7 @@ function saveWorkout(key) {
           totalVol: totalVol > 0 ? Math.round(totalVol) : null
         });
         // Progressive overload nudge: matched last session on all sets
-        if (allMatched && lastSets && activeEx.hasWeight) {
+        if (allMatched && lastSets && activeEx.hasWeight && !key.startsWith('hybrid-')) {
           const lastWt = lastSets[0]?.wt;
           if (lastWt) nudges.push(`${activeEx.name}: try +5 lbs next time (${parseFloat(lastWt)+5} lbs)`);
         }
@@ -2977,6 +2977,7 @@ function gtgSaveHourly(dayNum) {
 <script>
 if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});}
 </script>
+<script src="hybrid.js"></script>
 <script src="mobile.js"></script>
 <script src="outdoor.js"></script>
 </body>

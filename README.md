@@ -49,3 +49,8 @@ Sources reviewed:
 New vector icon source: `icon.svg`; versioned PNGs include 180 px Apple touch icon, 192 px and 512 px manifest icons. An existing iPhone home-screen shortcut may retain its old icon until re-added.
 
 Browser regression: `NODE_PATH=/path/to/playwright/node_modules CHROME_PATH=/path/to/chrome node tests/outdoor.cjs`. Tests simulate location permission/fixes; a real outdoor iPhone walk is still needed for field accuracy and OS behavior.
+
+### Hybrid personal plan
+The Train screen now starts with Hybrid: three rotating full-body strength sessions (45 minutes each) plus walking/running afterward, and an optional lighter fourth session. No carries are programmed. Rucking remains a separate optional activity. Home/Hotel DB and Commercial Gym preserve the prescribed set counts and rep targets. The next-session button advances from saved core sessions; optional sessions do not advance it. History and drafts use the existing storage, and previous routines remain available under a collapsed section. Progression guidance uses rep ranges and small load increases; it is guidance, not automatic weight prescription. Existing exercise history appears in the logger.
+
+Run `tests/hybrid.cjs` with Playwright available through NODE_PATH and, when needed, CHROME_PATH pointing at Chromium.
