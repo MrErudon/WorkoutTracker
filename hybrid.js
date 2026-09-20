@@ -34,6 +34,13 @@ overview.innerHTML=`<div class="hybrid-eyebrow">YOUR PLAN · 3 DAYS + 1 OPTIONAL
 document.getElementById('dayCategorySubnav').prepend(overview);
 HYBRID_SESSIONS.forEach((session,i)=>{
   session.exercises.push(hybridExercise('Frog Crunches',i===3?'2×12–20':'3×12–20',i===3?2:3,'Frog Crunches',false));
+  // Append to keep existing exercise IDs and saved drafts stable.
+  session.exercises.push([
+    hybridExercise('DB Lateral Raise','3×12–15',3,'Cable Lateral Raise'),
+    hybridExercise('DB Standing Calf Raise','3×12–20',3,'Standing Calf Raise Machine'),
+    hybridExercise('DB Hammer Curl','3×10–15',3,'Rope Cable Hammer Curl'),
+    hybridExercise('Glute Bridge','2×12–15 easy',2,'Glute Bridge',false)
+  ][i]);
   session.exercises.forEach(ex=>{if(ex.name==='Side Plank')ex.repsLabel='Secs';});
   WORKOUTS[session.key]={label:'Hybrid · '+session.title,sections:[{name:'Strength',exercises:session.exercises}]};
   const tab=document.createElement('div');tab.className='day-tab'+(i===0?' active':'');tab.dataset.day=session.key;tab.style.setProperty('--day-color','#c6f36a');tab.textContent=i===3?'4 · Optional':`${i+1} · ${session.title}`;hybridNav.append(tab);

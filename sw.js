@@ -1,4 +1,4 @@
-const CACHE = 'athletic-tracker-v5';
+const CACHE = 'athletic-tracker-v6';
 const ASSETS = ['./index.html','./mobile.css','./mobile.js','./hybrid.js','./outdoor.js','./icon.svg','./icon-180-v3.png','./manifest.json','./icon-192-v3.png','./icon-512-v3.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)));
