@@ -6,7 +6,8 @@ const server=http.createServer((req,res)=>{const f=path.join(root,req.url==='/'?
 page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.accept());
 await page.addInitScript(()=>{navigator.geolocation.watchPosition=(success,error)=>{window.gpsSuccess=success;window.gpsError=error;return 1;};navigator.geolocation.clearWatch=()=>{};});
 await page.goto('http://localhost:8766');
-assert.equal(await page.locator('#equip-upper-a').inputValue(),'default');await page.locator('#equip-upper-a').selectOption('Commercial Gym');assert.equal(await page.locator('#exname-upper-a-Press-0').textContent(),'Incline Machine Chest Press');await page.reload();assert.equal(await page.locator('#equip-upper-a').inputValue(),'Commercial Gym');assert.equal(await page.locator('#exname-upper-a-Press-0').textContent(),'Incline Machine Chest Press');
+await page.locator('.hybrid-legacy summary').click();await page.locator('[data-day=upper-a]').click();
+assert.equal(await page.locator('#equip-upper-a').inputValue(),'default');await page.locator('#equip-upper-a').selectOption('Commercial Gym');assert.equal(await page.locator('#exname-upper-a-Press-0').textContent(),'Incline Machine Chest Press');await page.reload();await page.locator('.hybrid-legacy summary').click();await page.locator('[data-day=upper-a]').click();assert.equal(await page.locator('#equip-upper-a').inputValue(),'Commercial Gym');assert.equal(await page.locator('#exname-upper-a-Press-0').textContent(),'Incline Machine Chest Press');
 await page.locator('#equip-upper-a').selectOption('default');assert.equal(await page.locator('#exname-upper-a-Press-0').textContent(),'Incline DB Press');
 await page.locator('[data-tab=run]').click();await page.locator('#gpsStart').click();
 await page.evaluate(()=>{const now=Date.now();gpsSuccess({timestamp:now-10000,coords:{latitude:40,longitude:-74,accuracy:5}});gpsSuccess({timestamp:now,coords:{latitude:40.0005,longitude:-74,accuracy:5}});});

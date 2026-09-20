@@ -1,0 +1,36 @@
+// NODE_PATH=/path/to/playwright/node_modules node tests/outdoor.cjs
+const {chromium}=require('playwright');const fs=require('node:fs'),http=require('node:http'),path=require('node:path'),assert=require('node:assert/strict');
+const root=path.join(__dirname,'..');
+const server=http.createServer((req,res)=>{const f=path.join(root,req.url==='/'?'index.html':req.url);res.setHeader('Content-Type',f.endsWith('.js')?'text/javascript':f.endsWith('.css')?'text/css':f.endsWith('.svg')?'image/svg+xml':f.endsWith('.png')?'image/png':'text/html');try{res.end(fs.readFileSync(f));}catch{res.statusCode=404;res.end();}}).listen(8766);
+(async()=>{const browser=await chromium.launch({headless:true,...(process.env.CHROME_PATH?{executablePath:process.env.CHROME_PATH}:{}),args:['--no-sandbox']});const page=await browser.newPage({viewport:{width:390,height:844}}),errors=[];
+page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.accept());
+await page.goto('http://localhost:8766');
+assert.equal(await page.locator('.panel.active').getAttribute('id'),'panel-hybrid-a');
+assert.equal(await page.locator('#hybrid-a-exercises .exercise-card').count(),4);
+assert.ok(!/carry/i.test(await page.locator('#hybrid-a-exercises').textContent()));
+await page.locator('#equip-hybrid-a').selectOption('Commercial Gym');
+assert.equal(await page.locator('#exname-hybrid-a-Strength-0').textContent(),'Hack Squat Machine');
+assert.equal(await page.locator('#logger-hybrid-a-Strength-0 .complete-btn').count(),3);
+await page.locator('#card-hybrid-a-Strength-0 .exercise-header-left').click();
+await page.locator('#hybrid-a-Strength-0-s1-reps').fill('8');
+await page.locator('#hybrid-a-Strength-0-s1-wt').fill('70');
+await page.locator('#hybrid-a-Strength-0-s1-done').click();
+await page.reload();
+assert.equal(await page.locator('#equip-hybrid-a').inputValue(),'Commercial Gym');
+assert.equal(await page.locator('#hybrid-a-Strength-0-s1-reps').inputValue(),'8');
+await page.evaluate(()=>saveWorkout('hybrid-a'));
+assert.equal(await page.evaluate(()=>log.length),1);
+assert.equal(await page.evaluate(()=>log[0].type),'hybrid-a');
+assert.ok((await page.locator('#hybridNext button').textContent()).includes('Strength & Control'));
+await page.evaluate(()=>saveWorkout('hybrid-a'));assert.equal(await page.evaluate(()=>log.length),1);
+await page.locator('#hybridNext button').click();
+assert.equal(await page.locator('.panel.active').getAttribute('id'),'panel-hybrid-b');
+await page.locator('[data-day=hybrid-d]').click();
+await page.evaluate(()=>{document.getElementById('hybrid-d-Strength-0-s1-reps').value='10';saveWorkout('hybrid-d');});
+assert.ok((await page.locator('#hybridNext button').textContent()).includes('Strength & Control'));
+await page.reload();assert.equal(await page.locator('.panel.active').getAttribute('id'),'panel-hybrid-d');
+await page.locator('[data-day=hybrid-a]').click();
+for(const width of [320,390,430]){await page.setViewportSize({width,height:844});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'overflow '+width);}
+await page.screenshot({path:'/tmp/hybrid-preview.png',fullPage:true});
+assert.deepEqual(errors,[]);await browser.close();server.close();console.log('PASS: Hybrid plan, gym set counts, draft recovery, save/deduplication, next-session rotation, optional session, mobile widths.');
+})().catch(e=>{console.error(e);process.exit(1);});
