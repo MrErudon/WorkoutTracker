@@ -2134,6 +2134,7 @@ function updateWeekLabel() {
     : `${fmt(start)} – ${fmt(end)}`;
 }
 
+function escapeText(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function renderLog() {
   const container=document.getElementById('logList');
   const now=new Date(), weekStart=new Date(now);
@@ -2178,9 +2179,9 @@ function renderLog() {
     const origIdx=log.indexOf(e);
     let detail='';
     if (e.sets) detail=e.sets.map(ex=>{
-      const setStr=ex.sets.map(s=>s.wt&&s.reps?`${s.reps}×${s.wt}lb`:s.reps?`${s.reps} reps`:s.done?'✓':'—').join(', ');
+      const setStr=ex.sets.map(s=>s.wt&&s.reps?`${s.reps}${ex.unit==='seconds'?' sec · ':'×'}${s.wt}lb`:s.reps?`${s.reps} ${ex.unit==='seconds'?'sec':'reps'}`:s.done?'✓':'—').join(', ');
       const volStr = ex.totalVol ? ` <span style="color:var(--muted);font-size:10px">(${ex.totalVol.toLocaleString()} lbs vol)</span>` : '';
-      return `<div><span style="color:var(--text)">${ex.exercise}</span>  ${setStr}${volStr}</div>`;
+      return `<div><span style="color:var(--text)">${escapeText(ex.exercise)}</span>  ${setStr}${volStr}</div>`;
     }).join('');
     else if (e.runData) detail=Object.entries(e.runData).filter(([,v])=>v).map(([k,v])=>
       `<div><span style="color:var(--text)">${k.charAt(0).toUpperCase()+k.slice(1)}</span>  ${v}</div>`).join('');
@@ -2204,11 +2205,12 @@ function renderLog() {
       }
     }
     if (e.outdoor) detail += `<div>${e.outdoor.distanceMiles.toFixed(2)} mi · ${e.outdoor.packLbs} lb pack · GPS</div><button class="backup-button" onclick="exportRoute(${origIdx})">Export GPX route</button>`;
+    if(e.type==='free'&&e.notes)detail+=`<p>${escapeText(e.notes)}</p>`;
     const calBadge = e.calories ? `<span class="log-cal-badge">🔥 ${e.calories} cal</span>` : '';
     return `
       <div class="log-entry" style="border-left:3px solid ${color}">
         <div class="log-entry-header">
-          <div><div class="log-entry-day">${e.label} ${calBadge}</div><div class="log-entry-date">${dateStr} · ${timeStr}${e.durationMin?` · ${e.durationMin} min`:''}</div></div>
+          <div><div class="log-entry-day">${escapeText(e.label)} ${calBadge}</div><div class="log-entry-date">${dateStr} · ${timeStr}${e.durationMin?` · ${e.durationMin} min`:''}</div></div>
           <button class="log-entry-delete" onclick="deleteEntry(${origIdx})">🗑</button>
         </div>
         <div class="log-sets">${detail}</div>
@@ -2993,6 +2995,7 @@ function gtgSaveHourly(dayNum) {
 if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});}
 </script>
 <script src="hybrid.js"></script>
+<script src="manual.js"></script>
 <script src="mobile.js"></script>
 <script src="outdoor.js"></script>
 </body>
