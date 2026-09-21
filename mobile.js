@@ -4,7 +4,7 @@ let draftReady = false;
 function persistDraft() {
   if (!draftReady) return;
   const panels = {};
-  document.querySelectorAll('.panel').forEach(panel => {
+  document.querySelectorAll('.panel:not(#panel-free)').forEach(panel => {
     panels[panel.id] = {
       inputs: Array.from(panel.querySelectorAll('input[id],select[id]'), el => [el.id, el.type === 'checkbox' ? el.checked : el.value]),
       done: Array.from(panel.querySelectorAll('.done[id],.exercise-card.open[id]'), el => [el.id, el.classList.contains('done') ? 'done' : 'open']),
@@ -58,7 +58,7 @@ function refreshProgress() {
 function exportBackup() {
   persistDraft();
   const data={version:1,exportedAt:new Date().toISOString(),data:{}};
-  ['trainingLog','trainingGoals','exercisePRs','gtgChallenge','restDuration','athleticOutdoorV1',DRAFT_KEY].forEach(key=>{const v=localStorage.getItem(key);if(v!==null)data.data[key]=JSON.parse(v);});
+  ['trainingLog','trainingGoals','exercisePRs','gtgChallenge','restDuration','athleticOutdoorV1','athleticFreeWorkoutV1',DRAFT_KEY].forEach(key=>{const v=localStorage.getItem(key);if(v!==null)data.data[key]=JSON.parse(v);});
   const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
   const a=document.createElement('a');a.href=url;a.download=`athletic-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
@@ -69,8 +69,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const backup=document.createElement('section');backup.innerHTML='<p class="backup-note">Your training data stays in this browser on this device. Export a complete backup to keep a separate copy.</p><button class="backup-button" onclick="exportBackup()">Export complete backup</button>';
   document.querySelector('#panel-log').append(backup);
   const status=document.createElement('div');status.id='draftStatus';status.setAttribute('role','status');document.querySelector('main').append(status);
-  const icons={train:'M4 8v8m4-11v14m8-14v14m4-11v8M8 12h8',run:'m5 20 4-6m-3-5 5-3 3 5 5 2M11 6l1 8 5 6m-2-18h.01',emom:'M9 2h6M12 8v5l3 2M20 13a8 8 0 1 1-16 0 8 8 0 0 1 16 0',gtg:'m13 2-9 12h7l-1 8 10-13h-7z',log:'M5 20V12m7 8V4m7 16V8'};
-  document.querySelectorAll('.tab').forEach(el=>{const key=el.dataset.tab;el.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${icons[key]}"/></svg><span>${({train:'Train',run:'Run',emom:'Intervals',gtg:'Challenge',log:'Progress'})[key]}</span>`;});
+  const icons={free:'M12 5v14M5 12h14',train:'M4 8v8m4-11v14m8-14v14m4-11v8M8 12h8',run:'m5 20 4-6m-3-5 5-3 3 5 5 2M11 6l1 8 5 6m-2-18h.01',emom:'M9 2h6M12 8v5l3 2M20 13a8 8 0 1 1-16 0 8 8 0 0 1 16 0',gtg:'m13 2-9 12h7l-1 8 10-13h-7z',log:'M5 20V12m7 8V4m7 16V8'};
+  document.querySelectorAll('.tab').forEach(el=>{const key=el.dataset.tab;el.innerHTML=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${icons[key]}"/></svg><span>${({free:'Log',train:'Train',run:'Run',emom:'Intervals',gtg:'Challenge',log:'Progress'})[key]}</span>`;});
   document.querySelectorAll('.warmup-card,.cooldown-card').forEach(card=>{const details=document.createElement('details');details.className=card.className;const summary=document.createElement('summary');summary.append(card.firstElementChild);details.append(summary);while(card.firstChild)details.append(card.firstChild);card.replaceWith(details);});
   document.querySelectorAll('.session-timer').forEach(timer=>{
     const key=timer.id.replace('timer-','');const controls=document.createElement('div');controls.className='session-control';controls.dataset.session=key;
