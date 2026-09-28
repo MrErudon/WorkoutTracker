@@ -1,0 +1,35 @@
+// NODE_PATH=/path/to/playwright/node_modules node tests/outdoor.cjs
+const {chromium}=require('playwright');const fs=require('node:fs'),http=require('node:http'),path=require('node:path'),assert=require('node:assert/strict');
+const root=path.join(__dirname,'..');
+const server=http.createServer((req,res)=>{const f=path.join(root,req.url==='/'?'index.html':req.url);res.setHeader('Content-Type',f.endsWith('.js')?'text/javascript':f.endsWith('.css')?'text/css':f.endsWith('.svg')?'image/svg+xml':f.endsWith('.png')?'image/png':'text/html');try{res.end(fs.readFileSync(f));}catch{res.statusCode=404;res.end();}}).listen(8766);
+(async()=>{const browser=await chromium.launch({headless:true,...(process.env.CHROME_PATH?{executablePath:process.env.CHROME_PATH}:{}),args:['--no-sandbox']});const page=await browser.newPage({viewport:{width:390,height:844}}),errors=[];
+page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.accept());
+await page.goto('http://localhost:8766');
+await page.locator('[data-tab=race]').click();assert.ok((await page.locator('.race-hero').textContent()).includes('Set the exact'));
+const today=await page.evaluate(()=>raceDayKey());const race=await page.evaluate(()=>raceShift(raceDayKey(),18));
+await page.locator('#raceDate').fill(race);await page.locator('#raceSetDate').click();
+assert.ok((await page.locator('.race-hero h2').textContent()).includes('18'));
+assert.equal(await page.evaluate(()=>raceSchedule().length),8);
+assert.equal(await page.evaluate(()=>raceDayNumber(raceState.date)-raceDayNumber(raceSchedule()[5].date)),8);
+assert.equal(await page.evaluate(()=>raceDayNumber('2026-03-09')-raceDayNumber('2026-03-07')),2,'DST safe calendar math');
+const nutrition=page.locator(`[data-race-check="${race}:${today}:nutrition"]`);
+await nutrition.check();await page.reload();await page.locator('[data-tab=race]').click();assert.ok(await nutrition.isChecked());
+await page.locator('#raceWeight').fill('212');await page.locator('#raceSleep').fill('6.5');await page.locator('#raceLegs').selectOption('Sore');await page.locator('#raceNotes').fill('<b>tired</b>');await page.locator('#raceSaveReady').click();
+assert.ok(await page.locator('.race-warning').count()>0);
+await page.evaluate(()=>{raceState.readiness[raceShift(raceDayKey(),-1)]={weight:'210'};saveRaceState(raceState);renderRace();});
+assert.equal(await page.evaluate(()=>raceTrend().value),211);
+await page.locator('[data-tab=run]').click();await page.locator('#easy-dist').fill('3.5');await page.locator('#easy-time').fill('40');await page.evaluate(()=>saveRun());
+await page.locator('[data-tab=race]').click();const runCheck=page.locator(`[data-race-check="${race}:run:${today}"]`).first();assert.ok(await runCheck.isChecked());assert.ok(await runCheck.isDisabled());
+await page.evaluate(()=>{log=[];localStorage.setItem('trainingLog','[]');renderRace();});assert.equal(await runCheck.isChecked(),false,'Removed history unmatches');
+await page.evaluate(()=>{log=[{type:'run',date:new Date().toISOString(),runData:{ruck:'8 mi · 25lb'}}];renderRace();});assert.equal(await runCheck.isChecked(),false,'Rucks never count as easy runs');
+await page.evaluate(()=>{log=[{type:'run',date:new Date().toISOString(),outdoor:{kind:'run',distanceMiles:3.2}}];renderRace();});assert.ok(await runCheck.isChecked(),'GPS matches');
+await page.evaluate(()=>{log=[];localStorage.setItem('trainingLog','[]');});
+await page.locator('#raceDate').fill(await page.evaluate(()=>raceShift(raceDayKey(),7)));await page.locator('#raceSetDate').click();assert.ok(await page.locator('.race-hybrid-note').count()===4);
+await page.locator('#raceDate').fill(await page.evaluate(()=>raceShift(raceDayKey(),3)));await page.locator('#raceSetDate').click();assert.ok((await page.locator('#panel-race').textContent()).includes('stop actively pursuing'));
+assert.ok(!(await page.locator('#panel-race').textContent()).includes('2,200'));
+await page.locator('#raceDate').fill(today);await page.locator('#raceSetDate').click();assert.equal(await page.locator('.race-hero h2').textContent(),'Race day');
+await page.locator('#raceDate').fill(race);await page.locator('#raceSetDate').click();assert.ok(await nutrition.isChecked(),'Race checklists retained separately');assert.equal(await page.locator('.race-hybrid-note').count(),0);
+await page.locator('[data-tab=run]').click();await page.locator('#manual-run-date').fill(await page.evaluate(()=>raceShift(raceDayKey(),-1)));await page.locator('#easy-dist').fill('5');await page.locator('#easy-time').fill('60');await page.evaluate(()=>saveRun());assert.equal(await page.evaluate(()=>raceMilesOn(raceShift(raceDayKey(),-1))),5);
+await page.locator('[data-tab=race]').click();for(const width of [320,390,430]){await page.setViewportSize({width,height:844});assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'overflow '+width);}
+await page.screenshot({path:'/tmp/race-preview.png',fullPage:true});assert.deepEqual(errors,[]);await browser.close();server.close();console.log('PASS: countdown, schedule, DST, persistence, readiness/trend, soreness, manual/GPS matching, ruck exclusion, final week/fueling/day, reusable dates, backdated runs, mobile widths.');
+})().catch(e=>{console.error(e);process.exit(1);});
