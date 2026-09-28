@@ -677,6 +677,7 @@
     <div class="workout-badge" style="background:#F5A623"></div>
     <div><div class="workout-title">Run / Ruck</div><div class="workout-subtitle">Manual entry · GPS optional</div></div>
   </div>
+  <label class="manual-run-date-label">Activity date<input type="date" id="manual-run-date"></label>
   <div class="run-option">
     <div class="run-type">Run · manual entry</div>
     <div class="run-detail">Enter your completed run. Distance is optional; time alone is enough.</div>
@@ -2053,6 +2054,9 @@ function saveWorkout(key) {
 
 // ── SAVE RUN ──────────────────────────────────────────────────────────
 function saveRun() {
+  const day=document.getElementById('manual-run-date').value || raceDayKey();
+  if(!Number.isFinite(raceDayNumber(day))||day>raceDayKey()){alert('Choose today or an earlier activity date.');return;}
+  const activityDate=day===raceDayKey()?new Date().toISOString():new Date(day+'T12:00:00').toISOString();
   // Normalize supported manual time formats before estimates or history writes.
   const normalized = [];
   for (const id of ['easy-time','ruck-time','int-pace']) {
@@ -2079,7 +2083,7 @@ function saveRun() {
   const ruckTime = document.getElementById('ruck-time')?.value;
   const ruckType = document.getElementById('ruck-type')?.value;
   if (!easyDist && !easyTime && !intReps && !tempoDur && !ruckDist && !ruckTime) { alert('Log at least one activity before saving.'); return; }
-  const entry = { type:'run', label:ruckDist||ruckTime ? (easyDist||easyTime||intReps||tempoDur ? 'Run + Ruck' : 'Ruck') : 'Run', date:new Date().toISOString(), source:'manual', runData:{
+  const entry = { type:'run', label:ruckDist||ruckTime ? (easyDist||easyTime||intReps||tempoDur ? 'Run + Ruck' : 'Ruck') : 'Run', date:activityDate, source:'manual', runMetrics:{easyMiles:Number(easyDist)||0}, runData:{
     easy: easyDist||easyTime ? `${easyDist||'?'} mi · ${easyTime||'?'}` : null,
     intervals: intReps ? `${intReps} × 400m @ ${intPace||'?'}/rep` : null,
     tempo: tempoDur ? `${tempoDur} min @ ${tempoSpeed||'?'} mph` : null,
@@ -2998,5 +3002,6 @@ if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.s
 <script src="manual.js"></script>
 <script src="mobile.js"></script>
 <script src="outdoor.js"></script>
+<script src="race.js"></script>
 </body>
 </html>

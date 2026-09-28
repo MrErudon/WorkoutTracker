@@ -57,3 +57,12 @@ Run `tests/hybrid.cjs` with Playwright available through NODE_PATH and, when nee
 
 ### Independent workout log
 The Log tab records workouts outside Hybrid. Choose equipment per exercise, search the built-in suggestions or enter a custom name, and log reps or seconds with optional load. Add/remove exercises and sets, enter a local date/time, duration and notes. Drafts persist separately and are included in complete backups. Saved entries share Progress history but never advance Hybrid. Custom text is escaped in history; failed saves retain the draft. Weight convention: per dumbbell or total barbell/machine load. No calorie estimate is invented for these sessions.
+
+### Race Prep
+Set an exact race date in Race to activate the reusable 10-mile checklist. The requested runs sit 18, 16, 14, 12, 10, 8, 5 and 3 days before the race; elapsed workouts remain visible in the full schedule and are not compressed into the future. The final long run is eight days out. This Week shows the next seven days, with the remaining build-up expandable. Today includes daily nutrition; the last seven days label Hybrid Reduced Leg Volume, and the final three days replace the calorie-deficit reminder with maintenance and familiar-carbohydrate fueling. This labels/recommends reduced strength volume without modifying entered sets.
+
+Readiness (weight, sleep, legs, notes) persists by local date; checklist completions are isolated by race date. Weight trend uses available morning observations within the last seven calendar days and compares with the preceding seven; missing days are not fabricated. Readiness history appears in Progress and complete backups include Race Prep state. Sore legs flag that day's prescribed run without rewriting it.
+
+Automatic run completion sums run mileage on the prescribed local calendar day, using structured manual run distance or GPS run distance and a compatibility parser for earlier run logs. Rucks and timed activities without known mileage do not qualify. Meeting the lower end of the prescribed range completes it, without asking for extra distance. Manual run entries can be backdated. Checkboxes alone do not invent workout history. Calorie targets are the user's requested rough targets, with an explicit fueling/recovery allowance; the dashboard does not promise nine-pound weight loss.
+
+Race UI takes the sixth bottom-navigation slot; the existing push-up Challenge remains accessible from Intervals. Test with `tests/race.cjs` using the same Playwright environment as other browser checks.
