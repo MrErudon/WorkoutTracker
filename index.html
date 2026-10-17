@@ -1603,6 +1603,7 @@ document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('.day-tab').forEach(el => el.classList.remove('active'));
       dt.classList.add('active');
       const dayKey = dt.dataset.day;
+      if(dt.closest('details'))dt.closest('details').open=true;
       document.querySelectorAll('.panel').forEach(el => el.classList.remove('active'));
       document.getElementById('panel-' + dayKey).classList.add('active');
       startTimerForTab(dayKey);
@@ -1689,6 +1690,7 @@ function renderWorkout(key) {
             <div class="exercise-chevron" onclick="toggleCard('${exId}')">▼</div>
           </div>
           ${swapDropHtml}
+          ${ex.variants ? hcVariantControl(exId, ex, displayEx) : ''}
           <div class="set-logger" id="logger-${exId}">
             ${buildSetLogger(exId, displayEx)}
           </div>
@@ -1707,6 +1709,7 @@ function renderWorkout(key) {
 }
 
 function buildSetLogger(exId, ex) {
+  if (ex.movement) return hcSetLogger(exId, ex);
   const lastSets = getLastSessionData(ex.name);
   let html = `
     <div class="sets-grid sets-grid-header">
@@ -1814,6 +1817,7 @@ function toggleCard(id) {
 
 // ── DONE BUTTON + AUTO-FILL + REST TIMER + PR CHECK ──────────────────
 function toggleDone(exId, setNum, exName, hasWeight) {
+  if(exId.startsWith('hc-') && !document.getElementById(`${exId}-s${setNum}-done`).classList.contains('done') && !hcValidateSet(exId,setNum)) return;
   const setId = `${exId}-s${setNum}`;
   const btn = document.getElementById(setId + '-done');
   const repsEl = document.getElementById(setId + '-reps');
@@ -1869,6 +1873,7 @@ function showPRFlash(exId) {
 
 // ── REST TIMER ────────────────────────────────────────────────────────
 let activeRestExId = null;
+let restTimerTotal = REST_DURATION;
 
 function startRestTimer(exId) {
   // Clear any existing timer
@@ -1877,8 +1882,10 @@ function startRestTimer(exId) {
     document.getElementById('rest-' + activeRestExId).style.display = 'none';
   }
   activeRestExId = exId;
-  restTimerRemaining = REST_DURATION;
-  const restDeadline = Date.now() + REST_DURATION * 1000;
+  const duration=exId.startsWith('hc-') ? (['frog','hollow','knee','tib','mobility','bird','rotation','hang'].includes(hcGetExercise(exId).active.movement)?60:120) : REST_DURATION;
+  restTimerRemaining = duration;
+  restTimerTotal = duration;
+  const restDeadline = Date.now() + duration * 1000;
   const timerEl = document.getElementById('rest-' + exId);
   const countEl = document.getElementById('restcount-' + exId);
   const barEl = document.getElementById('restbar-' + exId);
@@ -1903,9 +1910,9 @@ function updateRestDisplay(countEl, barEl) {
   const m = Math.floor(restTimerRemaining / 60);
   const s = restTimerRemaining % 60;
   countEl.textContent = `${m}:${s.toString().padStart(2,'0')}`;
-  barEl.style.width = (restTimerRemaining / REST_DURATION * 100) + '%';
+  barEl.style.width = (restTimerRemaining / restTimerTotal * 100) + '%';
   // Color shifts red as time runs out
-  const pct = restTimerRemaining / REST_DURATION;
+  const pct = restTimerRemaining / restTimerTotal;
   barEl.style.background = pct > 0.4 ? '#3DBE6E' : pct > 0.2 ? '#F5A623' : '#E84040';
 }
 
@@ -1962,7 +1969,7 @@ function getSessionDurationMinutes(key) {
 // ── SAVE WORKOUT ──────────────────────────────────────────────────────
 function saveWorkout(key) {
   const w = WORKOUTS[key];
-  const entry = { type:key, label:w.label, date:new Date().toISOString(), equipmentMode:document.getElementById('equip-'+key)?.value || 'default', sets:[] };
+  const entry = { type:key, ...(key.startsWith('hc-') ? {planVersion:1, bodyweight:hcBodyweight(), availableEquipment:hcState.equipment[key]?.available||HC_PRESETS.default} : {}), label:w.label, date:new Date().toISOString(), equipmentMode:document.getElementById('equip-'+key)?.value || 'default', sets:[] };
   let anyData = false;
   const nudges = []; // progressive overload suggestions
 
@@ -1983,9 +1990,9 @@ function saveWorkout(key) {
         const wt = wtEl?.value || '';
         const done = doneEl?.classList.contains('done') || false;
         if (reps || wt || done) {
-          exSets.push({s, reps, wt, done});
+          exSets.push({s, reps, wt, done, ...(key.startsWith('hc-') ? {rir:document.getElementById(`${exId}-s${s}-rir`)?.value||''} : {})});
           anyData = true;
-          if (reps && wt) totalVol += parseFloat(reps) * parseFloat(wt);
+          if (reps && wt && activeEx.loadKind!=='assistance' && activeEx.unit!=='seconds') totalVol += parseFloat(reps) * parseFloat(wt);
           // Check if matched last session exactly
           if (lastSets) {
             const last = lastSets.find(ls => ls.s === s);
@@ -1996,12 +2003,13 @@ function saveWorkout(key) {
       if (exSets.length) {
         entry.sets.push({
           exercise: activeEx.name,
+          ...(activeEx.movement ? {movement:activeEx.movement,variant:activeEx.variant,loadKind:activeEx.loadKind,unit:activeEx.unit||'reps'} : {}),
           scheme: activeEx.scheme,
           sets: exSets,
           totalVol: totalVol > 0 ? Math.round(totalVol) : null
         });
         // Progressive overload nudge: matched last session on all sets
-        if (allMatched && lastSets && activeEx.hasWeight && !key.startsWith('hybrid-')) {
+        if (allMatched && lastSets && activeEx.hasWeight && !key.startsWith('hybrid-') && !key.startsWith('hc-')) {
           const lastWt = lastSets[0]?.wt;
           if (lastWt) nudges.push(`${activeEx.name}: try +5 lbs next time (${parseFloat(lastWt)+5} lbs)`);
         }
@@ -2015,6 +2023,7 @@ function saveWorkout(key) {
   entry.calories = estimateCalories(key, durationMin);
   entry.durationMin = durationMin;
 
+  if(key?.startsWith('hc-')) entry.feedback={difficulty:document.getElementById('hcDifficulty-'+key).value,technique:document.getElementById('hcTechnique-'+key).value,legs:document.getElementById('hcLegs-'+key).value||raceState.readiness[raceDayKey()]?.legs||'',volume:document.getElementById('hcVolume-'+key).value};
   log.unshift(entry);
   localStorage.setItem('trainingLog', JSON.stringify(log));
 
@@ -2183,7 +2192,7 @@ function renderLog() {
     const origIdx=log.indexOf(e);
     let detail='';
     if (e.sets) detail=e.sets.map(ex=>{
-      const setStr=ex.sets.map(s=>s.wt&&s.reps?`${s.reps}${ex.unit==='seconds'?' sec · ':'×'}${s.wt}lb`:s.reps?`${s.reps} ${ex.unit==='seconds'?'sec':'reps'}`:s.done?'✓':'—').join(', ');
+      const setStr=ex.sets.map(s=>ex.movement ? `${escapeText(s.reps)} ${ex.unit==='seconds'?'sec':'reps'}${s.wt ? ' · '+escapeText(s.wt)+' lb '+(ex.loadKind==='assistance'?'assistance':ex.loadKind==='external'?'load':'added') : ''}` : s.wt&&s.reps?`${s.reps}${ex.unit==='seconds'?' sec · ':'×'}${s.wt}lb`:s.reps?`${s.reps} ${ex.unit==='seconds'?'sec':'reps'}`:s.done?'✓':'—').join(', ');
       const volStr = ex.totalVol ? ` <span style="color:var(--muted);font-size:10px">(${ex.totalVol.toLocaleString()} lbs vol)</span>` : '';
       return `<div><span style="color:var(--text)">${escapeText(ex.exercise)}</span>  ${setStr}${volStr}</div>`;
     }).join('');
@@ -3000,8 +3009,10 @@ if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.s
 </script>
 <script src="hybrid.js"></script>
 <script src="manual.js"></script>
+<script src="calisthenics.js"></script>
 <script src="mobile.js"></script>
 <script src="outdoor.js"></script>
 <script src="race.js"></script>
+<script src="speed.js"></script>
 </body>
 </html>

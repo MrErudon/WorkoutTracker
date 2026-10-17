@@ -2,7 +2,7 @@
 const {JSDOM,VirtualConsole}=require('jsdom');
 const fs=require('node:fs');const assert=require('node:assert/strict');const path=require('node:path');
 const root=path.join(__dirname,'..');
-const html=fs.readFileSync(path.join(root,'index.html'),'utf8').replace('<script src="mobile.js"></script>',()=>`<script>${fs.readFileSync(path.join(root,'mobile.js'),'utf8')}</script>`);
+const html=fs.readFileSync(path.join(root,'index.html'),'utf8').replace(/<script src="([^"]+)"><\/script>/g,(_,file)=>`<script>${fs.readFileSync(path.join(root,file),'utf8')}</script>`);
 async function boot(storage={}){
   const errors=[];const vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
   const dom=new JSDOM(html,{url:'https://example.com/WorkoutTracker/',runScripts:'dangerously',virtualConsole:vc,beforeParse(w){w.alert=()=>{};w.confirm=()=>true;w.scrollTo=()=>{};Object.entries(storage).forEach(([k,v])=>w.localStorage.setItem(k,v));}});
@@ -10,7 +10,7 @@ async function boot(storage={}){
 }
 (async()=>{
   let dom=await boot({'trainingLog':JSON.stringify([{type:'run',label:'Existing run',date:'2026-09-01T12:00:00Z',runData:{}}])});let w=dom.window,d=w.document;
-  assert.equal(d.querySelector('.goal-strip').parentElement.id,'panel-log');
+  assert.equal(d.querySelector('.goal-strip').closest('.panel').id,'panel-log');
   assert.equal(w.eval('Object.keys(sessionTimers).length'),0,'Browsing does not time a session');
   const id='upper-a-Press-0';
   d.getElementById(id+'-s1-reps').value='8';d.getElementById(id+'-s1-wt').value='45';

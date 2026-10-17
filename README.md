@@ -1,3 +1,5 @@
+> **Hybrid Calisthenics upgrade:** [Plan, storage compatibility, screenshots and regression checks](docs/hybrid-calisthenics.md).
+
 # Athletic Tracker
 
 A personal, mobile-first workout tracker. Serve this folder over HTTP (for example, `python -m http.server 8080`) or use its existing static hosting. No build step or production dependencies.
