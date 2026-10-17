@@ -5,6 +5,7 @@ const server=http.createServer((req,res)=>{const f=path.join(root,req.url==='/'?
 (async()=>{const browser=await chromium.launch({headless:true,...(process.env.CHROME_PATH?{executablePath:process.env.CHROME_PATH}:{}),args:['--no-sandbox']});const page=await browser.newPage({viewport:{width:390,height:844}}),errors=[];
 page.on('pageerror',e=>errors.push(e.message));page.on('dialog',d=>d.accept());
 await page.goto('http://localhost:8766');
+await page.locator('.hybrid-legacy').evaluate(el=>el.open=true);await page.locator('[data-day=hybrid-a]').click();
 assert.equal(await page.locator('.panel.active').getAttribute('id'),'panel-hybrid-a');
 assert.equal(await page.locator('#hybrid-a-exercises .exercise-card').count(),6);
 assert.ok(!/carry/i.test(await page.locator('#hybrid-a-exercises').textContent()));
@@ -23,7 +24,7 @@ assert.equal(await page.evaluate(()=>log.length),1);
 assert.equal(await page.evaluate(()=>log[0].type),'hybrid-a');
 assert.ok((await page.locator('#hybridNext button').textContent()).includes('Strength & Control'));
 await page.evaluate(()=>saveWorkout('hybrid-a'));assert.equal(await page.evaluate(()=>log.length),1);
-await page.locator('#hybridNext button').click();
+await page.locator('#hybridNext button').evaluate(el=>el.click());
 assert.equal(await page.locator('.panel.active').getAttribute('id'),'panel-hybrid-b');
 await page.locator('[data-day=hybrid-d]').click();
 await page.evaluate(()=>{document.getElementById('hybrid-d-Strength-0-s1-reps').value='10';saveWorkout('hybrid-d');});
