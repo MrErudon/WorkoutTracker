@@ -33,7 +33,7 @@ Existing `trainingLog`, PR, goals, GPS, manual-workout and Race Prep keys retain
 
 Two additive, versioned records are introduced: `athleticCalisthenicsV1` and `athleticSpeedV1`. New workout entries carry versioned plan/variation metadata, optional RIR and session feedback. Backups include both new records. No destructive migration is required. All data remains scoped to the current browser/device; there is no account sync.
 
-The service-worker cache advances from v8 to v9 and precaches both new scripts. GPS remains foreground-only, with the existing pause/recovery behavior when iOS suspends the page. Manual run and ruck logging are unchanged.
+The service-worker cache advances from v9 to v10 and precaches both new scripts. GPS remains foreground-only, with the existing pause/recovery behavior when iOS suspends the page. Manual run and ruck logging are unchanged.
 
 ## Validation
 
@@ -50,9 +50,10 @@ node tests/hybrid.cjs
 node tests/race.cjs
 node tests/calisthenics.cjs
 node tests/pwa-upgrade.cjs
+LAYOUT_BROWSERS=chromium node tests/speed-layout.cjs
 ```
 
-`CHROME_PATH` may select an existing Chromium executable. Tests cover previous data and draft recovery, all exercise variants/load modes, equipment changes without reset, manual overrides, progression safeguards, assessments/paces, running statuses/splits, GPS, rucks, Race Prep, save failures, duplicate prevention and mobile overflow at 320, 375, 390, 393 and 430 px. The PWA upgrade test serves the actual v8 files from commit `15204312`, installs the new worker and verifies old-cache cleanup, retained data and offline navigation.
+`CHROME_PATH` may select an existing Chromium executable. Tests cover previous data and draft recovery, all exercise variants/load modes, equipment changes without reset, manual overrides, progression safeguards, assessments/paces, running statuses/splits, GPS, rucks, Race Prep, save failures, duplicate prevention and mobile overflow at 320, 375, 390, 393 and 430 px. The PWA upgrade test serves the actual v9 files from commit `0d73ca7`, installs the new worker and verifies old-cache cleanup, retained data and offline navigation.
 
 Automated mobile screenshots below show the actual browser rendering. Physical-device Safari review remains part of the requested user review before merge.
 
@@ -65,3 +66,5 @@ Automated mobile screenshots below show the actual browser rendering. Physical-d
 | ![Speed](calisthenics-speed.png) | ![Progress](calisthenics-progress.png) |
 
 Training principles consulted: [ACSM progression position stand](https://pubmed.ncbi.nlm.nih.gov/19204579/) and the [American Heart Association’s talk-test guidance](https://www.heart.org/-/media/Files/Affiliates/WSA/Oregon/OR-Hard-Hats-Physical/Physical-Activity-Recommendations.pdf). The four-week calendar and conservative pace estimates are this app’s personal starter block.
+
+The Speed form uses one full-width column below 600 px so native date controls cannot crowd Status. `tests/speed-layout.cjs` checks field bounds, non-overlap and 44 px touch targets at six widths in Chromium and WebKit; set `LAYOUT_BROWSERS` to choose an engine. Install the matching Playwright WebKit browser and system dependencies to run its engine.

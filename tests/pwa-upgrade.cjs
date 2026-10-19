@@ -1,4 +1,4 @@
-// Real v8 -> v9 service-worker upgrade, with legacy browser data and offline reload.
+// Real v9 -> v10 service-worker upgrade, with legacy browser data and offline reload.
 const { chromium } = require("playwright"),
   { execFileSync } = require("node:child_process"),
   fs = require("node:fs"),
@@ -6,13 +6,15 @@ const { chromium } = require("playwright"),
   path = require("node:path"),
   assert = require("node:assert/strict");
 const root = path.join(__dirname, ".."),
-  base = "15204312c887b6a92ae43da90f57d3b4e4c983dd",
+  base = "0d73ca7dcf43261d77088a43f1e055b379fcf253",
   old = {};
 for (const file of [
   "index.html",
   "mobile.css",
   "mobile.js",
   "hybrid.js",
+  "calisthenics.js",
+  "speed.js",
   "manual.js",
   "outdoor.js",
   "race.js",
@@ -88,7 +90,7 @@ const server = http
   await page.waitForFunction(() => !!navigator.serviceWorker.controller);
   assert.ok(
     await page.evaluate(async () =>
-      (await caches.keys()).includes("athletic-tracker-v8"),
+      (await caches.keys()).includes("athletic-tracker-v9"),
     ),
   );
   upgraded = true;
@@ -99,8 +101,8 @@ const server = http
   await page.waitForFunction(async () => {
     const keys = await caches.keys();
     return (
-      keys.includes("athletic-tracker-v9") &&
-      !keys.includes("athletic-tracker-v8")
+      keys.includes("athletic-tracker-v10") &&
+      !keys.includes("athletic-tracker-v9")
     );
   });
   await page.reload();
@@ -115,7 +117,7 @@ const server = http
   await b.close();
   server.close();
   console.log(
-    "PASS: real v8→v9 activation, old-cache cleanup, unchanged legacy data, offline new plan and Speed.",
+    "PASS: real v9→v10 activation, old-cache cleanup, unchanged legacy data, offline new plan and Speed.",
   );
 })().catch((e) => {
   console.error(e);
