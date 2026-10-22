@@ -1,4 +1,4 @@
-// Real v9 -> v11 service-worker upgrade, with legacy browser data and offline reload.
+// Real v9 -> v12 service-worker upgrade, with legacy browser data and offline reload.
 const { chromium } = require("playwright"),
   { execFileSync } = require("node:child_process"),
   fs = require("node:fs"),
@@ -29,9 +29,10 @@ for (const file of [
     cwd: root,
     maxBuffer: 1024 * 1024,
   });
-let upgraded = false;
+let upgraded = false, stalled = false;
 const server = http
   .createServer((req, res) => {
+    if (stalled) return;
     const file = req.url === "/" ? "index.html" : req.url.slice(1);
     res.setHeader(
       "Content-Type",
@@ -101,7 +102,7 @@ const server = http
   await page.waitForFunction(async () => {
     const keys = await caches.keys();
     return (
-      keys.includes("athletic-tracker-v11") &&
+      keys.includes("athletic-tracker-v12") &&
       !keys.includes("athletic-tracker-v9")
     );
   });
@@ -109,7 +110,13 @@ const server = http
   assert.equal(await page.locator("#hc-a-exercises .exercise-card").count(), 6);
   assert.equal(await page.evaluate(() => log[0].label), "Retained run");
   assert.ok(await page.evaluate(() => raceState.checks.saved));
-  await context.setOffline(true);
+  stalled = true;
+  await page.reload();
+  assert.equal(await page.locator("#hc-a-exercises .exercise-card").count(), 6);
+  assert.equal(await page.evaluate(() => log[0].label), "Retained run");
+  // Stop the origin to test a real network failure, including worker fetches.
+  server.closeAllConnections();
+  await new Promise(resolve => server.close(resolve));
   await page.reload();
   assert.equal(await page.locator("#hc-a-exercises .exercise-card").count(), 6);
   await page.locator("[data-tab=speed]").click();
@@ -117,7 +124,7 @@ const server = http
   await b.close();
   server.close();
   console.log(
-    "PASS: real v9→v11 activation, old-cache cleanup, unchanged legacy data, offline new plan and Speed.",
+    "PASS: real v9→v12 activation, old-cache cleanup, unchanged legacy data, stalled connection fallback, offline new plan and Speed.",
   );
 })().catch((e) => {
   console.error(e);

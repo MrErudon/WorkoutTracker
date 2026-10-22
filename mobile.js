@@ -66,7 +66,7 @@ function refreshProgress() {
   const today=new Date();today.setHours(0,0,0,0);
   const counts=Array.from({length:7},(_,i)=>{const d=new Date(today);d.setDate(d.getDate()-6+i);return {d,n:log.filter(e=>new Date(e.date).toDateString()===d.toDateString()).length};});
   const max=Math.max(1,...counts.map(x=>x.n));
-  counts.forEach(({d,n})=>{const col=document.createElement('div');col.className='week-bar';const bar=document.createElement('i');bar.style.height=`${Math.max(3,n/max*60)}px`;bar.style.opacity=n?'1':'.15';col.append(bar,document.createTextNode(d.toLocaleDateString('en-US',{weekday:'short'})));col.title=`${n} sessions`;col.setAttribute('aria-label',`${d.toDateString()}: ${n} sessions`);chart.append(col);});
+  counts.forEach(({d,n})=>{const col=document.createElement('div');col.className='week-bar';const bar=document.createElement('i');bar.style.height=`${n/max*60}px`;bar.style.opacity=n?'1':'.15';const value=document.createElement('b');value.textContent=n;col.append(value,bar,document.createTextNode(d.toLocaleDateString('en-US',{weekday:'short'})));col.title=`${n} sessions`;col.setAttribute('aria-label',`${d.toDateString()}: ${n} sessions`);chart.append(col);});
   const total=counts.reduce((s,x)=>s+x.n,0);
   document.getElementById('weekActivity').textContent=`${total} ${total===1?'session':'sessions'} · past 7 days`;
 }
