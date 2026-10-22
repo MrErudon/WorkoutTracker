@@ -1,4 +1,4 @@
-const CACHE = 'athletic-tracker-v11';
+const CACHE = 'athletic-tracker-v12';
 const ASSETS = ['./index.html','./mobile.css','./mobile.js','./hybrid.js','./calisthenics.js','./speed.js','./manual.js','./race.js','./outdoor.js','./icon.svg','./icon-180-v3.png','./manifest.json','./icon-192-v3.png','./icon-512-v3.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)));
@@ -9,8 +9,11 @@ self.addEventListener('activate', event => {
 });
 self.addEventListener('fetch', event => {
   if(event.request.method !== 'GET' || new URL(event.request.url).origin !== self.location.origin) return;
-  event.respondWith(fetch(event.request).then(response => {
+  // A stalled connection must not prevent the installed app opening its cache.
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 5000);
+  event.respondWith(fetch(event.request, {signal: controller.signal}).then(response => {
     if(response.ok){const copy=response.clone();event.waitUntil(caches.open(CACHE).then(cache=>cache.put(event.request,copy)));}
     return response;
-  }).catch(()=>caches.match(event.request).then(cached=>cached || (event.request.mode==='navigate' ? caches.match('./index.html') : Response.error()))));
+  }).catch(()=>caches.match(event.request).then(cached=>cached || (event.request.mode==='navigate' ? caches.match('./index.html') : Response.error()))).finally(()=>clearTimeout(timeout)));
 });
