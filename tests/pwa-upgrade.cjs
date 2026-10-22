@@ -1,4 +1,4 @@
-// Real v9 -> v10 service-worker upgrade, with legacy browser data and offline reload.
+// Real v9 -> v11 service-worker upgrade, with legacy browser data and offline reload.
 const { chromium } = require("playwright"),
   { execFileSync } = require("node:child_process"),
   fs = require("node:fs"),
@@ -51,7 +51,7 @@ const server = http
       res.end();
     }
   })
-  .listen(8768);
+  .listen(0);
 (async () => {
   const b = await chromium.launch({
       headless: true,
@@ -63,7 +63,7 @@ const server = http
     context = await b.newContext(),
     page = await context.newPage();
   page.on("dialog", (d) => d.accept());
-  await page.goto("http://localhost:8768");
+  await page.goto(`http://localhost:${server.address().port}`);
   await page.evaluate(async () => {
     await navigator.serviceWorker.ready;
     localStorage.setItem(
@@ -101,7 +101,7 @@ const server = http
   await page.waitForFunction(async () => {
     const keys = await caches.keys();
     return (
-      keys.includes("athletic-tracker-v10") &&
+      keys.includes("athletic-tracker-v11") &&
       !keys.includes("athletic-tracker-v9")
     );
   });
@@ -117,7 +117,7 @@ const server = http
   await b.close();
   server.close();
   console.log(
-    "PASS: real v9→v10 activation, old-cache cleanup, unchanged legacy data, offline new plan and Speed.",
+    "PASS: real v9→v11 activation, old-cache cleanup, unchanged legacy data, offline new plan and Speed.",
   );
 })().catch((e) => {
   console.error(e);

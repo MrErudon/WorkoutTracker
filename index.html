@@ -687,7 +687,7 @@
     </div>
   </div>
   <div class="run-option" style="border-left:3px solid #9B5DE5">
-    <div class="run-type" style="color:#9B5DE5">Ruck · manual entry</div>
+    <div class="run-type" style="color:#bd91f1">Ruck · manual entry</div>
     <div class="run-detail">
       Enter your completed ruck with a backpack or weighted vest. Distance is optional.
     </div>
@@ -696,7 +696,7 @@
       <div class="run-input-wrap"><label>Pack weight (lbs)</label><input class="run-input" id="ruck-weight" type="number" placeholder="25"></div>
       <div class="run-input-wrap"><label>Time (minutes or mm:ss)</label><input class="run-input" id="ruck-time" type="text" placeholder="45:00"></div>
       <div class="run-input-wrap"><label>Type</label>
-        <select class="run-input" id="ruck-type" style="cursor:pointer">
+        <select class="run-input" id="ruck-type" aria-label="Ruck equipment type" style="cursor:pointer">
           <option value="rucksack">Rucksack</option>
           <option value="vest">Weighted Vest</option>
         </select>
@@ -794,7 +794,7 @@
     <div class="goal-inputs" style="grid-template-columns:1fr">
       <div class="goal-input-wrap">
         <label>Default rest (all exercises)</label>
-        <select class="goal-input" id="restDurationSelect" onchange="updateRestDuration()">
+        <select class="goal-input" id="restDurationSelect" aria-label="Rest timer duration" onchange="updateRestDuration()">
           <option value="60">60 sec — Accessories</option>
           <option value="90" selected>90 sec — Default</option>
           <option value="120">2:00 — Moderate compounds</option>
