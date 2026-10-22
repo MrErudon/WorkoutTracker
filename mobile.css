@@ -29,3 +29,25 @@ details.race-section>summary{font-size:20px;font-weight:700}details.race-section
 /* Native iPhone date controls need the full form width on narrow screens. */
 #panel-speed input[type=date]::-webkit-date-and-time-value{text-align:left;min-width:0}
 @media(min-width:600px){#panel-speed .free-fields{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* Keep controls comfortable on touch screens without changing saved workouts. */
+html { scroll-padding-block: 24px 110px; -webkit-text-size-adjust: 100%; }
+body { min-height: 100dvh; }
+button, [role=button], summary { touch-action: manipulation; }
+button, [role=button] { -webkit-user-select: none; user-select: none; }
+button:enabled:active, [role=button]:active { filter: brightness(.88); }
+.tab { transition: background-color 120ms ease-out, color 120ms ease-out; }
+.tab.active { box-shadow: inset 0 2px var(--accent); }
+.exercise-header-left { min-width: 0; padding-block: 5px; }
+.exercise-name { overflow-wrap: anywhere; }
+.exercise-chevron { min-width: 44px; min-height: 44px; text-align: center; }
+.swap-btn { min-height: 44px; font-size: 11px; }
+summary:focus-visible, textarea:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+textarea { font: inherit; font-size: 16px; }
+
+#globalToast { bottom: calc(100px + env(safe-area-inset-bottom)) !important; }
+@media (hover: none) {
+  .tab:not(.active):hover { color: var(--muted); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .exercise-chevron { transform: none !important; }
+}

@@ -68,3 +68,8 @@ Readiness (weight, sleep, legs, notes) persists by local date; checklist complet
 Automatic run completion sums run mileage on the prescribed local calendar day, using structured manual run distance or GPS run distance and a compatibility parser for earlier run logs. Rucks and timed activities without known mileage do not qualify. Meeting the lower end of the prescribed range completes it, without asking for extra distance. Manual run entries can be backdated. Checkboxes alone do not invent workout history. Calorie targets are the user's requested rough targets, with an explicit fueling/recovery allowance; the dashboard does not promise nine-pound weight loss.
 
 Race UI takes the sixth bottom-navigation slot; the existing push-up Challenge remains accessible from Intervals. Test with `tests/race.cjs` using the same Playwright environment as other browser checks.
+
+### Mobile interaction polish
+Selected navigation and exercise expansion/completion states are exposed to assistive technology. Touch controls have press feedback, larger exercise chevrons, and visible keyboard focus; long exercise names wrap. The ruck equipment and rest-duration selectors are named, and the ruck label meets text contrast requirements. Cache v11 preserves the existing origin and storage keys.
+
+Run `tests/accessibility.cjs` with `playwright` and `@axe-core/playwright` available via `NODE_PATH`; optionally set `CHROME_PATH`. It scans the five primary views at 320, 390, 430, and 1280 pixels. The existing regression suite and v9-to-v11 offline upgrade check also pass in Chromium. Physical iPhone keyboard, safe-area, and touch behavior still need device testing.

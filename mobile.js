@@ -39,6 +39,21 @@ function mobileAccessibility() {
   document.querySelectorAll('.tab,.day-tab,.exercise-header-left,.exercise-chevron,.warmup-item,.stretch-item,.swap-option').forEach(el => {
     el.setAttribute('role','button');el.tabIndex=0;
   });
+  document.querySelectorAll('.tab,.day-tab').forEach(el => {
+    el.setAttribute('aria-pressed', String(el.classList.contains('active')));
+  });
+  document.querySelectorAll('.exercise-card').forEach(card => {
+    const name = card.querySelector('.exercise-name')?.textContent;
+    const logger = card.querySelector('.set-logger');
+    card.querySelectorAll('.exercise-header-left,.exercise-chevron').forEach(control => {
+      control.setAttribute('aria-expanded', String(card.classList.contains('open')));
+      if (logger?.id) control.setAttribute('aria-controls', logger.id);
+      if (control.classList.contains('exercise-chevron')) control.setAttribute('aria-label', `${name} sets`);
+    });
+  });
+  document.querySelectorAll('.warmup-item,.stretch-item').forEach(el => {
+    el.setAttribute('aria-pressed', String(el.classList.contains('checked')));
+  });
   document.querySelectorAll('input[type=number]').forEach(el => {el.inputMode='decimal';el.min='0';});
   document.querySelectorAll('.set-input').forEach(el => {
     const name = el.closest('.exercise-card').querySelector('.exercise-name').textContent;
