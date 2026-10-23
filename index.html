@@ -1670,10 +1670,10 @@ function renderWorkout(key) {
   w.sections.forEach(section => {
     html += `<div class="section-label">${section.name}</div>`;
     section.exercises.forEach((ex, ei) => {
-      const exId = key + '-' + section.name.replace(/\s+/g,'-') + '-' + ei;
+      const exId = ex.id || key + '-' + section.name.replace(/\s+/g,'-') + '-' + ei;
       const altKey = ex.altKey || ex.name;
       const alts = ALTERNATES[altKey];
-      const hasAlts = alts && (Object.keys(alts).filter(k => k !== 'default').length > 0);
+      const hasAlts = !ex.extra && alts && (Object.keys(alts).filter(k => k !== 'default').length > 0);
       const swapBtnHtml = hasAlts
         ? `<button class="swap-btn" id="swapbtn-${exId}" onclick="toggleSwapDropdown(event,'${exId}','${altKey}')">SWAP ⇄</button>`
         : '';
@@ -1687,6 +1687,7 @@ function renderWorkout(key) {
               <div class="exercise-scheme" id="exscheme-${exId}">${displayEx.scheme}</div>
             </div>
             ${swapBtnHtml}
+            ${ex.extra ? `<button type="button" class="swap-btn" onclick="hcRemoveExtra('${key}','${exId}')" aria-label="Remove ${displayEx.name}">Remove</button>` : ''}
             <div class="exercise-chevron" onclick="toggleCard('${exId}')">▼</div>
           </div>
           ${swapDropHtml}
@@ -1975,7 +1976,7 @@ function saveWorkout(key) {
 
   w.sections.forEach(section => {
     section.exercises.forEach((ex, ei) => {
-      const exId = key + '-' + section.name.replace(/\s+/g,'-') + '-' + ei;
+      const exId = ex.id || key + '-' + section.name.replace(/\s+/g,'-') + '-' + ei;
       const activeEx = sessionSwaps[exId] || ex;
       const exSets = [];
       let totalVol = 0;
@@ -3010,6 +3011,7 @@ if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.s
 <script src="hybrid.js"></script>
 <script src="manual.js"></script>
 <script src="calisthenics.js"></script>
+<script src="extras.js"></script>
 <script src="mobile.js"></script>
 <script src="outdoor.js"></script>
 <script src="race.js"></script>

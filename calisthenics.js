@@ -331,7 +331,7 @@ HC_SESSIONS.forEach((s, i) => {
   const p = document.createElement("div");
   p.className = "panel";
   p.id = "panel-" + s.key;
-  p.innerHTML = `<div class="workout-header"><div><div class="workout-title">${s.title}</div><div class="workout-subtitle">${s.focus} · ${i === 3 ? "15–25 min easy" : "~45 min"}</div></div><div class="equip-mode-wrap"><label class="equip-mode-label" for="equip-${s.key}">Mode</label><select id="equip-${s.key}" class="equip-mode-select"><option value="default">Home / Hotel</option><option>Commercial Gym</option><option>Minimal Equipment</option><option>Bodyweight Only</option></select></div></div><p class="race-warning" id="hcTiming-${s.key}"></p>${hcEquipmentHTML(s.key)}<div class="session-timer" id="timer-${s.key}">0:00</div><div class="hybrid-note"><b>Prepare · 5 minutes</b><p>Easy walking, shoulder and hip movement, then light practice sets. ${i === 3 ? "Stay well short of fatigue; use the easiest variation." : "Use controlled reps and leave two good reps in reserve."}</p></div>${i === 1 ? '<details class="hybrid-note"><summary>Optional slant-board work</summary><p>Swap the Full Body squat for heel-elevated or slant-board squats. Start with bodyweight, comfortable depth and 1–2 easy sets; replace existing squat volume. Build depth, load or sets one at a time after recovery is consistently good. Keep new knee loading away from hard running.</p></details>' : ""}<div id="${s.key}-exercises"></div><div class="hybrid-note"><b>Then walk or run, if recovered</b><p>Keep easy days conversational. Check Speed before adding hard running after legs.</p><button type="button" onclick="document.querySelector('[data-tab=speed]').click()">Open running plan</button></div>${hcFeedbackHTML(s.key)}<div id="hc-summary-${s.key}" class="hybrid-note" hidden role="status"></div><div class="save-bar"><button class="save-btn" onclick="saveWorkout('${s.key}')">Finish ${s.title}</button></div>`;
+  p.innerHTML = `<div class="workout-header"><div><div class="workout-title">${s.title}</div><div class="workout-subtitle">${s.focus} · ${i === 3 ? "15–25 min easy" : "~45 min"}</div></div></div><p class="race-warning" id="hcTiming-${s.key}"></p>${hcEquipmentHTML(s.key)}<div class="session-timer" id="timer-${s.key}">0:00</div><div class="hybrid-note"><b>Prepare · 5 minutes</b><p>Easy walking, shoulder and hip movement, then light practice sets. ${i === 3 ? "Stay well short of fatigue; use the easiest variation." : "Use controlled reps and leave two good reps in reserve."}</p></div>${i === 1 ? '<details class="hybrid-note"><summary>Optional slant-board work</summary><p>Swap the Full Body squat for heel-elevated or slant-board squats. Start with bodyweight, comfortable depth and 1–2 easy sets; replace existing squat volume. Build depth, load or sets one at a time after recovery is consistently good. Keep new knee loading away from hard running.</p></details>' : ""}<div id="${s.key}-exercises"></div><div class="hybrid-note"><b>Then walk or run, if recovered</b><p>Keep easy days conversational. Check Speed before adding hard running after legs.</p><button type="button" onclick="document.querySelector('[data-tab=speed]').click()">Open running plan</button></div>${hcFeedbackHTML(s.key)}<div id="hc-summary-${s.key}" class="hybrid-note" hidden role="status"></div><div class="save-bar"><button class="save-btn" onclick="saveWorkout('${s.key}')">Finish ${s.title}</button></div>`;
   document.querySelector("main").append(p);
 });
 function hcVariantControl(id, base, ex) {
@@ -353,6 +353,7 @@ function hcProgression(
   ex,
   key = document.querySelector(".day-tab.active")?.dataset.day,
 ) {
+  if (ex.extra) return "Optional work: choose a comfortable load, leave clean reps in reserve and consider today’s total workload.";
   const seenDates = new Set();
   const sessions = log
       .filter((e) => e.type?.startsWith("hc-"))
@@ -395,9 +396,10 @@ function hcProgression(
     : "Build clean repetitions first. Progress suggestions need two controlled sessions, ≥2 reps in reserve, moderate/easy difficulty and normal/fresh recovery. Pull-up milestone: 10 strict, then 12–15. Weighted work is optional.";
 }
 function hcGetExercise(id) {
-  const [a, b, , index] = id.split("-"),
-    key = a + "-" + b,
-    base = WORKOUTS[key].sections[0].exercises[Number(index)];
+  const [a, b, section, index] = id.split("-"), key = a + "-" + b;
+  const base = section === "Extra"
+    ? WORKOUTS[key].sections.flatMap(s => s.exercises).find(ex => ex.id === id)
+    : WORKOUTS[key].sections[0].exercises[Number(index)];
   return { base, active: sessionSwaps[id] || base };
 }
 function hcValidateSet(id, n, allowPlaceholder = true) {
@@ -536,25 +538,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   };
   HC_SESSIONS.forEach(({ key }) => {
-    const mode = document.getElementById("equip-" + key);
-    mode.value = hcState.equipment[key]?.mode || "default";
-    mode.onchange = () => {
-      const available = HC_PRESETS[mode.value];
-      if (
-        hcStore({
-          ...hcState,
-          equipment: {
-            ...hcState.equipment,
-            [key]: { mode: mode.value, available },
-          },
-        })
-      ) {
-        document
-          .querySelectorAll(`[data-hc-equipment="${key}"]`)
-          .forEach((x) => (x.checked = available.includes(x.value)));
-        hcEquipmentAdvice(key);
-      }
-    };
     document.querySelectorAll(`[data-hc-equipment="${key}"]`).forEach(
       (x) =>
         (x.onchange = () => {
@@ -566,7 +549,7 @@ document.addEventListener("DOMContentLoaded", () => {
             ...hcState,
             equipment: {
               ...hcState.equipment,
-              [key]: { mode: mode.value, available },
+              [key]: { ...hcState.equipment[key], available },
             },
           });
           hcEquipmentAdvice(key);
@@ -650,6 +633,7 @@ document.addEventListener("DOMContentLoaded", () => {
           panel.querySelectorAll(".exercise-card.open"),
           (el) => el.id,
         );
+        hcClearExtras(key);
         renderWorkout(key);
         opened.forEach((id) =>
           document.getElementById(id)?.classList.add("open"),

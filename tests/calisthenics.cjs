@@ -88,7 +88,7 @@ const root = path.join(__dirname, ".."),
   await page.locator("#hc-a-Strength-0-s1-rir").fill("2");
   await page.locator("#hc-a-Strength-0-s1-done").click();
   assert.equal(await page.evaluate(() => restTimerRemaining), 120);
-  await page.locator("#equip-hc-a").selectOption("Bodyweight Only");
+  await page.evaluate(() => { const x=document.querySelector('[data-hc-equipment="hc-a"][value="Pull-up bar"]'); x.checked=false;x.dispatchEvent(new Event("change")); });
   assert.equal(
     await page.locator("#hc-a-Strength-0-s1-reps").inputValue(),
     "4",
@@ -105,7 +105,7 @@ const root = path.join(__dirname, ".."),
       await page.locator("#hc-a-Strength-0-s1-done").getAttribute("class")
     ).includes("done"),
   );
-  await page.locator("#equip-hc-a").selectOption("default");
+  await page.evaluate(() => { const x=document.querySelector('[data-hc-equipment="hc-a"][value="Pull-up bar"]'); x.checked=true;x.dispatchEvent(new Event("change")); });
   await page.evaluate(() => {
     document.getElementById("hcDifficulty-hc-a").value = "Moderate";
     document.getElementById("hcTechnique-hc-a").value = "Controlled full range";
@@ -221,6 +221,30 @@ const root = path.join(__dirname, ".."),
     await page.locator(".panel.active").getAttribute("id"),
     "panel-hc-c",
   );
+  // Extra work keeps existing sets, survives reload, and saves in the same session.
+  await page.locator('[data-day=hc-a]').click();
+  assert.equal(await page.locator('#panel-hc-a .equip-mode-select').count(), 0);
+  await page.locator('[data-add-exercise="hc-a"]').click();
+  await page.locator('#librarySearch').fill('Barbell Biceps Curl');
+  await page.locator('#libraryResults button').click();
+  const extraId = await page.evaluate(() => hcState.extraWork['hc-a'][0].id);
+  await page.locator('#'+extraId+'-s1-reps').fill('10');
+  await page.locator('#'+extraId+'-s1-wt').fill('45');
+  await page.locator('#'+extraId+'-s1-done').click();
+  await page.reload();
+  assert.equal(await page.locator('#'+extraId+'-s1-reps').inputValue(), '10');
+  await page.locator('[data-add-exercise="hc-a"]').click();
+  await page.locator('#librarySearch').fill('Barbell Row');
+  await page.locator('#libraryResults button').click();
+  const secondId = await page.evaluate(() => hcState.extraWork['hc-a'][1].id);
+  await page.locator('#card-'+secondId+' button.swap-btn').click();
+  assert.equal(await page.locator('#'+extraId+'-s1-wt').inputValue(), '45');
+  await page.evaluate(() => saveWorkout('hc-a'));
+  assert.equal(await page.evaluate(() => log[0].sets.find(s=>s.exercise==='Barbell Biceps Curl').sets[0].wt), '45');
+  assert.equal(await page.evaluate(() => hcState.extraWork['hc-a'].length), 0);
+  await page.reload();
+  assert.equal(await page.locator('[id^="card-hc-a-Extra-"]').count(), 0);
+  await page.locator('[data-day=hc-c]').click();
   // Progression never counts two workouts on the same date, or a sore readiness day.
   assert.ok(
     await page.evaluate(() => {
@@ -453,6 +477,10 @@ const root = path.join(__dirname, ".."),
   await preview.screenshot({
     path: path.join(root, "docs/calisthenics-progress.png"),
   });
+  await preview.locator('[data-tab=train]').click();
+  await preview.locator('[data-add-exercise="hc-a"]').click();
+  await preview.locator('#libraryEquipment').selectOption('Barbell');
+  await preview.screenshot({path:path.join(root, 'docs/exercise-library.png')});
   await preview.close();
   // Offline new assets and navigation survive a full reload.
   await page.evaluate(async () => {
