@@ -3,7 +3,7 @@ const FREE_KEY='athleticFreeWorkoutV1';
 const FREE_EQUIPMENT=['Dumbbell','Barbell','Cable','Machine','Kettlebell','Bodyweight','Band','Other'];
 const FREE_EXERCISES={
   Dumbbell:['Bench Press','Incline Press','Overhead Press','Row','Goblet Squat','Romanian Deadlift','Lunge','Split Squat','Lateral Raise','Hammer Curl','Biceps Curl','Triceps Extension','Calf Raise'],
-  Barbell:['Back Squat','Front Squat','Deadlift','Romanian Deadlift','Bench Press','Overhead Press','Row','Hip Thrust','Biceps Curl'],
+  Barbell:['Back Squat','Front Squat','Deadlift','Romanian Deadlift','Bench Press','Overhead Press','Row','Hip Thrust','Biceps Curl','Close-Grip Bench Press','Floor Press','Split Squat','Reverse Lunge','Calf Raise'],
   Cable:['Row','Lat Pulldown','Face Pull','Chest Fly','Lateral Raise','Triceps Pushdown','Hammer Curl','Pallof Press'],
   Machine:['Chest Press','Shoulder Press','Row','Lat Pulldown','Leg Press','Hack Squat','Leg Extension','Leg Curl','Calf Raise'],
   Kettlebell:['Swing','Goblet Squat','Deadlift','Press','Row','Turkish Get-Up'],

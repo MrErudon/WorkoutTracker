@@ -78,6 +78,7 @@ const HC_VARIANTS = {
     hcV("Lat Pulldown", "8–12", "external"),
     hcV("DB Supported Row", "8–12/side", "external"),
     hcV("Inverted Row", "6–12"),
+    hcV("Barbell Row", "8–12", "external"),
   ],
   dip: [
     hcV("Assisted Parallel-Bar Dip", "6–10", "assistance", "Beginner"),
@@ -86,6 +87,7 @@ const HC_VARIANTS = {
     hcV("Weighted Parallel-Bar Dip", "4–8", "added", "Advanced"),
     hcV("Close-Grip Push-Up", "6–12"),
     hcV("DB Floor Press", "8–12", "external"),
+    hcV("Barbell Close-Grip Bench Press", "6–10", "external"),
   ],
   push: [
     hcV("Incline Push-Up", "8–12", "bodyweight", "Beginner"),
@@ -94,6 +96,8 @@ const HC_VARIANTS = {
     hcV("Decline Push-Up", "6–12", "bodyweight", "Advanced"),
     hcV("Weighted Push-Up", "6–10", "added", "Advanced"),
     hcV("DB Bench Press", "8–12", "external"),
+    hcV("Barbell Bench Press", "6–10", "external"),
+    hcV("Barbell Floor Press", "8–12", "external"),
   ],
   row: [
     hcV("Supported Bodyweight Row", "8–12", "bodyweight", "Beginner"),
@@ -103,12 +107,14 @@ const HC_VARIANTS = {
     hcV("Band Row", "10–15", "bodyweight", "Beginner"),
     hcV("Prone Pull-Down", "10–15", "bodyweight", "Beginner"),
     hcV("Seated Cable Row", "8–12", "external"),
+    hcV("Barbell Row", "8–12", "external"),
   ],
   press: [
     hcV("Elevated Pike Push-Up", "6–10", "bodyweight", "Beginner"),
     hcV("Pike Push-Up", "5–10"),
     hcV("Feet-Elevated Pike Push-Up", "4–8", "bodyweight", "Advanced"),
     hcV("DB Overhead Press", "6–10", "external"),
+    hcV("Barbell Overhead Press", "6–10", "external"),
   ],
   frog: [
     hcV("Frog Crunches", "12–20", "bodyweight", "Beginner"),
@@ -120,6 +126,7 @@ const HC_VARIANTS = {
     hcV("Supported Split Squat", "8–10/leg", "bodyweight", "Beginner"),
     hcV("Bodyweight Bulgarian Split Squat", "6–10/leg"),
     hcV("Weighted Bulgarian Split Squat", "6–10/leg", "external", "Advanced"),
+    hcV("Barbell Split Squat", "6–10/leg", "external"),
   ],
   hinge: [
     hcV("Bodyweight Hip Hinge", "10–12", "bodyweight", "Beginner"),
@@ -130,11 +137,13 @@ const HC_VARIANTS = {
     hcV("Low Step-Up", "8–10/leg", "bodyweight", "Beginner"),
     hcV("Reverse Lunge", "8–10/leg"),
     hcV("Weighted Step-Up", "8–10/leg", "external", "Advanced"),
+    hcV("Barbell Reverse Lunge", "6–10/leg", "external"),
   ],
   calf: [
     hcV("Standing Calf Raise", "12–20", "bodyweight", "Beginner"),
     hcV("Single-Leg Calf Raise", "10–15/leg"),
     hcV("Weighted Calf Raise", "10–15", "external", "Advanced"),
+    hcV("Barbell Calf Raise", "10–15", "external"),
   ],
   tib: [
     hcV("Wall Tibialis Raise", "12–20", "bodyweight", "Beginner"),
@@ -153,6 +162,7 @@ const HC_VARIANTS = {
     hcV("Band Pulldown", "10–15", "bodyweight", "Beginner"),
     hcV("Lat Pulldown", "8–12", "external"),
     hcV("DB Supported Row", "8–12/side", "external"),
+    hcV("Barbell Row", "8–12", "external"),
   ],
   squat: [
     hcV("Supported Bodyweight Squat", "8–12", "bodyweight", "Beginner"),
@@ -160,6 +170,8 @@ const HC_VARIANTS = {
     hcV("Goblet Squat", "8–12", "external", "Advanced"),
     hcV("Heel-Elevated Goblet Squat", "8–10", "external"),
     hcV("Slant-Board Bodyweight Squat", "6–10"),
+    hcV("Barbell Back Squat", "6–10", "external"),
+    hcV("Barbell Front Squat", "6–10", "external"),
   ],
   hollow: [
     hcV("Tucked Hollow Hold", "15–25", "bodyweight", "Beginner", "seconds"),
@@ -194,7 +206,7 @@ function hcExercise(movement, sets) {
   };
 }
 const HC_PRESETS = {
-  default: ["Pull-up bar", "Dip station", "Dumbbells", "Bench"],
+  default: ["Pull-up bar", "Dip station", "Dumbbells", "Bench", "Barbell"],
   "Commercial Gym": [
     "Pull-up bar",
     "Dip station",
@@ -203,6 +215,8 @@ const HC_PRESETS = {
     "Cables",
     "Machines",
     "Bands",
+    "Barbell",
+    "Squat rack",
   ],
   "Minimal Equipment": ["Bands"],
   "Bodyweight Only": [],
@@ -321,7 +335,7 @@ HC_SESSIONS.forEach((s, i) => {
   document.querySelector("main").append(p);
 });
 function hcVariantControl(id, base, ex) {
-  return `<div class="hc-variant"><label for="variant-${id}">Variation / equipment</label><select id="variant-${id}" onchange="hcChangeVariant('${id}',this)">${base.variants.map((v, i) => `<option value="${i}" ${v.variant === ex.variant ? "selected" : ""}>${v.level} · ${v.name}${hcAvailable(v.name, id.slice(0, 4)) ? "" : " · equipment needed"}</option>`).join("")}</select><p class="backup-note">${ex.movement === "push" && hcState.maxima.push === null ? "Push-up maximum untested. Start with comfortable technique sets; establish a clean max when recovered before pursuing progression targets. " : ""}${ex.movement === "dip" ? "Parallel-bar strength is tracked separately from pressing substitutes." : ex.movement === "pull" ? "Strict pull-ups are tracked separately from rows and pulldowns." : "Choose for today’s equipment. Your plan rotation stays the same."}</p></div>`;
+  return `<div class="hc-variant"><label for="variant-${id}">Variation / equipment</label><select id="variant-${id}" onchange="hcChangeVariant('${id}',this)">${base.variants.map((v, i) => `<option value="${i}" ${v.variant === ex.variant ? "selected" : ""}>${v.name}${hcAvailable(v.name, id.slice(0, 4)) ? "" : " · equipment needed"}</option>`).join("")}</select><p class="backup-note">${ex.movement === "push" && hcState.maxima.push === null ? "Push-up maximum untested. Start with comfortable technique sets; establish a clean max when recovered before pursuing progression targets. " : ""}${ex.movement === "dip" ? "Parallel-bar strength is tracked separately from pressing substitutes." : ex.movement === "pull" ? "Strict pull-ups are tracked separately from rows and pulldowns." : "Choose for today’s equipment. Your plan rotation stays the same."}</p></div>`;
 }
 function hcSetLogger(id, ex) {
   const last = getLastSessionData(ex.name),
@@ -654,15 +668,16 @@ document.addEventListener("DOMContentLoaded", () => {
 function hcEquipmentHTML(key) {
   const available = hcState.equipment[key]?.available ||
     HC_PRESETS?.default || ["Pull-up bar", "Dip station", "Dumbbells", "Bench"];
-  return `<details class="hybrid-note"><summary>Equipment available today</summary><div class="hc-equipment">${["Pull-up bar", "Dip station", "Dumbbells", "Bench", "Cables", "Machines", "Bands"].map((x) => `<label><input type="checkbox" value="${x}" data-hc-equipment="${key}" ${available.includes(x) ? "checked" : ""}>${x}</label>`).join("")}</div><p id="equipment-advice-${key}" class="backup-note"></p></details>`;
+  return `<details class="hybrid-note"><summary>Equipment available today</summary><div class="hc-equipment">${["Pull-up bar", "Dip station", "Dumbbells", "Bench", "Barbell", "Squat rack", "Cables", "Machines", "Bands"].map((x) => `<label><input type="checkbox" value="${x}" data-hc-equipment="${key}" ${available.includes(x) ? "checked" : ""}>${x}</label>`).join("")}</div><p id="equipment-advice-${key}" class="backup-note"></p></details>`;
 }
 function hcAvailable(name, key) {
-  const have = hcState.equipment[key]?.available || [
-    "Pull-up bar",
-    "Dip station",
-    "Dumbbells",
-    "Bench",
-  ];
+  const have = hcState.equipment[key]?.available || HC_PRESETS.default;
+  if (/Barbell/.test(name)) {
+    const required = ["Barbell"];
+    if (/Bench Press/.test(name)) required.push("Bench", "Squat rack");
+    if (/Back Squat|Front Squat|Split Squat|Reverse Lunge|Calf Raise/.test(name)) required.push("Squat rack");
+    return required.every(item => have.includes(item));
+  }
   if (/Band/.test(name)) return have.includes("Bands");
   if (
     /DB |Weighted (Step|Bulgarian|Calf)|Goblet|Tibialis/.test(name) &&
@@ -672,7 +687,6 @@ function hcAvailable(name, key) {
   if (/Pulldown/.test(name))
     return have.includes("Machines") || have.includes("Cables");
   if (/Cable/.test(name)) return have.includes("Cables");
-  if (/Barbell/.test(name)) return have.includes("Machines");
   if (/Inverted|Supported Bodyweight/.test(name))
     return have.includes("Pull-up bar");
   if (/Pull-Up|Chin-Up|Hang/.test(name)) return have.includes("Pull-up bar");
@@ -687,15 +701,13 @@ function hcEquipmentAdvice(key) {
       .forEach((option, j) => {
         const v = base.variants[j];
         option.textContent =
-          v.level +
-          " · " +
           v.name +
           (hcAvailable(v.name, key) ? "" : " · equipment needed");
       });
   });
   const target = document.getElementById("equipment-advice-" + key);
   target.textContent =
-    "Equipment preferences remembered. Select substitutions below; changes never reset your rotation.";
+    "Select the equipment you have, including a barbell at home. Bench presses and rack-loaded leg exercises also need a rack; bench presses need a bench. Log total barbell weight, including the bar. Your rotation stays the same.";
   WORKOUTS[key].sections[0].exercises.forEach((base, i) => {
     const id = key + "-Strength-" + i,
       ex = sessionSwaps[id] || base;
