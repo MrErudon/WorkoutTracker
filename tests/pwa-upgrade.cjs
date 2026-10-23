@@ -1,4 +1,4 @@
-// Real v9 -> v12 service-worker upgrade, with legacy browser data and offline reload.
+// Real v12 -> v13 service-worker upgrade, with legacy browser data and offline reload.
 const { chromium } = require("playwright"),
   { execFileSync } = require("node:child_process"),
   fs = require("node:fs"),
@@ -6,7 +6,7 @@ const { chromium } = require("playwright"),
   path = require("node:path"),
   assert = require("node:assert/strict");
 const root = path.join(__dirname, ".."),
-  base = "0d73ca7dcf43261d77088a43f1e055b379fcf253",
+  base = "f0d77ca9b1379defdf4cdcdb054e319174b2460c",
   old = {};
 for (const file of [
   "index.html",
@@ -91,7 +91,7 @@ const server = http
   await page.waitForFunction(() => !!navigator.serviceWorker.controller);
   assert.ok(
     await page.evaluate(async () =>
-      (await caches.keys()).includes("athletic-tracker-v9"),
+      (await caches.keys()).includes("athletic-tracker-v12"),
     ),
   );
   upgraded = true;
@@ -102,8 +102,8 @@ const server = http
   await page.waitForFunction(async () => {
     const keys = await caches.keys();
     return (
-      keys.includes("athletic-tracker-v12") &&
-      !keys.includes("athletic-tracker-v9")
+      keys.includes("athletic-tracker-v13") &&
+      !keys.includes("athletic-tracker-v12")
     );
   });
   await page.reload();
@@ -124,7 +124,7 @@ const server = http
   await b.close();
   server.close();
   console.log(
-    "PASS: real v9→v12 activation, old-cache cleanup, unchanged legacy data, stalled connection fallback, offline new plan and Speed.",
+    "PASS: real v12→v13 activation, old-cache cleanup, unchanged legacy data, stalled connection fallback, offline new plan and Speed.",
   );
 })().catch((e) => {
   console.error(e);

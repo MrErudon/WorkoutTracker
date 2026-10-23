@@ -47,6 +47,26 @@ const root = path.join(__dirname, ".."),
     await page.locator(".panel.active").getAttribute("id"),
     "panel-hc-a",
   );
+  assert.equal(await page.locator('.tab:not([hidden]) svg').count(), 5);
+  assert.equal(await page.locator('[data-tab=train] span').textContent(), 'Today');
+  assert.equal(await page.locator('.tab.active').evaluate(el => getComputedStyle(el).color), 'rgb(213, 245, 138)');
+  assert.equal(await page.evaluate(() => {
+    const previous = hcState.equipment['hc-a'];
+    try {
+      hcState.equipment['hc-a'] = {mode:'default', available:['Barbell']};
+      if (!hcAvailable('Barbell Row', 'hc-a') || !hcAvailable('Barbell Romanian Deadlift', 'hc-a')) return false;
+      if (hcAvailable('Barbell Back Squat', 'hc-a') || hcAvailable('Barbell Bench Press', 'hc-a')) return false;
+      hcState.equipment['hc-a'].available.push('Bench', 'Squat rack');
+      if (!hcAvailable('Barbell Bench Press', 'hc-a') || !hcAvailable('Barbell Back Squat', 'hc-a')) return false;
+      hcState.equipment['hc-a'].available = ['Machines'];
+      if (hcAvailable('Barbell Romanian Deadlift', 'hc-a')) return false;
+      return HC_PRESETS.default.includes('Barbell') && HC_PRESETS['Commercial Gym'].includes('Barbell') &&
+        ['pull','dip','push','row','press','split','hinge','step','calf','chin','squat'].every(m => HC_VARIANTS[m].some(v => v.name.startsWith('Barbell ') && v.loadKind === 'external'));
+    } finally {
+      if (previous) hcState.equipment['hc-a'] = previous;
+      else delete hcState.equipment['hc-a'];
+    }
+  }), true);
   assert.equal(await page.evaluate(() => hcState.maxima.pull), 6);
   assert.equal(await page.evaluate(() => hcState.maxima.dip), 10);
   assert.equal(await page.evaluate(() => hcState.maxima.push), null);
@@ -135,7 +155,7 @@ const root = path.join(__dirname, ".."),
   );
   await page
     .locator("#variant-hc-a-Strength-0")
-    .selectOption({ label: "Advanced · Weighted Pull-Up" });
+    .selectOption({ label: "Weighted Pull-Up" });
   await page.locator("#hc-a-Strength-0-s1-reps").fill("3");
   await page.locator("#hc-a-Strength-0-s1-wt").fill("10");
   await page.locator("#hc-a-Strength-0-s1-done").click();
